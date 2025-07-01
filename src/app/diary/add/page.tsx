@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Search, Camera, Barcode, Plus, Minus } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -33,7 +33,7 @@ const getMealLabel = (meal: string): string => {
   return mealLabels[meal as keyof typeof mealLabels] || 'Unbekannt'
 }
 
-export default function AddFoodPage() {
+function AddFoodContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user } = useAuthStore()
@@ -325,5 +325,17 @@ export default function AddFoodPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function AddFoodPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+      </div>
+    }>
+      <AddFoodContent />
+    </Suspense>
   )
 }
