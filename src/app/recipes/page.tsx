@@ -96,14 +96,7 @@ export default function RecipesPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navigation />
-      
-      <div className="w-full px-4 py-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Rezepte entdecken</h1>
-          <p className="text-gray-600 text-sm">Finde gesunde Rezepte, die zu deinen Ernährungszielen passen</p>
-        </div>
-
+      <div className="w-full px-4 pt-4 pb-20">
         {/* Search and Filters */}
         <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg p-6 mb-6">
           <div className="space-y-4">
@@ -267,6 +260,8 @@ export default function RecipesPage() {
           </div>
         </div>
       </div>
+      
+      <Navigation />
     </div>
   )
 }

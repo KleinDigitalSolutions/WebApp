@@ -14,6 +14,8 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [formData, setFormData] = useState<Partial<Profile>>({
+    first_name: undefined,
+    last_name: undefined,
     age: undefined,
     gender: undefined,
     height_cm: undefined,
@@ -114,31 +116,42 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <Navigation />
         <div className="flex items-center justify-center py-12">
           <LoadingSpinner size="lg" />
         </div>
+        <Navigation />
       </div>
     )
   }
 
   return (
     <div className="min-h-screen bg-white">
-      <Navigation />
-      
-      <div className="w-full px-4 py-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Dein Profil</h1>
-          <p className="text-gray-600 text-sm">
-            Hilf uns, deine Ernährungsreise zu personalisieren
-          </p>
-        </div>
-
+      <div className="w-full px-4 pt-4 pb-20">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Grunddaten</h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-4">Persönliche Daten</h2>
             
             <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  label="Vorname"
+                  type="text"
+                  value={formData.first_name || ''}
+                  onChange={(e) => handleInputChange('first_name', e.target.value)}
+                  placeholder="Dein Vorname"
+                  required
+                />
+                
+                <Input
+                  label="Nachname"
+                  type="text"
+                  value={formData.last_name || ''}
+                  onChange={(e) => handleInputChange('last_name', e.target.value)}
+                  placeholder="Dein Nachname"
+                  required
+                />
+              </div>
+
               <Input
                 label="Alter"
                 type="number"
@@ -147,6 +160,7 @@ export default function ProfilePage() {
                 placeholder="Dein Alter eingeben"
                 min="13"
                 max="120"
+                required
               />
 
               <Select
@@ -306,7 +320,7 @@ export default function ProfilePage() {
             <Button
               type="submit"
               loading={saving}
-              disabled={!formData.age || !formData.gender || !formData.height_cm || !formData.weight_kg || !formData.activity_level || !formData.goal}
+              disabled={!formData.first_name || !formData.last_name || !formData.age || !formData.gender || !formData.height_cm || !formData.weight_kg || !formData.activity_level || !formData.goal}
               className="flex-1"
             >
               Profil speichern
@@ -314,6 +328,8 @@ export default function ProfilePage() {
           </div>
         </form>
       </div>
+      
+      <Navigation />
     </div>
   )
 }

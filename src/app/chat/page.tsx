@@ -154,24 +154,18 @@ Wie kann ich dir heute helfen? 🌱`,
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <Navigation />
-      
-      <div className="flex-1 w-full px-4 py-6 flex flex-col">
-        {/* Header */}
-        <div className="mb-6 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">KI-Ernährungsberater</h1>
-            <p className="text-gray-600 text-sm">Personalisierte Ernährungstipps & Beratung</p>
-          </div>
-          {messages.length > 1 && (
-            <Button variant="outline" onClick={clearChat} className="text-sm">
-              Neu starten
-            </Button>
-          )}
-        </div>
-
+      <div className="flex-1 w-full px-4 pt-4 pb-20 flex flex-col">
         {/* Chat Messages */}
-        <div className="flex-1 backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg flex flex-col mb-4">
+        <div className="flex-1 backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg flex flex-col mb-4 relative">
+          {/* Floating "Neu starten" Button */}
+          {messages.length > 1 && (
+            <button
+              onClick={clearChat}
+              className="absolute top-4 right-4 z-10 bg-white/90 hover:bg-white text-gray-600 hover:text-gray-800 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200 shadow-sm transition-colors"
+            >
+              ↻ Neu
+            </button>
+          )}
           <div className="flex-1 p-4 overflow-y-auto">
             <div className="space-y-4">
               {messages.map((message) => (
@@ -287,6 +281,8 @@ Wie kann ich dir heute helfen? 🌱`,
           </div>
         )}
       </div>
+      
+      <Navigation />
     </div>
   )
 }

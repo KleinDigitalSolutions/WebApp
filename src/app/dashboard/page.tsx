@@ -87,10 +87,62 @@ function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
 
 export default function Dashboard() {
   const router = useRouter()
-  const { user, setProfile } = useAuthStore()
+  const { user, profile, setProfile } = useAuthStore()
   const { dailyGoals, setEntries, setDailyGoals } = useDiaryStore()
   const [loading, setLoading] = useState(true)
   const [todayEntries, setTodayEntries] = useState<DiaryEntry[]>([])
+
+  // Funktion für zeitbasierte Begrüßung
+  const getGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 6) return "Gute Nacht"
+    if (hour < 12) return "Guten Morgen"
+    if (hour < 17) return "Guten Tag"
+    if (hour < 21) return "Guten Abend"
+    return "Gute Nacht"
+  }
+
+  // Funktion um Vorname zu bestimmen (Profil oder E-Mail)
+  const getFirstName = () => {
+    // 1. Priorität: Vorname aus Profil
+    if (profile?.first_name) {
+      return profile.first_name
+    }
+    
+    // 2. Fallback: Vorname aus E-Mail extrahieren
+    if (!user?.email) return ""
+    
+    // Versuche verschiedene Extraktionsmethoden
+    const email = user.email.toLowerCase()
+    
+    // 1. Wenn Punkt im Namen: "max.mustermann@email.com" → "Max"
+    if (email.includes('.') && !email.startsWith('.')) {
+      const beforeAt = email.split('@')[0]
+      const firstName = beforeAt.split('.')[0]
+      return firstName.charAt(0).toUpperCase() + firstName.slice(1)
+    }
+    
+    // 2. Wenn Unterstrich: "max_mustermann@email.com" → "Max"
+    if (email.includes('_')) {
+      const beforeAt = email.split('@')[0]
+      const firstName = beforeAt.split('_')[0]
+      return firstName.charAt(0).toUpperCase() + firstName.slice(1)
+    }
+    
+    // 3. Wenn Zahlen am Ende: "max123@email.com" → "Max"
+    const beforeAt = email.split('@')[0]
+    const nameWithoutNumbers = beforeAt.replace(/\d+$/, '')
+    if (nameWithoutNumbers.length >= 2 && nameWithoutNumbers.length <= 15) {
+      return nameWithoutNumbers.charAt(0).toUpperCase() + nameWithoutNumbers.slice(1)
+    }
+    
+    // 4. Fallback: Ersten Teil der E-Mail nehmen, wenn sinnvoll
+    if (beforeAt.length >= 2 && beforeAt.length <= 20) {
+      return beforeAt.charAt(0).toUpperCase() + beforeAt.slice(1)
+    }
+    
+    return ""
+  }
 
   const loadData = useCallback(async () => {
     if (!user) return
@@ -175,7 +227,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  Guten Tag!
+                  {getGreeting()}{getFirstName() && `, ${getFirstName()}`}!
                 </h1>
                 <p className="text-sm text-gray-600 mt-1">
                   {new Date().toLocaleDateString('de-DE', { 

@@ -21,6 +21,8 @@ export const getSiteUrl = () => {
 // Database Types
 export interface Profile {
   id: string
+  first_name?: string
+  last_name?: string
   age?: number
   gender?: 'male' | 'female' | 'other'
   height_cm?: number
@@ -61,5 +63,63 @@ export interface Recipe {
     [key: string]: unknown;
   }
   is_public: boolean
+  created_at: string
+}
+
+// User-Generated Products System Types
+export interface Product {
+  id: string
+  code: string
+  name: string
+  brand: string
+  category: 'dairy' | 'meat' | 'bakery' | 'frozen' | 'beverages' | 'fruits' | 'vegetables' | 'snacks' | 'pantry'
+  supermarkets: string[]
+  price_min?: number
+  price_max?: number
+  image_url?: string
+  
+  // Nutrition per 100g
+  calories_per_100g: number
+  protein_per_100g: number
+  carbs_per_100g: number
+  fat_per_100g: number
+  fiber_per_100g?: number
+  sugar_per_100g?: number
+  salt_per_100g?: number
+  
+  allergens: string[]
+  keywords: string[]
+  
+  // User and verification
+  created_by?: string
+  is_verified: boolean
+  is_community_product: boolean
+  verification_status: 'pending' | 'approved' | 'rejected'
+  moderator_notes?: string
+  verified_by?: string
+  
+  created_at: string
+  updated_at: string
+}
+
+export interface ProductReview {
+  id: string
+  product_id: string
+  user_id: string
+  rating: number // 1-5
+  review_text?: string
+  is_nutrition_accurate?: boolean
+  created_at: string
+}
+
+export interface ProductReport {
+  id: string
+  product_id: string
+  user_id: string
+  report_type: 'incorrect_nutrition' | 'wrong_name' | 'wrong_brand' | 'spam' | 'other'
+  description: string
+  status: 'pending' | 'resolved' | 'dismissed'
+  resolved_by?: string
+  resolved_at?: string
   created_at: string
 }
