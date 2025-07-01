@@ -14,6 +14,10 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Browser-Detection außerhalb des useEffect
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+
   useEffect(() => {
     if (!isActive) return
 
@@ -25,7 +29,6 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
     }
 
     // iOS-spezifische Warnungen
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
     const isStandalone = ('standalone' in window.navigator) && (window.navigator as { standalone?: boolean }).standalone === true
     
     if (isIOS && isStandalone) {
@@ -42,14 +45,20 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
         // Explizit um Kamera-Zugriff bitten (wichtig für mobile Browser!)
         let stream: MediaStream
         try {
-          // Mobile-optimierte Constraints für bessere Kompatibilität
+          // Safari-optimierte Constraints für bessere Kompatibilität
           const constraints = {
-            video: {
-              facingMode: { ideal: 'environment' }, // Rückkamera bevorzugen
+            video: isIOS && isSafari ? {
+              // Vereinfachte Constraints für Safari iOS
+              facingMode: 'environment',
+              width: { ideal: 640 },
+              height: { ideal: 480 }
+            } : {
+              // Erweiterte Constraints für andere Browser
+              facingMode: { ideal: 'environment' },
               width: { min: 320, ideal: 640, max: 1280 },
               height: { min: 240, ideal: 480, max: 720 },
-              aspectRatio: { ideal: 1.333 }, // 4:3 für bessere Barcode-Erkennung
-              frameRate: { ideal: 15, max: 30 } // Batterie schonen
+              aspectRatio: { ideal: 1.333 },
+              frameRate: { ideal: 15, max: 30 }
             }
           }
           
@@ -107,10 +116,16 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
             name: 'Live',
             type: 'LiveStream' as const,
             target: scannerRef.current,
-            constraints: {
+            constraints: isIOS && isSafari ? {
+              // Safari-optimierte Quagga-Constraints
+              width: { ideal: 640 },
+              height: { ideal: 480 },
+              facingMode: 'environment'
+            } : {
+              // Standard-Constraints für andere Browser
               width: { min: 320, ideal: 640, max: 1280 },
               height: { min: 240, ideal: 480, max: 720 },
-              facingMode: 'environment', // Rückkamera für Barcode-Scanning
+              facingMode: 'environment',
               aspectRatio: { min: 1, max: 2 }
             },
             area: { // Scan-Bereich optimiert für mobile
@@ -134,11 +149,11 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
             }
           },
           locator: {
-            patchSize: 'medium',
-            halfSample: true
+            patchSize: isSafari ? 'large' : 'medium', // Safari braucht größere Patches
+            halfSample: isSafari ? false : true // Safari: keine Halbierung
           },
-          numOfWorkers: navigator.hardwareConcurrency > 2 ? 2 : 1, // CPU-optimiert
-          frequency: 10, // Scan-Frequenz für mobile
+          numOfWorkers: isIOS ? 1 : (navigator.hardwareConcurrency > 2 ? 2 : 1), // iOS: nur 1 Worker
+          frequency: isSafari ? 5 : 10, // Safari: langsamere Frequenz
           locate: true
         }
 
@@ -263,6 +278,9 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
               </div>
               <div className="mt-4 text-xs text-white/60">
                 <p>📱 <strong>Mobile Browser:</strong> Erlaube Kamera-Zugriff in den Browser-Einstellungen</p>
+                {isIOS && isSafari && (
+                  <p>🍎 <strong>Safari iOS:</strong> Probiere Chrome für bessere Kompatibilität</p>
+                )}
                 <p>💡 <strong>Tipp:</strong> Teste mit verschiedenen Browsern (Chrome, Safari, Firefox)</p>
               </div>
             </div>
