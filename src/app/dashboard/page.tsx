@@ -323,7 +323,7 @@ export default function Dashboard() {
                 <Wheat className="h-5 w-5 text-emerald-600" />
               </div>
               <div className="text-sm font-semibold text-gray-900">{Math.round(consumedCarbs)}g</div>
-              <div className="text-xs text-gray-600">Kohlenhydrate</div>
+              <div className="text-xs text-gray-600">Carbs</div>
               <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
                 <div 
                   className="bg-emerald-500 h-1.5 rounded-full"
