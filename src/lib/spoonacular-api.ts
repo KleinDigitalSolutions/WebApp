@@ -10,6 +10,24 @@ export interface SpoonacularRecipe {
   spoonacularSourceUrl: string
 }
 
+export interface SpoonacularIngredient {
+  id: number
+  name: string
+  image?: string
+  original?: string
+}
+
+export interface IngredientNutrition {
+  nutrition?: {
+    nutrients?: Array<{
+      name: string
+      amount: number
+      unit: string
+      percentOfDailyNeeds?: number
+    }>
+  }
+}
+
 export interface RecipeInformation {
   id: number
   title: string
@@ -116,6 +134,53 @@ export class SpoonacularAPI {
     } catch (error) {
       console.error('Spoonacular API error:', error)
       return []
+    }
+  }
+
+  // New method for ingredient search
+  async searchIngredients(query: string, number: number = 20): Promise<SpoonacularIngredient[]> {
+    try {
+      const params = new URLSearchParams({
+        apiKey: this.apiKey,
+        query,
+        number: number.toString(),
+        metaInformation: 'true',
+      })
+
+      const response = await fetch(`https://api.spoonacular.com/food/ingredients/search?${params}`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to search ingredients')
+      }
+
+      const data = await response.json()
+      return data.results || []
+    } catch (error) {
+      console.error('Spoonacular ingredient search error:', error)
+      return []
+    }
+  }
+
+  // Get nutrition information for an ingredient
+  async getIngredientNutrition(id: number, amount: number = 100, unit: string = 'grams'): Promise<IngredientNutrition | null> {
+    try {
+      const params = new URLSearchParams({
+        apiKey: this.apiKey,
+        amount: amount.toString(),
+        unit,
+      })
+
+      const response = await fetch(`https://api.spoonacular.com/food/ingredients/${id}/information?${params}`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to get ingredient nutrition')
+      }
+
+      const data = await response.json()
+      return data
+    } catch (error) {
+      console.error('Spoonacular nutrition error:', error)
+      return null
     }
   }
 }
