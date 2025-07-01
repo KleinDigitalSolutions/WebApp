@@ -26,7 +26,7 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
 
     // iOS-spezifische Warnungen
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
-    const isStandalone = (window.navigator as any)?.standalone === true
+    const isStandalone = ('standalone' in window.navigator) && (window.navigator as { standalone?: boolean }).standalone === true
     
     if (isIOS && isStandalone) {
       setError('📱 Barcode-Scanner funktioniert auf iOS nicht in PWA-Modus. Bitte öffne die App direkt in Safari.')
