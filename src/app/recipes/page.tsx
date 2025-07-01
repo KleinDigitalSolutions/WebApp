@@ -194,8 +194,8 @@ export default function RecipesPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {recipes.map((recipe) => (
-              <div key={recipe.id} className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg overflow-hidden">
+            {recipes.map((recipe, index) => (
+              <div key={`${recipe.id}-${index}`} className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg overflow-hidden">
                 <div className="relative h-48">
                   {recipe.image ? (
                     <Image

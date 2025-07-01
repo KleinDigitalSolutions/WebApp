@@ -71,21 +71,29 @@ export class MealDBAPI {
   async getRandomRecipes(count: number = 12): Promise<Recipe[]> {
     try {
       const recipes: Recipe[] = []
+      const seenIds = new Set<string>()
       
       // TheMealDB only gives 1 random recipe per call, so we make multiple calls
-      const promises = Array(Math.min(count, 20)).fill(null).map(() => 
+      // We'll make more calls than needed to account for potential duplicates
+      const promises = Array(Math.min(count * 2, 40)).fill(null).map(() => 
         fetch(`${this.baseUrl}/random.php`).then(res => res.json())
       )
       
       const results = await Promise.all(promises)
       
       for (const data of results) {
-        if (data.meals && data.meals[0]) {
-          recipes.push(this.formatRecipe(data.meals[0]))
+        if (data.meals && data.meals[0] && recipes.length < count) {
+          const recipe = this.formatRecipe(data.meals[0])
+          
+          // Only add if we haven't seen this ID before
+          if (!seenIds.has(recipe.id)) {
+            seenIds.add(recipe.id)
+            recipes.push(recipe)
+          }
         }
       }
       
-      return recipes
+      return recipes.slice(0, count)
     } catch (error) {
       console.error('Error getting random recipes:', error)
       return []
