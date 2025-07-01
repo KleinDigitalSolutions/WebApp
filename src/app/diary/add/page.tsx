@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Search, Camera, Barcode, Plus, Minus } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
+import { useAuthStore } from '@/store'
 
 interface FoodItem {
   code: string
@@ -21,13 +23,34 @@ interface FoodItem {
   serving_quantity?: number
 }
 
+const getMealLabel = (meal: string): string => {
+  const mealLabels = {
+    breakfast: 'Frühstück',
+    lunch: 'Mittagessen',
+    dinner: 'Abendessen',
+    snacks: 'Snacks'
+  }
+  return mealLabels[meal as keyof typeof mealLabels] || 'Unbekannt'
+}
+
 export default function AddFoodPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const { user } = useAuthStore()
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<FoodItem[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null)
-  const [quantity, setQuantity] = useState(1)
+  const [quantity, setQuantity] = useState(100)
+  const [adding, setAdding] = useState(false)
+  const [mealType, setMealType] = useState<string>('breakfast')
+
+  useEffect(() => {
+    const meal = searchParams.get('meal')
+    if (meal) {
+      setMealType(meal)
+    }
+  }, [searchParams])
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return
@@ -57,11 +80,64 @@ export default function AddFoodPage() {
   }
 
   const handleAddFood = async () => {
-    if (!selectedFood) return
+    if (!selectedFood || !user) {
+      if (!user) {
+        alert('❌ Bitte melden Sie sich an, um Lebensmittel hinzuzufügen.')
+        router.push('/login')
+        return
+      }
+      return
+    }
     
-    // Here you would add the food to the diary
-    console.log('Adding food:', selectedFood, 'Quantity:', quantity)
-    router.push('/dashboard')
+    setAdding(true)
+    try {
+      // Berechne Nährwerte basierend auf Menge
+      const calories = Math.round(((selectedFood.nutriments['energy-kcal_100g'] || 0) * quantity) / 100)
+      const protein = ((selectedFood.nutriments['proteins_100g'] || 0) * quantity) / 100
+      const carbs = ((selectedFood.nutriments['carbohydrates_100g'] || 0) * quantity) / 100
+      const fat = ((selectedFood.nutriments['fat_100g'] || 0) * quantity) / 100
+      const fiber = ((selectedFood.nutriments['fiber_100g'] || 0) * quantity) / 100
+      const sugar = ((selectedFood.nutriments['sugars_100g'] || 0) * quantity) / 100
+      const salt = ((selectedFood.nutriments['salt_100g'] || 0) * quantity) / 100
+
+      // Füge Eintrag zur Datenbank hinzu
+      const { error } = await supabase
+        .from('diary_entries')
+        .insert([
+          {
+            user_id: user.id,
+            food_name: selectedFood.product_name,
+            quantity: quantity,
+            unit: 'g',
+            meal_type: mealType, // Aus URL-Parameter oder Standard
+            calories: calories,
+            protein_g: Math.round(protein * 10) / 10,
+            carb_g: Math.round(carbs * 10) / 10,
+            fat_g: Math.round(fat * 10) / 10,
+            fiber_g: Math.round(fiber * 10) / 10,
+            sugar_g: Math.round(sugar * 10) / 10,
+            sodium_mg: Math.round(salt * 1000) // Salt to sodium in mg
+          }
+        ])
+
+      if (error) {
+        console.error('Error adding food:', error)
+        alert('Fehler beim Hinzufügen des Lebensmittels')
+        return
+      }
+
+      console.log('Food added successfully!')
+      
+      // UI-Feedback für erfolgreiche Hinzufügung
+      alert('✅ Lebensmittel erfolgreich zum Tagebuch hinzugefügt!')
+      
+      router.push('/diary')
+    } catch (error) {
+      console.error('Error adding food:', error)
+      alert('Fehler beim Hinzufügen des Lebensmittels')
+    } finally {
+      setAdding(false)
+    }
   }
 
   return (
@@ -75,7 +151,9 @@ export default function AddFoodPage() {
           >
             <ArrowLeft className="h-6 w-6 text-gray-700" />
           </button>
-          <h1 className="text-lg font-semibold text-gray-900">Lebensmittel hinzufügen</h1>
+          <h1 className="text-lg font-semibold text-gray-900">
+            Lebensmittel hinzufügen {mealType && `- ${getMealLabel(mealType)}`}
+          </h1>
           <div className="w-10" /> {/* Spacer */}
         </div>
       </div>
@@ -113,7 +191,7 @@ export default function AddFoodPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Lebensmittel suchen..."
-              className="w-full p-4 pr-12 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full p-4 pr-12 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
             <button 
@@ -157,6 +235,25 @@ export default function AddFoodPage() {
           </div>
         )}
 
+        {/* No Results - Show Add Product Option */}
+        {!loading && searchQuery && searchResults.length === 0 && (
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 text-center">
+            <div className="text-gray-400 text-4xl mb-4">🔍</div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Keine Ergebnisse für &quot;{searchQuery}&quot;
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Das gesuchte Produkt ist noch nicht in unserer Datenbank verfügbar.
+            </p>
+            <button 
+              onClick={() => router.push('/products/add')}
+              className="w-full p-3 bg-blue-500 text-white rounded-2xl font-medium active:scale-95 transition-transform"
+            >
+              Produkt zur Datenbank hinzufügen
+            </button>
+          </div>
+        )}
+
         {/* Selected Food */}
         {selectedFood && (
           <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
@@ -174,7 +271,7 @@ export default function AddFoodPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">Menge (g)</label>
               <div className="flex items-center space-x-3">
                 <button 
-                  onClick={() => setQuantity(Math.max(1, quantity - 10))}
+                  onClick={() => setQuantity(Math.max(10, quantity - 10))}
                   className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center transition-colors active:scale-95"
                 >
                   <Minus className="h-4 w-4" />
@@ -183,9 +280,9 @@ export default function AddFoodPage() {
                 <input
                   type="number"
                   value={quantity}
-                  onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                  className="flex-1 text-center p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  min="1"
+                  onChange={(e) => setQuantity(parseInt(e.target.value) || 100)}
+                  className="flex-1 text-center p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900"
+                  min="10"
                 />
                 
                 <button 
@@ -200,18 +297,18 @@ export default function AddFoodPage() {
             {/* Nutrition Info */}
             <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-4 mb-6">
               <h5 className="font-medium text-gray-900 mb-2">Nährwerte für {quantity}g</h5>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div>Kalorien: <span className="font-medium">
+              <div className="grid grid-cols-2 gap-3 text-sm text-gray-900">
+                <div>Kalorien: <span className="font-bold text-emerald-600">
                   {Math.round(((selectedFood.nutriments['energy-kcal_100g'] || 0) * quantity) / 100)}
                 </span></div>
-                <div>Protein: <span className="font-medium">
-                  {Math.round(((selectedFood.nutriments['proteins_100g'] || 0) * quantity) / 100)}g
+                <div>Protein: <span className="font-bold text-blue-600">
+                  {((selectedFood.nutriments['proteins_100g'] || 0) * quantity / 100).toFixed(1)}g
                 </span></div>
-                <div>Kohlenhydrate: <span className="font-medium">
-                  {Math.round(((selectedFood.nutriments['carbohydrates_100g'] || 0) * quantity) / 100)}g
+                <div>Kohlenhydrate: <span className="font-bold text-orange-600">
+                  {((selectedFood.nutriments['carbohydrates_100g'] || 0) * quantity / 100).toFixed(1)}g
                 </span></div>
-                <div>Fett: <span className="font-medium">
-                  {Math.round(((selectedFood.nutriments['fat_100g'] || 0) * quantity) / 100)}g
+                <div>Fett: <span className="font-bold text-yellow-600">
+                  {((selectedFood.nutriments['fat_100g'] || 0) * quantity / 100).toFixed(1)}g
                 </span></div>
               </div>
             </div>
@@ -219,9 +316,10 @@ export default function AddFoodPage() {
             {/* Add Button */}
             <button 
               onClick={handleAddFood}
-              className="w-full p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform"
+              disabled={adding}
+              className="w-full p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Zum Tagebuch hinzufügen
+              {adding ? 'Wird hinzugefügt...' : 'Zum Tagebuch hinzufügen'}
             </button>
           </div>
         )}

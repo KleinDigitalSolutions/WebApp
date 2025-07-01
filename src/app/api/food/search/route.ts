@@ -1,55 +1,105 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { OpenFoodFactsAPI } from '@/lib/openfoodfacts-api'
+import { GermanProductDatabase } from '@/lib/german-product-database'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const query = searchParams.get('q')
 
-    if (!query) {
-      return NextResponse.json(
-        { error: 'Suchbegriff ist erforderlich' },
-        { status: 400 }
-      )
+    if (!query || query.trim().length < 2) {
+      return NextResponse.json([])
     }
 
     console.log(`Food search request for: "${query}"`)
 
-    // Search from OpenFoodFacts
-    const openFoodFactsAPI = new OpenFoodFactsAPI()
-    const products = await openFoodFactsAPI.searchProducts(query)
+    // 1. Suche in unserer lokalen deutschen Produktdatenbank
+    const localResults = GermanProductDatabase.searchProducts(query)
 
-    console.log(`Found ${products.length} products for: "${query}"`)
+    // 2. Suche in Supabase für community-hinzugefügte Produkte
+    const { data: supabaseProducts, error } = await supabase
+      .from('products')
+      .select('*')
+      .or(`name.ilike.%${query}%,brand.ilike.%${query}%,keywords.cs.{${query}}`)
+      .eq('verification_status', 'approved')
+      .limit(10)
 
-    // Sort by relevance (products with names that match the query more closely)
-    const sortedProducts = products.sort((a, b) => {
-      const aNameLower = a.product_name.toLowerCase()
-      const bNameLower = b.product_name.toLowerCase()
-      const queryLower = query.toLowerCase()
-      
-      // Exact matches first
-      if (aNameLower.includes(queryLower) && !bNameLower.includes(queryLower)) return -1
-      if (!aNameLower.includes(queryLower) && bNameLower.includes(queryLower)) return 1
-      
-      // Then by how early the match appears
-      const aIndex = aNameLower.indexOf(queryLower)
-      const bIndex = bNameLower.indexOf(queryLower)
-      
-      if (aIndex !== -1 && bIndex !== -1) {
-        return aIndex - bIndex
-      }
-      
-      return 0
-    })
+    if (error) {
+      console.error('Supabase search error:', error)
+    }
+
+    // Konvertiere lokale Ergebnisse zu einheitlichem Format
+    const formattedLocalResults = localResults.map((product) => ({
+      code: product.code,
+      product_name: product.name,
+      brands: product.brand,
+      image_url: product.image_url || '',
+      nutriments: {
+        'energy-kcal_100g': product.nutrition.calories_per_100g,
+        'proteins_100g': product.nutrition.protein_per_100g,
+        'carbohydrates_100g': product.nutrition.carbs_per_100g,
+        'fat_100g': product.nutrition.fat_per_100g,
+        'fiber_100g': product.nutrition.fiber_per_100g || 0,
+        'sugars_100g': product.nutrition.sugar_per_100g || 0,
+        'salt_100g': product.nutrition.salt_per_100g || 0
+      },
+      supermarkets: product.supermarkets,
+      price_range: product.price_range,
+      category: product.category,
+      allergens: product.allergens || [],
+      source: 'local'
+    }))
+
+    // Konvertiere Supabase-Ergebnisse zu einheitlichem Format
+    const formattedSupabaseResults = (supabaseProducts || []).map((product) => ({
+      code: product.code,
+      product_name: product.name,
+      brands: product.brand,
+      image_url: product.image_url || '',
+      nutriments: {
+        'energy-kcal_100g': product.calories_per_100g,
+        'proteins_100g': product.protein_per_100g,
+        'carbohydrates_100g': product.carbs_per_100g,
+        'fat_100g': product.fat_per_100g,
+        'fiber_100g': product.fiber_per_100g || 0,
+        'sugars_100g': product.sugar_per_100g || 0,
+        'salt_100g': product.salt_per_100g || 0
+      },
+      supermarkets: product.supermarkets || [],
+      price_range: product.price_min && product.price_max 
+        ? `${product.price_min}-${product.price_max}€` 
+        : undefined,
+      category: product.category,
+      allergens: product.allergens || [],
+      source: 'community',
+      is_verified: product.is_verified,
+      created_by: product.created_by
+    }))
+
+    // Kombiniere beide Ergebnissets (lokale zuerst, dann community)
+    const allResults = [...formattedLocalResults, ...formattedSupabaseResults]
+
+    // Begrenze Ergebnisse auf maximal 20
+    const limitedResults = allResults.slice(0, 20)
 
     return NextResponse.json({ 
-      products: sortedProducts.slice(0, 20),
-      total: sortedProducts.length 
+      products: limitedResults,
+      total: limitedResults.length,
+      sources: {
+        local: formattedLocalResults.length,
+        community: formattedSupabaseResults.length
+      }
     })
+
   } catch (error) {
-    console.error('Food search API error:', error)
+    console.error('Fehler bei Produktsuche:', error)
     return NextResponse.json(
-      { error: 'Fehler beim Suchen von Lebensmitteln' },
+      { error: 'Fehler bei der Produktsuche' },
       { status: 500 }
     )
   }

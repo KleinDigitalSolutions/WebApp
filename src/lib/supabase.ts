@@ -9,6 +9,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// Export createClient function for client-side usage
+export { createClient }
+
 // Utility to get the correct site URL for redirects
 export const getSiteUrl = () => {
   return process.env.NEXT_PUBLIC_SITE_URL || 

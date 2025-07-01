@@ -255,6 +255,45 @@ export default function ProfilePage() {
             </div>
           )}
 
+          {/* Produktverwaltung */}
+          <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-blue-100 shadow-lg p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-4">Community & Produkte</h2>
+            
+            <div className="space-y-3">
+              <div 
+                onClick={() => router.push('/products/add')}
+                className="flex items-center justify-between p-4 bg-blue-50 rounded-xl cursor-pointer hover:bg-blue-100 transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+                    <span className="text-white text-lg">➕</span>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">Produkt hinzufügen</h3>
+                    <p className="text-sm text-gray-600">Hilf der Community mit neuen Produkten</p>
+                  </div>
+                </div>
+                <span className="text-blue-500">→</span>
+              </div>
+
+              <div 
+                onClick={() => router.push('/products/my')}
+                className="flex items-center justify-between p-4 bg-green-50 rounded-xl cursor-pointer hover:bg-green-100 transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                    <span className="text-white text-lg">📦</span>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">Meine Produkte</h3>
+                    <p className="text-sm text-gray-600">Übersicht deiner hinzugefügten Produkte</p>
+                  </div>
+                </div>
+                <span className="text-green-500">→</span>
+              </div>
+            </div>
+          </div>
+
           <div className="flex space-x-3 pt-4">
             <Button
               type="button"

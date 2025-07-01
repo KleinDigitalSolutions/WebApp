@@ -205,14 +205,14 @@ export default function DiaryPage() {
                         {mealEntries.map((entry) => (
                           <div 
                             key={entry.id} 
-                            className="group flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl transition-all duration-200"
+                            className="group flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl shadow-sm transition-all duration-200 hover:shadow-md"
                           >
                             <div className="flex-1">
-                              <h4 className="font-medium text-gray-900">{entry.food_name}</h4>
-                              <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
-                                <span>{entry.quantity}{entry.unit}</span>
-                                <span>{entry.calories} kcal</span>
-                                <div className="flex items-center">
+                              <h4 className="font-semibold text-gray-900">{entry.food_name}</h4>
+                              <div className="flex items-center space-x-4 text-sm text-gray-700 mt-1">
+                                <span className="font-medium">{entry.quantity}{entry.unit}</span>
+                                <span className="font-medium text-emerald-600">{entry.calories} kcal</span>
+                                <div className="flex items-center text-gray-500">
                                   <Clock className="h-3 w-3 mr-1" />
                                   {new Date(entry.created_at).toLocaleTimeString('de-DE', { 
                                     hour: '2-digit', 
@@ -222,10 +222,10 @@ export default function DiaryPage() {
                               </div>
                               
                               {/* Nutrition Info */}
-                              <div className="flex items-center space-x-3 text-xs text-gray-500 mt-2">
-                                <span>P: {entry.protein_g}g</span>
-                                <span>K: {entry.carb_g}g</span>
-                                <span>F: {entry.fat_g}g</span>
+                              <div className="flex items-center space-x-3 text-xs text-gray-600 mt-2">
+                                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">P: {entry.protein_g}g</span>
+                                <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full">K: {entry.carb_g}g</span>
+                                <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">F: {entry.fat_g}g</span>
                               </div>
                             </div>
                             
