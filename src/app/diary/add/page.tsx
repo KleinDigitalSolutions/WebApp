@@ -5,11 +5,20 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Search, Camera, Barcode, Plus, Minus } from 'lucide-react'
 
 interface FoodItem {
-  name: string
-  calories: number
-  protein: number
-  carbs: number
-  fat: number
+  code: string
+  product_name: string
+  image_url?: string
+  nutriments: {
+    'energy-kcal_100g'?: number
+    'proteins_100g'?: number
+    'carbohydrates_100g'?: number
+    'fat_100g'?: number
+    'fiber_100g'?: number
+    'sugars_100g'?: number
+    'salt_100g'?: number
+  }
+  serving_size?: string
+  serving_quantity?: number
 }
 
 export default function AddFoodPage() {
@@ -27,9 +36,17 @@ export default function AddFoodPage() {
     try {
       const response = await fetch(`/api/food/search?q=${encodeURIComponent(searchQuery)}`)
       const data = await response.json()
-      setSearchResults(data.foods || [])
+      
+      if (response.ok) {
+        setSearchResults(data.products || [])
+        console.log('Search results:', data.products?.length || 0, 'products found')
+      } else {
+        console.error('Search error:', data.error)
+        setSearchResults([])
+      }
     } catch (error) {
       console.error('Search error:', error)
+      setSearchResults([])
     } finally {
       setLoading(false)
     }
@@ -121,13 +138,15 @@ export default function AddFoodPage() {
             <div className="space-y-3">
               {searchResults.slice(0, 5).map((food: FoodItem, index) => (
                 <button
-                  key={index}
+                  key={food.code || index}
                   onClick={() => handleFoodSelect(food)}
                   className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-2xl transition-colors text-left active:scale-95"
                 >
                   <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{food.name}</h4>
-                    <p className="text-sm text-gray-600">{food.calories} kcal pro 100g</p>
+                    <h4 className="font-medium text-gray-900">{food.product_name || 'Unbekanntes Produkt'}</h4>
+                    <p className="text-sm text-gray-600">
+                      {food.nutriments['energy-kcal_100g'] || 0} kcal pro 100g
+                    </p>
                   </div>
                   <div className="text-emerald-600">
                     <Plus className="h-5 w-5" />
@@ -144,8 +163,10 @@ export default function AddFoodPage() {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Ausgewähltes Lebensmittel</h3>
             
             <div className="mb-4">
-              <h4 className="font-medium text-gray-900">{selectedFood.name}</h4>
-              <p className="text-sm text-gray-600">{selectedFood.calories} kcal pro 100g</p>
+              <h4 className="font-medium text-gray-900">{selectedFood.product_name || 'Unbekanntes Produkt'}</h4>
+              <p className="text-sm text-gray-600">
+                {selectedFood.nutriments['energy-kcal_100g'] || 0} kcal pro 100g
+              </p>
             </div>
 
             {/* Quantity Selector */}
@@ -180,10 +201,18 @@ export default function AddFoodPage() {
             <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-4 mb-6">
               <h5 className="font-medium text-gray-900 mb-2">Nährwerte für {quantity}g</h5>
               <div className="grid grid-cols-2 gap-3 text-sm">
-                <div>Kalorien: <span className="font-medium">{Math.round((selectedFood.calories * quantity) / 100)}</span></div>
-                <div>Protein: <span className="font-medium">{Math.round((selectedFood.protein * quantity) / 100)}g</span></div>
-                <div>Kohlenhydrate: <span className="font-medium">{Math.round((selectedFood.carbs * quantity) / 100)}g</span></div>
-                <div>Fett: <span className="font-medium">{Math.round((selectedFood.fat * quantity) / 100)}g</span></div>
+                <div>Kalorien: <span className="font-medium">
+                  {Math.round(((selectedFood.nutriments['energy-kcal_100g'] || 0) * quantity) / 100)}
+                </span></div>
+                <div>Protein: <span className="font-medium">
+                  {Math.round(((selectedFood.nutriments['proteins_100g'] || 0) * quantity) / 100)}g
+                </span></div>
+                <div>Kohlenhydrate: <span className="font-medium">
+                  {Math.round(((selectedFood.nutriments['carbohydrates_100g'] || 0) * quantity) / 100)}g
+                </span></div>
+                <div>Fett: <span className="font-medium">
+                  {Math.round(((selectedFood.nutriments['fat_100g'] || 0) * quantity) / 100)}g
+                </span></div>
               </div>
             </div>
 
