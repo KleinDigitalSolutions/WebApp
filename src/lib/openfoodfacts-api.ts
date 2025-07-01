@@ -2,6 +2,7 @@
 export interface FoodProduct {
   code: string
   product_name: string
+  product_name_de?: string  // German product name
   image_url?: string
   nutriments: {
     'energy-kcal_100g'?: number
@@ -14,23 +15,41 @@ export interface FoodProduct {
   }
   serving_size?: string
   serving_quantity?: number
+  countries_tags?: string[]
+  stores_tags?: string[]
+  brands?: string
 }
 
 export class OpenFoodFactsAPI {
   private baseUrl = 'https://world.openfoodfacts.org/api/v2'
 
+  // German market optimization parameters
+  private getGermanMarketParams(): string {
+    const params = new URLSearchParams({
+      // Country filter for German market
+      countries_tags: 'germany',
+      // Language preference
+      lc: 'de',
+      // German stores
+      stores_tags: 'edeka,rewe,aldi,lidl,penny,netto,kaufland,dm',
+      // Return relevant fields
+      fields: 'code,product_name,product_name_de,image_url,nutriments,serving_size,serving_quantity,brands,countries_tags,stores_tags'
+    })
+    return params.toString()
+  }
+
   async searchProducts(query: string): Promise<FoodProduct[]> {
     try {
       let products: FoodProduct[] = []
       
-      // Multiple search strategies for better results
+      // Optimized search strategies for German market
       const searchStrategies = [
-        // Direct product search
-        `https://world.openfoodfacts.org/api/v2/search?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=15&fields=code,product_name,image_url,nutriments,serving_size,serving_quantity`,
-        // Category-based search
-        `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=15&fields=code,product_name,image_url,nutriments,serving_size,serving_quantity`,
-        // English translation search
-        `https://world.openfoodfacts.org/api/v2/search?search_terms=${encodeURIComponent(this.translateToEnglish(query))}&search_simple=1&action=process&json=1&page_size=15&fields=code,product_name,image_url,nutriments,serving_size,serving_quantity`
+        // Primary: German market optimized search
+        `${this.baseUrl}/search?search_terms=${encodeURIComponent(query)}&${this.getGermanMarketParams()}&page_size=20`,
+        // Fallback: Broader European search
+        `${this.baseUrl}/search?search_terms=${encodeURIComponent(query)}&countries_tags=germany,austria,switzerland&lc=de&page_size=15&fields=code,product_name,product_name_de,image_url,nutriments,serving_size,serving_quantity`,
+        // Final fallback: Standard search with English translation
+        `${this.baseUrl}/search?search_terms=${encodeURIComponent(this.translateToEnglish(query))}&page_size=10&fields=code,product_name,image_url,nutriments,serving_size,serving_quantity`
       ]
 
       for (const searchUrl of searchStrategies) {
@@ -40,11 +59,12 @@ export class OpenFoodFactsAPI {
             const data = await response.json()
             const searchProducts = data.products || []
             
-            // Filter products for relevance
+            // Filter products for German market relevance
             const relevantProducts = searchProducts.filter((product: FoodProduct) => {
               if (!product.product_name) return false
               
-              const productName = product.product_name.toLowerCase()
+              // Prefer German product names
+              const productName = (product.product_name_de || product.product_name || '').toLowerCase()
               const searchTerm = query.toLowerCase()
               
               // Exclude irrelevant products
@@ -57,14 +77,29 @@ export class OpenFoodFactsAPI {
                 return false
               }
               
-              // Basic relevance check
-              return productName.includes(searchTerm) || 
-                     this.isRelevantProduct(productName, searchTerm)
+              // Prefer products available in German stores
+              const isGermanProduct = this.isGermanMarketProduct(product)
+              
+              // Enhanced relevance check with German preference
+              const isRelevant = productName.includes(searchTerm) || 
+                                this.isRelevantProduct(productName, searchTerm)
+              
+              return isRelevant && (isGermanProduct || products.length < 10)
+            })
+            
+            // Sort by German market preference
+            const sortedProducts = relevantProducts.sort((a: FoodProduct, b: FoodProduct) => {
+              const aIsGerman = this.isGermanMarketProduct(a)
+              const bIsGerman = this.isGermanMarketProduct(b)
+              
+              if (aIsGerman && !bIsGerman) return -1
+              if (!aIsGerman && bIsGerman) return 1
+              return 0
             })
             
             // Add relevant products, avoiding duplicates
             const existingCodes = new Set(products.map(p => p.code))
-            const newProducts = relevantProducts
+            const newProducts = sortedProducts
               .filter((p: FoodProduct) => !existingCodes.has(p.code))
               .slice(0, 20 - products.length)
             
@@ -351,5 +386,26 @@ export class OpenFoodFactsAPI {
   private isCommonFood(query: string): boolean {
     const commonFoods = ['milch', 'milk', 'joghurt', 'yogurt', 'brot', 'bread', 'käse', 'cheese']
     return commonFoods.some(food => query.toLowerCase().includes(food))
+  }
+
+  // Check if product is from German market
+  private isGermanMarketProduct(product: FoodProduct): boolean {
+    // Check if product is sold in German stores
+    const germanStores = ['edeka', 'rewe', 'aldi', 'lidl', 'penny', 'netto', 'kaufland', 'dm', 'rossmann']
+    const hasGermanStore = product.stores_tags?.some(store => 
+      germanStores.some(germanStore => store.toLowerCase().includes(germanStore))
+    ) || false
+
+    // Check if product is available in Germany
+    const hasGermanyCountry = product.countries_tags?.some(country => 
+      country.toLowerCase().includes('germany') || country.toLowerCase().includes('deutschland')
+    ) || false
+
+    // Check for German brands (basic check)
+    const germanBrands = ['müller', 'edeka', 'rewe', 'aldi', 'lidl', 'ja!', 'gut & günstig']
+    const hasGermanBrand = product.brands ? 
+      germanBrands.some(brand => product.brands!.toLowerCase().includes(brand)) : false
+
+    return hasGermanStore || hasGermanyCountry || hasGermanBrand
   }
 }
