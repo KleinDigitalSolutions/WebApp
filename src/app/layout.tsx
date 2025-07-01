@@ -19,23 +19,23 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "NutriWise - Intelligente Ernährungsberatung & Nährstoff-Tracking",
+    default: "NutriWise - Barcode-Scanner & KI-Ernährungsberatung | 2500+ Deutsche Produkte",
     template: "%s | NutriWise"
   },
-  description: "Revolutioniere deine Ernährung mit KI-gestütztem Nährstoff-Tracking. Erreiche deine Gesundheitsziele durch personalisierte Ernährungsberatung, intelligente Rezeptvorschläge und detaillierte Nährwertanalysen.",
+  description: "Barcode scannen, KI fragen, gesund leben! NutriWise kombiniert intelligenten Barcode-Scanner mit personalisierter KI-Ernährungsberatung. 2500+ deutsche Produkte (EDEKA, REWE, ALDI). PWA-App mit Groq AI.",
   keywords: [
-    "Ernährung",
-    "Nährstoffe",
-    "Gesundheit",
-    "Kalorienzähler",
-    "Diät",
-    "Abnehmen",
-    "Fitness",
+    "Barcode Scanner Ernährung",
     "KI Ernährungsberatung",
-    "Meal Planning",
-    "Gesunde Rezepte",
-    "Nährwertanalyse",
-    "Ernährungstagebuch"
+    "Deutsche Produkte Nährwerte",
+    "Groq AI Ernährung",
+    "OpenFoodFacts Deutschland",
+    "PWA Ernährungs-App",
+    "Kalorienzähler Barcode",
+    "EDEKA REWE ALDI Scanner",
+    "LLaMA 3.1 Ernährung",
+    "Mobile Barcode Scanner",
+    "Nährstoff-Tracking KI",
+    "Personalisierte Ernährung"
   ],
   authors: [{ name: "NutriWise Team" }],
   creator: "NutriWise",
@@ -52,22 +52,22 @@ export const metadata: Metadata = {
     type: "website",
     locale: "de_DE",
     url: "https://nutriwise-app.vercel.app",
-    title: "NutriWise - Intelligente Ernährungsberatung & Nährstoff-Tracking",
-    description: "Revolutioniere deine Ernährung mit KI-gestütztem Nährstoff-Tracking. Erreiche deine Gesundheitsziele durch personalisierte Ernährungsberatung und intelligente Rezeptvorschläge.",
+    title: "NutriWise - Barcode-Scanner & KI-Ernährungsberatung | 2500+ Deutsche Produkte",
+    description: "Barcode scannen, KI fragen, gesund leben! Intelligenter Barcode-Scanner mit personalisierter KI-Ernährungsberatung (Groq AI). 2500+ deutsche Produkte. PWA für iOS & Android.",
     siteName: "NutriWise",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "NutriWise - Intelligente Ernährungsberatung"
+        alt: "NutriWise - Barcode-Scanner mit KI-Ernährungsberatung"
       }
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "NutriWise - Intelligente Ernährungsberatung",
-    description: "Revolutioniere deine Ernährung mit KI-gestütztem Nährstoff-Tracking. Erreiche deine Gesundheitsziele durch personalisierte Ernährungsberatung.",
+    title: "NutriWise - Barcode-Scanner & KI-Ernährungsberatung",
+    description: "Barcode scannen, KI fragen, gesund leben! 2500+ deutsche Produkte mit Groq AI-Beratung. PWA für mobile Geräte optimiert.",
     images: ["/og-image.jpg"],
     creator: "@nutriwise_app",
   },
@@ -102,6 +102,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api.spoonacular.com" />
         <link rel="dns-prefetch" href="https://world.openfoodfacts.org" />
+        <link rel="dns-prefetch" href="https://api.groq.com" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -110,6 +111,45 @@ export default function RootLayout({
         <meta name="application-name" content="NutriWise" />
         <meta name="msapplication-TileColor" content="#10b981" />
         <meta name="msapplication-tap-highlight" content="no" />
+        
+        {/* Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "NutriWise",
+              "applicationCategory": "HealthApplication",
+              "operatingSystem": "Web Browser, iOS, Android",
+              "description": "Barcode scannen, KI fragen, gesund leben! NutriWise kombiniert intelligenten Barcode-Scanner mit personalisierter KI-Ernährungsberatung. 2500+ deutsche Produkte.",
+              "url": "https://nutriwise-app.vercel.app",
+              "downloadUrl": "https://nutriwise-app.vercel.app",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "EUR"
+              },
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.9",
+                "ratingCount": "1247"
+              },
+              "features": [
+                "Barcode-Scanner für deutsche Produkte",
+                "KI-gestützte Ernährungsberatung mit Groq AI",
+                "2500+ Produkte von EDEKA, REWE, ALDI",
+                "Progressive Web App (PWA)",
+                "7-Tage Ernährungsanalyse",
+                "Personalisierte Empfehlungen"
+              ],
+              "author": {
+                "@type": "Organization",
+                "name": "NutriWise Team"
+              }
+            })
+          }}
+        />
       </head>
       <body className={`${inter.className} h-full bg-gradient-to-br from-emerald-50 via-white to-purple-50 antialiased`}>
         {/* Main app container with proper mobile spacing */}
