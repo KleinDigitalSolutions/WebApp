@@ -1904,6 +1904,449 @@ export class GermanProductDatabase {
         sugar_per_100g: 9.8
       },
       keywords: ['birnen', 'conference', 'süß', 'saftig', 'grün']
+    },
+
+    // WEITERE BELIEBTE DEUTSCHE SUPERMARKTPRODUKTE
+
+    // FLEISCH & WURST
+    {
+      code: 'de_bratwurst_gutfleisch',
+      name: 'Gut & Günstig Bratwurst 4 Stück',
+      brand: 'Gut & Günstig',
+      category: 'meat',
+      supermarkets: ['edeka'],
+      price_range: { min: 1.99, max: 2.49 },
+      nutrition: {
+        calories_per_100g: 312,
+        protein_per_100g: 13.5,
+        carbs_per_100g: 1.2,
+        fat_per_100g: 28.5,
+        salt_per_100g: 2.1
+      },
+      allergens: ['Senf'],
+      keywords: ['bratwurst', 'wurst', 'grillen', 'grillwurst', 'fleisch']
+    },
+    {
+      code: 'de_hackfleisch_rind_schwein',
+      name: 'Hackfleisch gemischt Rind/Schwein',
+      brand: 'Metzgerei Regional',
+      category: 'meat',
+      supermarkets: ['rewe', 'edeka', 'penny'],
+      price_range: { min: 5.99, max: 7.99 },
+      nutrition: {
+        calories_per_100g: 263,
+        protein_per_100g: 17.2,
+        carbs_per_100g: 0,
+        fat_per_100g: 21.2,
+        salt_per_100g: 0.08
+      },
+      keywords: ['hackfleisch', 'gehacktes', 'hack', 'rind', 'schwein', 'fleisch']
+    },
+    {
+      code: 'de_haehnchenbrust_filet',
+      name: 'Hähnchenbrust Filet',
+      brand: 'Regional',
+      category: 'meat',
+      supermarkets: ['rewe', 'edeka', 'aldi', 'lidl'],
+      price_range: { min: 7.99, max: 12.99 },
+      nutrition: {
+        calories_per_100g: 165,
+        protein_per_100g: 31.0,
+        carbs_per_100g: 0,
+        fat_per_100g: 3.6,
+        salt_per_100g: 0.05
+      },
+      keywords: ['hähnchen', 'hühnchen', 'brust', 'filet', 'geflügel', 'fleisch']
+    },
+
+    // KÄSE
+    {
+      code: 'de_gouda_jung_rewe',
+      name: 'REWE Gouda jung 45% Fett i.Tr.',
+      brand: 'REWE',
+      category: 'dairy',
+      supermarkets: ['rewe'],
+      price_range: { min: 1.79, max: 2.29 },
+      nutrition: {
+        calories_per_100g: 356,
+        protein_per_100g: 25.0,
+        carbs_per_100g: 0.1,
+        fat_per_100g: 27.0,
+        salt_per_100g: 2.0
+      },
+      allergens: ['Milch'],
+      keywords: ['gouda', 'käse', 'jung', 'schnittkäse', 'mild']
+    },
+    {
+      code: 'de_emmentaler_bio_alnatura',
+      name: 'Alnatura Bio Emmentaler',
+      brand: 'Alnatura',
+      category: 'dairy',
+      supermarkets: ['rewe', 'edeka'],
+      price_range: { min: 2.79, max: 3.49 },
+      nutrition: {
+        calories_per_100g: 380,
+        protein_per_100g: 28.5,
+        carbs_per_100g: 0.1,
+        fat_per_100g: 29.0,
+        salt_per_100g: 1.1
+      },
+      allergens: ['Milch'],
+      keywords: ['emmentaler', 'käse', 'bio', 'schweizer', 'löcher', 'hartkäse']
+    },
+    {
+      code: 'de_mozzarella_galbani',
+      name: 'Galbani Mozzarella 125g',
+      brand: 'Galbani',
+      category: 'dairy',
+      supermarkets: ['rewe', 'edeka', 'penny'],
+      price_range: { min: 1.29, max: 1.79 },
+      nutrition: {
+        calories_per_100g: 254,
+        protein_per_100g: 18.1,
+        carbs_per_100g: 1.0,
+        fat_per_100g: 19.5,
+        salt_per_100g: 0.5
+      },
+      allergens: ['Milch'],
+      keywords: ['mozzarella', 'käse', 'italien', 'pizza', 'caprese', 'weichkäse']
+    },
+
+    // GEMÜSE
+    {
+      code: 'de_tomaten_rispentomaten',
+      name: 'Rispentomaten',
+      brand: 'Regional',
+      category: 'vegetables',
+      supermarkets: ['rewe', 'edeka', 'aldi', 'lidl', 'penny'],
+      price_range: { min: 2.99, max: 4.99 },
+      nutrition: {
+        calories_per_100g: 18,
+        protein_per_100g: 0.9,
+        carbs_per_100g: 3.9,
+        fat_per_100g: 0.2,
+        fiber_per_100g: 1.0,
+        sugar_per_100g: 2.6
+      },
+      keywords: ['tomaten', 'rispentomaten', 'rot', 'gemüse', 'salat', 'frisch']
+    },
+    {
+      code: 'de_gurken_salatgurke',
+      name: 'Salatgurke',
+      brand: 'Regional',
+      category: 'vegetables',
+      supermarkets: ['rewe', 'edeka', 'aldi', 'lidl', 'penny'],
+      price_range: { min: 0.79, max: 1.29 },
+      nutrition: {
+        calories_per_100g: 12,
+        protein_per_100g: 0.6,
+        carbs_per_100g: 2.3,
+        fat_per_100g: 0.2,
+        fiber_per_100g: 0.9,
+        sugar_per_100g: 1.7
+      },
+      keywords: ['gurke', 'salatgurke', 'grün', 'gemüse', 'salat', 'frisch']
+    },
+    {
+      code: 'de_paprika_rot',
+      name: 'Paprika rot',
+      brand: 'Regional',
+      category: 'vegetables',
+      supermarkets: ['rewe', 'edeka', 'aldi', 'lidl', 'penny'],
+      price_range: { min: 1.99, max: 3.49 },
+      nutrition: {
+        calories_per_100g: 37,
+        protein_per_100g: 1.0,
+        carbs_per_100g: 6.4,
+        fat_per_100g: 0.3,
+        fiber_per_100g: 3.6,
+        sugar_per_100g: 4.2
+      },
+      keywords: ['paprika', 'rot', 'gemüse', 'vitamin c', 'süß', 'frisch']
+    },
+    {
+      code: 'de_zwiebeln_gelb',
+      name: 'Zwiebeln gelb 2kg Netz',
+      brand: 'Regional',
+      category: 'vegetables',
+      supermarkets: ['rewe', 'edeka', 'aldi', 'lidl', 'penny'],
+      price_range: { min: 1.49, max: 2.29 },
+      nutrition: {
+        calories_per_100g: 40,
+        protein_per_100g: 1.1,
+        carbs_per_100g: 9.3,
+        fat_per_100g: 0.1,
+        fiber_per_100g: 1.7,
+        sugar_per_100g: 4.2
+      },
+      keywords: ['zwiebeln', 'gelb', 'gemüse', 'kochen', 'würzen', 'scharf']
+    },
+    {
+      code: 'de_kartoffeln_festkochend',
+      name: 'Kartoffeln festkochend 2,5kg',
+      brand: 'Regional',
+      category: 'vegetables',
+      supermarkets: ['rewe', 'edeka', 'aldi', 'lidl', 'penny'],
+      price_range: { min: 1.99, max: 3.49 },
+      nutrition: {
+        calories_per_100g: 77,
+        protein_per_100g: 2.0,
+        carbs_per_100g: 14.8,
+        fat_per_100g: 0.1,
+        fiber_per_100g: 2.1,
+        sugar_per_100g: 0.8
+      },
+      keywords: ['kartoffeln', 'festkochend', 'gemüse', 'kochen', 'beilage', 'stärke']
+    },
+
+    // TIEFKÜHLPRODUKTE
+    {
+      code: 'de_tk_pommes_mccain',
+      name: 'McCain Pommes Original 750g',
+      brand: 'McCain',
+      category: 'frozen',
+      supermarkets: ['rewe', 'edeka', 'penny'],
+      price_range: { min: 1.79, max: 2.49 },
+      nutrition: {
+        calories_per_100g: 155,
+        protein_per_100g: 2.5,
+        carbs_per_100g: 24.0,
+        fat_per_100g: 5.2,
+        fiber_per_100g: 2.8,
+        salt_per_100g: 0.5
+      },
+      keywords: ['pommes', 'tiefkühl', 'kartoffeln', 'fritten', 'backofen', 'mccain']
+    },
+    {
+      code: 'de_tk_fischstaebchen_iglo',
+      name: 'iglo Fischstäbchen 15 Stück',
+      brand: 'iglo',
+      category: 'frozen',
+      supermarkets: ['rewe', 'edeka', 'aldi', 'lidl'],
+      price_range: { min: 2.99, max: 3.99 },
+      nutrition: {
+        calories_per_100g: 214,
+        protein_per_100g: 13.1,
+        carbs_per_100g: 16.8,
+        fat_per_100g: 10.6,
+        salt_per_100g: 1.0
+      },
+      allergens: ['Fisch', 'Gluten'],
+      keywords: ['fischstäbchen', 'iglo', 'tiefkühl', 'fisch', 'paniert', 'kinder']
+    },
+    {
+      code: 'de_tk_spinat_iglo',
+      name: 'iglo Blattspinat 450g',
+      brand: 'iglo',
+      category: 'frozen',
+      supermarkets: ['rewe', 'edeka', 'penny'],
+      price_range: { min: 1.69, max: 2.19 },
+      nutrition: {
+        calories_per_100g: 26,
+        protein_per_100g: 2.8,
+        carbs_per_100g: 1.6,
+        fat_per_100g: 0.4,
+        fiber_per_100g: 2.9,
+        salt_per_100g: 0.1
+      },
+      keywords: ['spinat', 'blattspinat', 'iglo', 'tiefkühl', 'gemüse', 'grün']
+    },
+
+    // REIS & GETREIDE
+    {
+      code: 'de_reis_uncle_bens',
+      name: 'Uncle Ben\'s Langkorn Reis 1kg',
+      brand: 'Uncle Ben\'s',
+      category: 'pantry',
+      supermarkets: ['rewe', 'edeka', 'aldi', 'lidl'],
+      price_range: { min: 2.49, max: 3.49 },
+      nutrition: {
+        calories_per_100g: 350,
+        protein_per_100g: 7.2,
+        carbs_per_100g: 78.0,
+        fat_per_100g: 0.6,
+        fiber_per_100g: 1.4,
+        salt_per_100g: 0.01
+      },
+      keywords: ['reis', 'langkorn', 'uncle bens', 'beilage', 'kochen', 'getreide']
+    },
+    {
+      code: 'de_quinoa_alnatura',
+      name: 'Alnatura Bio Quinoa 500g',
+      brand: 'Alnatura',
+      category: 'pantry',
+      supermarkets: ['rewe', 'edeka'],
+      price_range: { min: 3.79, max: 4.99 },
+      nutrition: {
+        calories_per_100g: 368,
+        protein_per_100g: 14.1,
+        carbs_per_100g: 58.5,
+        fat_per_100g: 6.1,
+        fiber_per_100g: 7.0,
+        salt_per_100g: 0.01
+      },
+      keywords: ['quinoa', 'bio', 'superfood', 'alnatura', 'glutenfrei', 'protein']
+    },
+
+    // SÜSSWAREN
+    {
+      code: 'de_gummibaerchen_haribo_color_rado',
+      name: 'Haribo Color-Rado 200g',
+      brand: 'Haribo',
+      category: 'snacks',
+      supermarkets: ['rewe', 'edeka', 'aldi', 'lidl', 'penny'],
+      price_range: { min: 1.29, max: 1.79 },
+      nutrition: {
+        calories_per_100g: 343,
+        protein_per_100g: 6.9,
+        carbs_per_100g: 77.0,
+        fat_per_100g: 0.5,
+        sugar_per_100g: 46.0,
+        salt_per_100g: 0.07
+      },
+      keywords: ['haribo', 'gummibärchen', 'color-rado', 'süß', 'fruchtgummi', 'bunt']
+    },
+    {
+      code: 'de_schokolade_lindt_excellence',
+      name: 'Lindt Excellence 70% Cacao 100g',
+      brand: 'Lindt',
+      category: 'snacks',
+      supermarkets: ['rewe', 'edeka', 'penny'],
+      price_range: { min: 2.79, max: 3.49 },
+      nutrition: {
+        calories_per_100g: 579,
+        protein_per_100g: 9.0,
+        carbs_per_100g: 24.0,
+        fat_per_100g: 42.0,
+        fiber_per_100g: 12.0,
+        sugar_per_100g: 19.0,
+        salt_per_100g: 0.01
+      },
+      keywords: ['lindt', 'schokolade', 'excellence', 'dunkel', 'cacao', 'bitter']
+    },
+
+    // GETRÄNKE
+    {
+      code: 'de_apfelsaft_valensina',
+      name: 'Valensina Apfelsaft 1L',
+      brand: 'Valensina',
+      category: 'beverages',
+      supermarkets: ['rewe', 'edeka', 'penny'],
+      price_range: { min: 1.99, max: 2.79 },
+      nutrition: {
+        calories_per_100g: 46,
+        protein_per_100g: 0.1,
+        carbs_per_100g: 11.0,
+        fat_per_100g: 0.1,
+        sugar_per_100g: 10.0,
+        salt_per_100g: 0.01
+      },
+      keywords: ['valensina', 'apfelsaft', 'saft', 'frucht', 'trinken', 'süß']
+    },
+    {
+      code: 'de_orangensaft_hohes_c',
+      name: 'Hohes C Orangensaft 1L',
+      brand: 'Hohes C',
+      category: 'beverages',
+      supermarkets: ['rewe', 'edeka', 'aldi', 'lidl'],
+      price_range: { min: 1.79, max: 2.49 },
+      nutrition: {
+        calories_per_100g: 42,
+        protein_per_100g: 0.7,
+        carbs_per_100g: 8.9,
+        fat_per_100g: 0.2,
+        sugar_per_100g: 8.1,
+        salt_per_100g: 0.01
+      },
+      keywords: ['hohes c', 'orangensaft', 'saft', 'vitamin c', 'frucht', 'orange']
+    },
+    {
+      code: 'de_kaffee_jacobs_kronung',
+      name: 'Jacobs Krönung Kaffee 500g',
+      brand: 'Jacobs',
+      category: 'beverages',
+      supermarkets: ['rewe', 'edeka', 'aldi', 'lidl', 'penny'],
+      price_range: { min: 4.99, max: 6.99 },
+      nutrition: {
+        calories_per_100g: 2,
+        protein_per_100g: 0.1,
+        carbs_per_100g: 0.3,
+        fat_per_100g: 0,
+        salt_per_100g: 0.01
+      },
+      keywords: ['jacobs', 'krönung', 'kaffee', 'gemahlen', 'filterkaffee', 'röstung']
+    },
+
+    // EIER & MILCHPRODUKTE
+    {
+      code: 'de_eier_bodenhaltung_10er',
+      name: 'Eier Bodenhaltung 10er Packung',
+      brand: 'Regional',
+      category: 'dairy',
+      supermarkets: ['rewe', 'edeka', 'aldi', 'lidl', 'penny'],
+      price_range: { min: 1.79, max: 2.49 },
+      nutrition: {
+        calories_per_100g: 155,
+        protein_per_100g: 13.0,
+        carbs_per_100g: 0.7,
+        fat_per_100g: 11.0,
+        salt_per_100g: 0.14
+      },
+      allergens: ['Ei'],
+      keywords: ['eier', 'bodenhaltung', 'frisch', 'kochen', 'backen', 'protein']
+    },
+    {
+      code: 'de_sahne_schlagrahm_weihenstephan',
+      name: 'Weihenstephan Schlagsahne 30% 200ml',
+      brand: 'Weihenstephan',
+      category: 'dairy',
+      supermarkets: ['rewe', 'edeka', 'penny'],
+      price_range: { min: 1.29, max: 1.79 },
+      nutrition: {
+        calories_per_100g: 309,
+        protein_per_100g: 2.4,
+        carbs_per_100g: 3.2,
+        fat_per_100g: 30.0,
+        salt_per_100g: 0.06
+      },
+      allergens: ['Milch'],
+      keywords: ['sahne', 'schlagsahne', 'weihenstephan', 'schlagen', 'kochen', 'backen']
+    },
+
+    // BROTAUFSTRICHE
+    {
+      code: 'de_marmelade_zentis_erdbeere',
+      name: 'Zentis Erdbeere Fruchtaufstrich 450g',
+      brand: 'Zentis',
+      category: 'pantry',
+      supermarkets: ['rewe', 'edeka', 'penny'],
+      price_range: { min: 2.49, max: 3.29 },
+      nutrition: {
+        calories_per_100g: 247,
+        protein_per_100g: 0.4,
+        carbs_per_100g: 60.0,
+        fat_per_100g: 0.2,
+        sugar_per_100g: 58.0,
+        salt_per_100g: 0.01
+      },
+      keywords: ['zentis', 'marmelade', 'erdbeere', 'fruchtaufstrich', 'süß', 'brot']
+    },
+    {
+      code: 'de_honig_langnese_blueten',
+      name: 'Langnese Blütenhonig 500g',
+      brand: 'Langnese',
+      category: 'pantry',
+      supermarkets: ['rewe', 'edeka', 'aldi', 'lidl'],
+      price_range: { min: 3.99, max: 5.49 },
+      nutrition: {
+        calories_per_100g: 304,
+        protein_per_100g: 0.4,
+        carbs_per_100g: 75.1,
+        fat_per_100g: 0,
+        sugar_per_100g: 75.1,
+        salt_per_100g: 0.01
+      },
+      keywords: ['langnese', 'honig', 'blütenhonig', 'süß', 'natur', 'brot']
     }
   ]
 
