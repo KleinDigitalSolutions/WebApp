@@ -26,7 +26,7 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
 
     // iOS-spezifische Warnungen
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
-    const isStandalone = (window as any).navigator?.standalone === true
+    const isStandalone = (window.navigator as any)?.standalone === true
     
     if (isIOS && isStandalone) {
       setError('📱 Barcode-Scanner funktioniert auf iOS nicht in PWA-Modus. Bitte öffne die App direkt in Safari.')
@@ -58,33 +58,35 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
           
           // Stream wieder stoppen, Quagga übernimmt das Management
           stream.getTracks().forEach(track => track.stop())
-        } catch (err: any) {
+        } catch (err: unknown) {
           console.error('❌ Kamera-Zugriff Fehler:', err)
           
           // Spezifische Fehlermeldungen basierend auf getUserMedia() Errors
           let errorMessage = 'Kamera-Zugriff erforderlich.'
           
-          switch (err.name) {
-            case 'NotAllowedError':
-              errorMessage = '📷 Kamera-Berechtigung verweigert. Bitte erlaube den Zugriff in den Browser-Einstellungen und lade die Seite neu.'
-              break
-            case 'NotFoundError':
-              errorMessage = '📷 Keine Kamera gefunden. Stelle sicher, dass eine Kamera angeschlossen ist.'
-              break
-            case 'NotReadableError':
-              errorMessage = '📷 Kamera wird bereits von einer anderen App verwendet. Schließe andere Apps und versuche es erneut.'
-              break
-            case 'OverconstrainedError':
-              errorMessage = '📷 Kamera unterstützt nicht die erforderlichen Einstellungen. Versuche es mit einer anderen Kamera.'
-              break
-            case 'SecurityError':
-              errorMessage = '🔒 Sicherheitsfehler: Barcode-Scanner funktioniert nur über HTTPS oder localhost.'
-              break
-            case 'TypeError':
-              errorMessage = '⚠️ Browser unterstützt keine Kamera-API. Bitte verwende einen modernen Browser (Chrome, Firefox, Safari).'
-              break
-            default:
-              errorMessage = `📷 Kamera-Fehler: ${err.message || 'Unbekannter Fehler'}. Bitte lade die Seite neu.`
+          if (err instanceof Error) {
+            switch (err.name) {
+              case 'NotAllowedError':
+                errorMessage = '📷 Kamera-Berechtigung verweigert. Bitte erlaube den Zugriff in den Browser-Einstellungen und lade die Seite neu.'
+                break
+              case 'NotFoundError':
+                errorMessage = '📷 Keine Kamera gefunden. Stelle sicher, dass eine Kamera angeschlossen ist.'
+                break
+              case 'NotReadableError':
+                errorMessage = '📷 Kamera wird bereits von einer anderen App verwendet. Schließe andere Apps und versuche es erneut.'
+                break
+              case 'OverconstrainedError':
+                errorMessage = '📷 Kamera unterstützt nicht die erforderlichen Einstellungen. Versuche es mit einer anderen Kamera.'
+                break
+              case 'SecurityError':
+                errorMessage = '🔒 Sicherheitsfehler: Barcode-Scanner funktioniert nur über HTTPS oder localhost.'
+                break
+              case 'TypeError':
+                errorMessage = '⚠️ Browser unterstützt keine Kamera-API. Bitte verwende einen modernen Browser (Chrome, Firefox, Safari).'
+                break
+              default:
+                errorMessage = `📷 Kamera-Fehler: ${err.message || 'Unbekannter Fehler'}. Bitte lade die Seite neu.`
+            }
           }
           
           setError(errorMessage)
