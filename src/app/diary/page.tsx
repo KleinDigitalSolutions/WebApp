@@ -10,8 +10,7 @@ import {
   ChevronLeft, 
   ChevronRight,
   Trash2,
-  Edit,
-  Clock
+  Edit
 } from 'lucide-react'
 
 export default function DiaryPage() {
@@ -82,9 +81,9 @@ export default function DiaryPage() {
   }, {} as Record<string, DiaryEntry[]>)
 
   const mealTypes = [
-    { key: 'breakfast', label: 'Frühstück', icon: '🌅' },
-    { key: 'lunch', label: 'Mittagessen', icon: '☀️' },
-    { key: 'dinner', label: 'Abendessen', icon: '🌙' },
+    { key: 'breakfast', label: 'Frühstück', icon: '☕' },
+    { key: 'lunch', label: 'Mittagessen', icon: '🍽️' },
+    { key: 'dinner', label: 'Abendessen', icon: '🥗' },
     { key: 'snack', label: 'Snacks', icon: '🍎' }
   ]
 
@@ -168,90 +167,84 @@ export default function DiaryPage() {
               const mealCalories = mealEntries.reduce((sum, entry) => sum + entry.calories, 0)
 
               return (
-                <div key={mealType.key} className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 overflow-hidden">
-                  {/* Meal Header */}
-                  <div className="p-6 border-b border-gray-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{mealType.icon}</span>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">{mealType.label}</h3>
-                          <p className="text-sm text-gray-600">{mealCalories} kcal</p>
-                        </div>
+                <div key={mealType.key} className="bg-white rounded-2xl shadow-sm border border-gray-200">
+                  {/* Compact Meal Header */}
+                  <div className="flex items-center justify-between p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                        <span className="text-xl">{mealType.icon}</span>
                       </div>
-                      <button 
-                        onClick={() => router.push(`/diary/add?meal=${mealType.key}`)}
-                        className="p-2 bg-emerald-500 text-white rounded-xl transition-colors active:scale-95"
-                      >
-                        <Plus className="h-5 w-5" />
-                      </button>
+                      <div>
+                        <h3 className="font-medium text-gray-900">{mealType.label}</h3>
+                        <p className="text-sm text-gray-600">{mealCalories} kcal</p>
+                      </div>
                     </div>
+                    <button 
+                      onClick={() => router.push(`/diary/add?meal=${mealType.key}`)}
+                      className="w-10 h-10 bg-emerald-500 text-white rounded-full flex items-center justify-center transition-colors active:scale-95"
+                    >
+                      <Plus className="h-5 w-5" />
+                    </button>
                   </div>
 
-                  {/* Meal Entries */}
-                  <div className="p-6">
-                    {mealEntries.length === 0 ? (
-                      <div className="text-center py-8">
-                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                          <Plus className="h-8 w-8 text-gray-400" />
+                  {/* Meal Entries - Only show if there are entries */}
+                  {mealEntries.length === 0 ? (
+                    <div className="px-4 pb-4">
+                      <div className="text-center py-6 border-t border-gray-100">
+                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <Plus className="h-6 w-6 text-gray-400" />
                         </div>
-                        <p className="text-gray-500 text-sm">Keine Einträge für {mealType.label.toLowerCase()}</p>
+                        <p className="text-gray-500 text-sm mb-2">Keine Einträge für {mealType.label.toLowerCase()}</p>
                         <button 
                           onClick={() => router.push(`/diary/add?meal=${mealType.key}`)}
-                          className="mt-3 text-emerald-600 font-medium text-sm"
+                          className="text-emerald-600 font-medium text-sm"
                         >
                           Erstes Lebensmittel hinzufügen
                         </button>
                       </div>
-                    ) : (
-                      <div className="space-y-3">
+                    </div>
+                  ) : (
+                    <div className="border-t border-gray-100">
+                      <div className="px-4 py-3 space-y-2">
                         {mealEntries.map((entry) => (
                           <div 
                             key={entry.id} 
-                            className="group flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl shadow-sm transition-all duration-200 hover:shadow-md"
+                            className="group flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-xl transition-all duration-200 hover:bg-gray-100"
                           >
                             <div className="flex-1">
-                              <h4 className="font-semibold text-gray-900">{entry.food_name}</h4>
-                              <div className="flex items-center space-x-4 text-sm text-gray-700 mt-1">
-                                <span className="font-medium">{entry.quantity}{entry.unit}</span>
+                              <h4 className="font-medium text-gray-900 text-sm">{entry.food_name}</h4>
+                              <div className="flex items-center space-x-3 text-xs text-gray-600 mt-1">
+                                <span>{entry.quantity}{entry.unit}</span>
                                 <span className="font-medium text-emerald-600">{entry.calories} kcal</span>
-                                <div className="flex items-center text-gray-500">
-                                  <Clock className="h-3 w-3 mr-1" />
+                                <span className="text-gray-400">
                                   {new Date(entry.created_at).toLocaleTimeString('de-DE', { 
                                     hour: '2-digit', 
                                     minute: '2-digit' 
                                   })}
-                                </div>
-                              </div>
-                              
-                              {/* Nutrition Info */}
-                              <div className="flex items-center space-x-3 text-xs text-gray-600 mt-2">
-                                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">P: {entry.protein_g}g</span>
-                                <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full">K: {entry.carb_g}g</span>
-                                <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">F: {entry.fat_g}g</span>
+                                </span>
                               </div>
                             </div>
                             
                             {/* Action Buttons */}
-                            <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button 
                                 onClick={() => router.push(`/diary/edit/${entry.id}`)}
-                                className="p-2 bg-blue-500 text-white rounded-xl transition-colors active:scale-95"
+                                className="p-1.5 bg-blue-500 text-white rounded-lg transition-colors active:scale-95"
                               >
-                                <Edit className="h-4 w-4" />
+                                <Edit className="h-3 w-3" />
                               </button>
                               <button 
                                 onClick={() => deleteEntry(entry.id)}
-                                className="p-2 bg-red-500 text-white rounded-xl transition-colors active:scale-95"
+                                className="p-1.5 bg-red-500 text-white rounded-lg transition-colors active:scale-95"
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-3 w-3" />
                               </button>
                             </div>
                           </div>
                         ))}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               )
             })}
