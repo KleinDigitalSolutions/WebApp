@@ -17,6 +17,23 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
   useEffect(() => {
     if (!isActive) return
 
+    // Browser-Kompatibilitätsprüfung
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setError('🚫 Dein Browser unterstützt keine Kamera-API. Bitte verwende Chrome, Firefox oder Safari.')
+      setIsLoading(false)
+      return
+    }
+
+    // iOS-spezifische Warnungen
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+    const isStandalone = (window as any).navigator?.standalone === true
+    
+    if (isIOS && isStandalone) {
+      setError('📱 Barcode-Scanner funktioniert auf iOS nicht in PWA-Modus. Bitte öffne die App direkt in Safari.')
+      setIsLoading(false)
+      return
+    }
+
     const initializeScanner = async () => {
       try {
         setIsLoading(true)
@@ -25,20 +42,52 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
         // Explizit um Kamera-Zugriff bitten (wichtig für mobile Browser!)
         let stream: MediaStream
         try {
-          stream = await navigator.mediaDevices.getUserMedia({
+          // Mobile-optimierte Constraints für bessere Kompatibilität
+          const constraints = {
             video: {
               facingMode: { ideal: 'environment' }, // Rückkamera bevorzugen
-              width: { min: 640, ideal: 1280 },
-              height: { min: 480, ideal: 720 }
+              width: { min: 320, ideal: 640, max: 1280 },
+              height: { min: 240, ideal: 480, max: 720 },
+              aspectRatio: { ideal: 1.333 }, // 4:3 für bessere Barcode-Erkennung
+              frameRate: { ideal: 15, max: 30 } // Batterie schonen
             }
-          })
+          }
+          
+          stream = await navigator.mediaDevices.getUserMedia(constraints)
           console.log('✅ Kamera-Zugriff erteilt')
           
           // Stream wieder stoppen, Quagga übernimmt das Management
           stream.getTracks().forEach(track => track.stop())
-        } catch (err) {
-          console.error('❌ Kamera-Zugriff verweigert:', err)
-          setError('Kamera-Zugriff erforderlich. Bitte erlaube den Zugriff und lade die Seite neu.')
+        } catch (err: any) {
+          console.error('❌ Kamera-Zugriff Fehler:', err)
+          
+          // Spezifische Fehlermeldungen basierend auf getUserMedia() Errors
+          let errorMessage = 'Kamera-Zugriff erforderlich.'
+          
+          switch (err.name) {
+            case 'NotAllowedError':
+              errorMessage = '📷 Kamera-Berechtigung verweigert. Bitte erlaube den Zugriff in den Browser-Einstellungen und lade die Seite neu.'
+              break
+            case 'NotFoundError':
+              errorMessage = '📷 Keine Kamera gefunden. Stelle sicher, dass eine Kamera angeschlossen ist.'
+              break
+            case 'NotReadableError':
+              errorMessage = '📷 Kamera wird bereits von einer anderen App verwendet. Schließe andere Apps und versuche es erneut.'
+              break
+            case 'OverconstrainedError':
+              errorMessage = '📷 Kamera unterstützt nicht die erforderlichen Einstellungen. Versuche es mit einer anderen Kamera.'
+              break
+            case 'SecurityError':
+              errorMessage = '🔒 Sicherheitsfehler: Barcode-Scanner funktioniert nur über HTTPS oder localhost.'
+              break
+            case 'TypeError':
+              errorMessage = '⚠️ Browser unterstützt keine Kamera-API. Bitte verwende einen modernen Browser (Chrome, Firefox, Safari).'
+              break
+            default:
+              errorMessage = `📷 Kamera-Fehler: ${err.message || 'Unbekannter Fehler'}. Bitte lade die Seite neu.`
+          }
+          
+          setError(errorMessage)
           setIsLoading(false)
           return
         }
