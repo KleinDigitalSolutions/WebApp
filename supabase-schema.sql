@@ -132,6 +132,18 @@ CREATE TABLE public.product_reports (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Create water_intake table
+CREATE TABLE public.water_intake (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  date DATE NOT NULL DEFAULT CURRENT_DATE,
+  amount_ml INTEGER NOT NULL DEFAULT 0,
+  daily_goal_ml INTEGER NOT NULL DEFAULT 2000,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, date)
+);
+
 -- Row Level Security Policies
 
 -- Profiles RLS
@@ -263,6 +275,25 @@ CREATE POLICY "Users can delete own product reports"
   ON public.product_reports FOR DELETE
   USING (auth.uid() = user_id);
 
+-- Water Intake RLS
+ALTER TABLE public.water_intake ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own water intake"
+  ON public.water_intake FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own water intake"
+  ON public.water_intake FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own water intake"
+  ON public.water_intake FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own water intake"
+  ON public.water_intake FOR DELETE
+  USING (auth.uid() = user_id);
+
 -- Indexes for better performance
 CREATE INDEX idx_diary_entries_user_date ON public.diary_entries(user_id, entry_date);
 CREATE INDEX idx_diary_entries_meal_type ON public.diary_entries(meal_type);
@@ -307,6 +338,10 @@ CREATE TRIGGER set_updated_at_recipes
 
 CREATE TRIGGER set_updated_at_products
   BEFORE UPDATE ON public.products
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TRIGGER set_updated_at_water_intake
+  BEFORE UPDATE ON public.water_intake
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 -- Enable email confirmations (optional - you can disable this in Supabase Auth settings)
