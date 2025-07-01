@@ -1,25 +1,69 @@
 # NutriWise - Intelligent Nutrition Tracking
 
-A comprehensive, AI-powered nutrition tracking web application built with Next.js, TypeScript, Tailwind CSS, Zustand, and Supabase.
+Eine umfassende, KI-gestützte Ernährungs-Tracking-Web-App mit personalisierten Empfehlungen, gebaut mit Next.js, TypeScript, Tailwind CSS, Zustand und Supabase.
 
 ## 🚀 Features (Phase 1 - MVP)
 
-### ✅ Implemented
-- **User Authentication** - Secure signup/login with Supabase Auth + Google OAuth
-- **Personal Profile Management** - BMR/TDEE calculations using Mifflin-St Jeor equation
-- **Food Diary** - Track daily nutrition with OpenFoodFacts API integration
-- **Smart Dashboard** - Visual progress tracking with macro breakdown
-- **AI Nutrition Coach** - Chat interface powered by Grok AI
-- **Recipe Discovery** - Search recipes with dietary filters via Spoonacular API
-- **Mobile-First Design** - Responsive, app-like experience
-- **PWA Ready** - Basic Progressive Web App capabilities
+### ✅ Vollständig Implementiert
+- **Benutzer-Authentifizierung** - Sichere Anmeldung mit Supabase Auth + Google OAuth
+- **Persönliches Profil** - BMR/TDEE-Berechnungen mit Mifflin-St Jeor-Gleichung
+- **Ernährungstagebuch** - Tägliche Nährstoff-Verfolgung mit OpenFoodFacts API
+- **Smart Dashboard** - Visueller Fortschritt mit Makronährstoff-Aufschlüsselung
+- **🧠 KI-Ernährungsberater** - **NEUE FUNKTION:** Personalisierte Analyse der letzten 7 Tage
+- **Rezepte-Entdeckung** - Rezeptsuche mit TheMealDB (kostenlos) + Übersetzungsunterstützung
+- **Mobile-First Design** - Responsive, app-ähnliche Erfahrung
+- **PWA Ready** - Progressive Web App Funktionen
 
-### 🏗️ Architecture
-- **Frontend**: Next.js 14 with App Router, TypeScript, Tailwind CSS
-- **State Management**: Zustand for client-side state
+### 🔥 **NEUE KI-FUNKTIONEN**
+- **📊 Detaillierte Ernährungsanalyse:** Automatische Auswertung der letzten 7 Tage
+- **⚠️ Intelligente Problembewertung:** Erkennt automatisch ungesunde Muster (z.B. "Du trinkst zu viel Cola")
+- **💡 Personalisierte Empfehlungen:** Konkrete, umsetzbare Verbesserungsvorschläge
+- **📈 Nährstoff-Tracking:** Protein, Kohlenhydrate, Fett, Zucker, Ballaststoffe, Natrium
+- **🎯 Zielspezifische Beratung:** Angepasst an Abnehmen, Zunehmen, Muskelaufbau
+- **🍎 Quick-Actions:** Vorgefertigte Analyse-Fragen für sofortige Insights
+
+### 🏗️ Technologie-Stack
+- **Frontend**: Next.js 14 mit App Router, TypeScript, Tailwind CSS
+- **State Management**: Zustand für Client-seitige Zustandsverwaltung
 - **Backend**: Supabase (PostgreSQL, Auth, Real-time)
-- **APIs**: Grok AI, OpenFoodFacts, Spoonacular
-- **Styling**: Tailwind CSS with mobile-first approach
+- **APIs**: Groq AI (LLaMA 3.1), OpenFoodFacts, TheMealDB
+- **Styling**: Tailwind CSS mit Mobile-First-Ansatz
+- **KI-Features**: Personalisierte Ernährungsanalyse mit 7-Tage-Tracking
+
+## 🧠 KI-Ernährungsberater Features
+
+### 📊 **Intelligente Datenanalyse**
+- **Makronährstoff-Bewertung:** Automatische Berechnung von Protein-, Kohlenhydrat- und Fettverteilung
+- **Mikronährstoff-Tracking:** Zucker, Ballaststoffe, Natrium-Überwachung
+- **Durchschnittswerte:** Tägliche Kalorienzufuhr und Nährstoffaufnahme über 7 Tage
+- **Nährstoffverhältnisse:** Prozentuale Verteilung der Makronährstoffe
+
+### 🔍 **Automatische Mustererkennung**
+```
+✅ Erkennt automatisch:
+• Cola, Softdrinks, Limonaden → "Du trinkst zu viel zuckerhaltige Getränke"
+• Fast Food, Burger, Pommes → "Zu viel verarbeitete Lebensmittel"
+• Süßigkeiten, Schokolade → "Hoher Zuckerkonsum erkannt"
+• Unregelmäßige Mahlzeiten → "Essrhythmus optimieren"
+• Fehlende Lebensmittelgruppen → "Mehr Gemüse/Vollkorn empfohlen"
+```
+
+### 💬 **Persönliche Beratung**
+- **Strukturierte Antworten** mit Emojis und klaren Abschnitten
+- **Konkrete Empfehlungen:** "Ersetze Cola durch Wasser mit Zitrone"
+- **Wissenschaftlich fundiert:** Basiert auf Ernährungswissenschaft
+- **Zielspezifisch:** Angepasst an Abnehmen, Zunehmen, Muskelaufbau
+- **Motivierend:** Positive Verstärkung und Ermutigung
+
+### 🎯 **Quick-Action Buttons**
+```
+📊 "Analysiere meine Ernährung der letzten 7 Tage detailliert"
+⚠️ "Was esse ich zu viel und was sollte ich reduzieren?"
+💪 "Bekomme ich genug Protein und alle wichtigen Nährstoffe?"
+🍬 "Wie viel Zucker und verarbeitete Lebensmittel esse ich?"
+🥗 "Welche gesunden Alternativen passen zu meinen Gewohnheiten?"
+📋 "Erstelle mir einen Wochenplan basierend auf meiner Analyse"
+```
 
 ## 🛠️ Setup Instructions
 
@@ -35,10 +79,10 @@ Create a `.env.local` file with:
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
 # API Keys (Server-side only)
-GROK_API_KEY=your_grok_api_key
-SPOONACULAR_API_KEY=your_spoonacular_api_key
+GROQ_API_KEY=your_groq_api_key
 
 # App Configuration
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -139,6 +183,7 @@ CREATE POLICY "Users can delete own recipes" ON recipes
 -- Create indexes for performance
 CREATE INDEX idx_diary_entries_user_date ON diary_entries(user_id, entry_date);
 CREATE INDEX idx_diary_entries_meal_type ON diary_entries(meal_type);
+CREATE INDEX idx_diary_entries_created_at ON diary_entries(created_at);
 CREATE INDEX idx_recipes_public ON recipes(is_public) WHERE is_public = TRUE;
 ```
 
@@ -158,16 +203,20 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 2. Get your Project URL and Anon Key from Settings > API
 3. Enable Google OAuth in Authentication > Providers (optional)
 
-### Grok AI
-1. Get API access at [x.ai](https://x.ai)
-2. Generate API key from your dashboard
+### 4. KI-API Setup
 
-### Spoonacular
-1. Sign up at [spoonacular.com/food-api](https://spoonacular.com/food-api)
-2. Get your API key (free tier: 150 requests/day)
+#### Groq AI (für KI-Ernährungsberater)
+1. Kostenloses Konto erstellen auf [console.groq.com](https://console.groq.com)
+2. API-Key generieren
+3. Model: `llama-3.1-8b-instant` (schnell und kostenlos)
 
-### OpenFoodFacts
-- No API key required - free public API
+#### OpenFoodFacts
+- Keine API-Key erforderlich - kostenlose öffentliche API
+- Deutsche Produktdatenbank verfügbar
+
+#### TheMealDB  
+- Keine API-Key erforderlich - kostenlose Rezept-API
+- Rezepte werden automatisch ins Deutsche übersetzt
 
 ## 📱 App Structure
 
@@ -185,19 +234,47 @@ src/
 └── store/                 # Zustand state management
 ```
 
-## 🎯 Usage Guide
+## 🎯 Benutzer-Anleitung
 
-### First Time Setup
-1. **Register/Login** - Create account or sign in
-2. **Complete Profile** - Add age, height, weight, activity level, and goal
-3. **Start Tracking** - Log your first meal in the diary
-4. **Explore Features** - Try the AI coach and recipe discovery
+### Erste Schritte
+1. **Registrierung/Anmeldung** - Konto erstellen oder anmelden
+2. **Profil vervollständigen** - Alter, Größe, Gewicht, Aktivitätslevel und Ziel eingeben
+3. **Erste Mahlzeit loggen** - Erstes Essen im Tagebuch erfassen
+4. **KI-Berater testen** - Ernährungsanalyse anfordern
 
-### Daily Workflow
-1. **Check Dashboard** - View progress and daily targets
-2. **Log Meals** - Search and add foods to diary
-3. **Ask AI Coach** - Get personalized nutrition advice
-4. **Discover Recipes** - Find meals that match your goals
+### Täglicher Workflow
+1. **Dashboard prüfen** - Fortschritt und Tagesziele anzeigen
+2. **Mahlzeiten loggen** - Lebensmittel suchen und zum Tagebuch hinzufügen
+3. **🧠 KI-Berater nutzen** - Personalisierte Ernährungsanalyse anfordern
+4. **Rezepte entdecken** - Passende Mahlzeiten für Ihre Ziele finden
+
+### 🔥 **NEUE KI-Features nutzen**
+
+#### Sofortige Ernährungsanalyse
+```
+💬 Fragen Sie den KI-Berater:
+• "Analysiere meine Ernährung der letzten 7 Tage"
+• "Was esse ich zu viel?"
+• "Bekomme ich genug Protein?"
+• "Wie kann ich abnehmen?"
+```
+
+#### Beispiel KI-Antwort
+```
+📊 ERNÄHRUNGSANALYSE (letzte 7 Tage):
+- Gesamtkalorien: 14.500 kcal (⌀ 2.071 kcal/Tag)
+- Protein: 15% (zu niedrig für Muskelaufbau)
+- Zucker: 45g/Tag (zu hoch)
+
+⚠️ AUFFÄLLIGKEITEN:
+- Du trinkst häufig Cola (5x diese Woche)
+- Zu wenig Gemüse und Ballaststoffe
+
+✅ EMPFEHLUNGEN:
+1. Ersetze Cola durch Wasser mit Zitrone
+2. Füge täglich 2 Portionen Gemüse hinzu
+3. Erhöhe Protein auf 1,6g/kg Körpergewicht
+```
 
 ## 🔮 Roadmap
 
