@@ -9,6 +9,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// Utility to get the correct site URL for redirects
+export const getSiteUrl = () => {
+  return process.env.NEXT_PUBLIC_SITE_URL || 
+         (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')
+}
+
 // Database Types
 export interface Profile {
   id: string
