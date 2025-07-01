@@ -31,9 +31,20 @@ export default function ChatPage() {
       const welcomeMessage: ChatMessageWithId = {
         id: 'welcome',
         role: 'assistant',
-        content: `Hallo! Ich bin dein KI-Ernährungsberater. Ich helfe dir gerne mit personalisierten Ernährungstipps, Mahlzeitenplanung und beantworte alle Fragen zu deiner Ernährung und deinen Gesundheitszielen.
+        content: `Hallo! 👋 Ich bin dein persönlicher KI-Ernährungsberater. Ich helfe dir gerne mit evidenzbasierten Ernährungstipps, detaillierter Mahlzeitenanalyse und beantworte alle Fragen zu deiner Ernährung und deinen Gesundheitszielen.
 
-${profile?.goal ? `Ich sehe, dein Ziel ist ${profile.goal.replace('_', ' ')}. ` : ''}Wie kann ich dir heute helfen?`,
+🔍 **Personalisierte Analyse:** Ich kann deine Tagebuch-Einträge der letzten 7 Tage detailliert analysieren und dir konkrete, umsetzbare Verbesserungsvorschläge geben!
+
+📊 **Was ich für dich analysiere:**
+• Nährstoffverteilung (Protein, Kohlenhydrate, Fett)
+• Mikronährstoffe und Ballaststoffe  
+• Essgewohnheiten und -muster
+• Potentielle Problembereiche
+• Konkrete Verbesserungsvorschläge
+
+${profile?.goal ? `🎯 Ich sehe, dein Ziel ist "${profile.goal.replace('_', ' ')}". Darauf werde ich meine Empfehlungen abstimmen! ` : ''}
+
+Wie kann ich dir heute helfen? 🌱`,
         timestamp: new Date(),
       }
       setMessages([welcomeMessage])
@@ -77,6 +88,7 @@ ${profile?.goal ? `Ich sehe, dein Ziel ist ${profile.goal.replace('_', ' ')}. ` 
         body: JSON.stringify({
           messages: apiMessages,
           userProfile: profile,
+          userId: user?.id, // Add user ID for diary analysis
         }),
       })
 
@@ -121,9 +133,20 @@ ${profile?.goal ? `Ich sehe, dein Ziel ist ${profile.goal.replace('_', ' ')}. ` 
     const welcomeMessage: ChatMessageWithId = {
       id: 'welcome',
       role: 'assistant',
-      content: `Hallo! Ich bin dein KI-Ernährungsberater. Ich helfe dir gerne mit personalisierten Ernährungstipps, Mahlzeitenplanung und beantworte alle Fragen zu deiner Ernährung und deinen Gesundheitszielen.
+      content: `Hallo! 👋 Ich bin dein persönlicher KI-Ernährungsberater. Ich helfe dir gerne mit evidenzbasierten Ernährungstipps, detaillierter Mahlzeitenanalyse und beantworte alle Fragen zu deiner Ernährung und deinen Gesundheitszielen.
 
-${profile?.goal ? `Ich sehe, dein Ziel ist ${profile.goal.replace('_', ' ')}. ` : ''}Wie kann ich dir heute helfen?`,
+🔍 **Personalisierte Analyse:** Ich kann deine Tagebuch-Einträge der letzten 7 Tage detailliert analysieren und dir konkrete, umsetzbare Verbesserungsvorschläge geben!
+
+📊 **Was ich für dich analysiere:**
+• Nährstoffverteilung (Protein, Kohlenhydrate, Fett)
+• Mikronährstoffe und Ballaststoffe  
+• Essgewohnheiten und -muster
+• Potentielle Problembereiche
+• Konkrete Verbesserungsvorschläge
+
+${profile?.goal ? `🎯 Ich sehe, dein Ziel ist "${profile.goal.replace('_', ' ')}". Darauf werde ich meine Empfehlungen abstimmen! ` : ''}
+
+Wie kann ich dir heute helfen? 🌱`,
       timestamp: new Date(),
     }
     setMessages([welcomeMessage])
@@ -221,22 +244,45 @@ ${profile?.goal ? `Ich sehe, dein Ziel ist ${profile.goal.replace('_', ' ')}. ` 
         {/* Suggested Questions */}
         {messages.length <= 1 && (
           <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Vorschläge:</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-3">🍎 Ernährungsanalyse starten:</h3>
             <div className="space-y-2">
               {[
-                "Was soll ich essen, um meine Proteinziele zu erreichen?",
-                "Kannst du mir einen gesunden Wochenplan erstellen?",
-                "Wie verfolge ich meine Makronährstoffe am besten?",
-                "Welche gesunden Snacks helfen beim Abnehmen?",
+                "📊 Analysiere meine Ernährung der letzten 7 Tage detailliert",
+                "⚠️ Was esse ich zu viel und was sollte ich reduzieren?",
+                "💪 Bekomme ich genug Protein und alle wichtigen Nährstoffe?",
+                "🍬 Wie viel Zucker und verarbeitete Lebensmittel esse ich?",
+                "🥗 Welche gesunden Alternativen passten zu meinen Gewohnheiten?",
+                "📋 Erstelle mir einen Wochenplan basierend auf meiner Analyse",
+                "🎯 Wie kann ich mein Ernährungsziel optimal erreichen?",
+                "⚖️ Ist meine Kalorienzufuhr für mein Ziel angemessen?",
               ].map((question, index) => (
                 <button
                   key={index}
                   onClick={() => setInputMessage(question)}
-                  className="w-full text-left p-4 backdrop-blur-sm bg-green-50/80 rounded-xl text-sm text-green-800 border border-green-100 shadow-sm active:bg-green-100/80"
+                  className="w-full text-left p-4 backdrop-blur-sm bg-green-50/80 rounded-xl text-sm text-green-800 border border-green-100 shadow-sm active:bg-green-100/80 hover:bg-green-100/60 transition-colors"
                 >
                   {question}
                 </button>
               ))}
+            </div>
+            
+            <div className="mt-4">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">💬 Oder frage mich direkt:</h3>
+              <div className="grid grid-cols-1 gap-2">
+                {[
+                  "Was sind gesunde Snacks zum Abnehmen?",
+                  "Wie kann ich mehr Gemüse in meine Ernährung einbauen?",
+                  "Welche Proteinquellen sind am besten?",
+                ].map((question, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setInputMessage(question)}
+                    className="text-left p-3 bg-blue-50/80 rounded-lg text-sm text-blue-800 border border-blue-100 hover:bg-blue-100/60 transition-colors"
+                  >
+                    {question}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
