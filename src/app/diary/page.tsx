@@ -1,386 +1,259 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase, DiaryEntry } from '@/lib/supabase'
-import { useAuthStore, useDiaryStore } from '@/store'
-import { Navigation } from '@/components/BottomNavBar'
-import { Button, Input, Select, LoadingSpinner } from '@/components/ui'
-import { OpenFoodFactsAPI, FoodProduct } from '@/lib/openfoodfacts-api'
+import { useAuthStore } from '@/store'
+import { 
+  Plus, 
+  Calendar, 
+  ChevronLeft, 
+  ChevronRight,
+  Trash2,
+  Edit,
+  Clock
+} from 'lucide-react'
 
 export default function DiaryPage() {
   const router = useRouter()
   const { user } = useAuthStore()
-  const { entries, selectedDate, setEntries, setSelectedDate } = useDiaryStore()
+  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [entries, setEntries] = useState<DiaryEntry[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<FoodProduct[]>([])
-  const [searching, setSearching] = useState(false)
-  const [selectedFood, setSelectedFood] = useState<FoodProduct | null>(null)
-  const [quantity, setQuantity] = useState('')
-  const [unit, setUnit] = useState('g')
-  const [mealType, setMealType] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast')
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [adding, setAdding] = useState(false)
-
-  const openFoodFactsAPI = new OpenFoodFactsAPI()
-
-  const loadDiaryEntries = useCallback(async () => {
-    if (!user) return
-
-    try {
-      const { data, error } = await supabase
-        .from('diary_entries')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('entry_date', selectedDate)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-
-      setEntries(data || [])
-    } catch (error) {
-      console.error('Error loading diary entries:', error)
-    } finally {
-      setLoading(false)
-    }
-  }, [user, selectedDate, setEntries])
 
   useEffect(() => {
     if (!user) {
       router.push('/login')
       return
     }
+    loadEntries()
+  }, [user, selectedDate])
 
-    const loadData = async () => {
-      await loadDiaryEntries()
-    }
+  const loadEntries = async () => {
+    if (!user) return
 
-    loadData()
-  }, [user, loadDiaryEntries, router])
-
-  const searchFood = useCallback(async (query: string) => {
-    if (!query.trim() || query.length < 3) {
-      setSearchResults([])
-      return
-    }
-
-    setSearching(true)
+    setLoading(true)
     try {
-      const response = await fetch(`/api/food/search?q=${encodeURIComponent(query)}`)
-      const data = await response.json()
-      setSearchResults(data.products || [])
-    } catch (error) {
-      console.error('Error searching food:', error)
-      setSearchResults([])
-    } finally {
-      setSearching(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    const delayedSearch = setTimeout(() => {
-      searchFood(searchQuery)
-    }, 500)
-
-    return () => clearTimeout(delayedSearch)
-  }, [searchQuery, searchFood])
-
-  const selectFood = (food: FoodProduct) => {
-    setSelectedFood(food)
-    setSearchQuery(food.product_name || '')
-    setSearchResults([])
-    setShowAddForm(true)
-  }
-
-  const addFoodEntry = async () => {
-    if (!selectedFood || !quantity || !user) return
-
-    setAdding(true)
-    try {
-      const quantityNum = parseFloat(quantity)
-      const nutrition = openFoodFactsAPI.calculateNutritionPerServing(selectedFood, quantityNum)
-
-      const entry: Omit<DiaryEntry, 'id' | 'created_at'> = {
-        user_id: user.id,
-        food_name: selectedFood.product_name || 'Unknown Food',
-        quantity: quantityNum,
-        unit,
-        meal_type: mealType,
-        calories: nutrition.calories,
-        protein_g: nutrition.protein,
-        carb_g: nutrition.carbs,
-        fat_g: nutrition.fat,
-        entry_date: selectedDate,
-      }
-
-      const { data, error } = await supabase
+      const dateStr = selectedDate.toISOString().split('T')[0]
+      const { data } = await supabase
         .from('diary_entries')
-        .insert([entry])
-        .select()
-        .single()
+        .select('*')
+        .eq('user_id', user.id)
+        .gte('created_at', `${dateStr}T00:00:00`)
+        .lt('created_at', `${dateStr}T23:59:59`)
+        .order('created_at', { ascending: false })
 
-      if (error) throw error
-
-      // Add to local state
-      setEntries([data, ...entries])
-      
-      // Reset form
-      setSelectedFood(null)
-      setSearchQuery('')
-      setQuantity('')
-      setShowAddForm(false)
+      if (data) {
+        setEntries(data)
+      }
     } catch (error) {
-      console.error('Error adding food entry:', error)
+      console.error('Error loading entries:', error)
     } finally {
-      setAdding(false)
+      setLoading(false)
     }
   }
 
-  const deleteEntry = async (id: string) => {
+  const changeDate = (direction: 'prev' | 'next') => {
+    const newDate = new Date(selectedDate)
+    newDate.setDate(newDate.getDate() + (direction === 'next' ? 1 : -1))
+    setSelectedDate(newDate)
+  }
+
+  const deleteEntry = async (entryId: string) => {
     try {
-      const { error } = await supabase
+      await supabase
         .from('diary_entries')
         .delete()
-        .eq('id', id)
-        .eq('user_id', user!.id)
-
-      if (error) throw error
-
-      setEntries(entries.filter(entry => entry.id !== id))
+        .eq('id', entryId)
+      
+      setEntries(entries.filter(entry => entry.id !== entryId))
     } catch (error) {
       console.error('Error deleting entry:', error)
     }
   }
 
-  // Calculate daily totals
-  const dailyTotals = entries.reduce(
-    (totals, entry) => ({
-      calories: totals.calories + entry.calories,
-      protein: totals.protein + entry.protein_g,
-      carbs: totals.carbs + entry.carb_g,
-      fat: totals.fat + entry.fat_g,
-    }),
-    { calories: 0, protein: 0, carbs: 0, fat: 0 }
-  )
+  const groupedEntries = entries.reduce((groups, entry) => {
+    const mealType = entry.meal_type
+    if (!groups[mealType]) {
+      groups[mealType] = []
+    }
+    groups[mealType].push(entry)
+    return groups
+  }, {} as Record<string, DiaryEntry[]>)
 
-  // Group entries by meal type
-  const mealGroups = {
-    breakfast: entries.filter(e => e.meal_type === 'breakfast'),
-    lunch: entries.filter(e => e.meal_type === 'lunch'),
-    dinner: entries.filter(e => e.meal_type === 'dinner'),
-    snack: entries.filter(e => e.meal_type === 'snack'),
-  }
+  const mealTypes = [
+    { key: 'breakfast', label: 'Frühstück', icon: '🌅' },
+    { key: 'lunch', label: 'Mittagessen', icon: '☀️' },
+    { key: 'dinner', label: 'Abendessen', icon: '🌙' },
+    { key: 'snack', label: 'Snacks', icon: '🍎' }
+  ]
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <div className="flex items-center justify-center py-12">
-          <LoadingSpinner size="lg" />
-        </div>
-      </div>
-    )
-  }
+  const totalCalories = entries.reduce((sum, entry) => sum + entry.calories, 0)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Food Diary</h1>
-            <p className="text-gray-600">Track your daily nutrition intake</p>
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50">
+      {/* Mobile Header */}
+      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-gray-100">
+        <div className="px-4 py-4">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-lg font-semibold text-gray-900">Ernährungstagebuch</h1>
+            <button 
+              onClick={() => router.push('/diary/add')}
+              className="p-2 bg-emerald-500 text-white rounded-full transition-colors active:scale-95"
+            >
+              <Plus className="h-6 w-6" />
+            </button>
           </div>
-          
-          <div className="mt-4 sm:mt-0">
-            <Input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full sm:w-auto"
-            />
-          </div>
-        </div>
 
-        {/* Daily Summary */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Daily Summary</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{Math.round(dailyTotals.calories)}</div>
-              <div className="text-sm text-gray-500">Calories</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{Math.round(dailyTotals.protein)}g</div>
-              <div className="text-sm text-gray-500">Protein</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-600">{Math.round(dailyTotals.carbs)}g</div>
-              <div className="text-sm text-gray-500">Carbs</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{Math.round(dailyTotals.fat)}g</div>
-              <div className="text-sm text-gray-500">Fat</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Add Food Section */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Add Food</h2>
-          
-          <div className="space-y-4">
-            <div className="relative">
-              <Input
-                label="Search for food"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Type to search food products..."
-              />
-              
-              {searching && (
-                <div className="absolute right-3 top-8">
-                  <LoadingSpinner size="sm" />
-                </div>
-              )}
-              
-              {searchResults.length > 0 && !showAddForm && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                  {searchResults.map((food, index) => (
-                    <button
-                      key={index}
-                      onClick={() => selectFood(food)}
-                      className="w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
-                    >
-                      <div className="font-medium text-gray-900">{food.product_name}</div>
-                      <div className="text-sm text-gray-500">
-                        {food.nutriments['energy-kcal_100g'] && (
-                          <span>{Math.round(food.nutriments['energy-kcal_100g'])} cal per 100g</span>
-                        )}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {showAddForm && selectedFood && (
-              <div className="border-t pt-4 space-y-4">
-                <div className="bg-gray-50 p-3 rounded">
-                  <h3 className="font-medium text-gray-900">{selectedFood.product_name}</h3>
-                  {selectedFood.nutriments['energy-kcal_100g'] && (
-                    <p className="text-sm text-gray-600">
-                      {Math.round(selectedFood.nutriments['energy-kcal_100g'])} calories per 100g
-                    </p>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Input
-                    label="Quantity"
-                    type="number"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    placeholder="Amount"
-                    min="0"
-                    step="0.1"
-                  />
-
-                  <Select
-                    label="Unit"
-                    value={unit}
-                    onChange={(e) => setUnit(e.target.value)}
-                    options={[
-                      { value: 'g', label: 'grams (g)' },
-                      { value: 'ml', label: 'milliliters (ml)' },
-                      { value: 'piece', label: 'piece(s)' },
-                      { value: 'cup', label: 'cup(s)' },
-                      { value: 'tbsp', label: 'tablespoon(s)' },
-                      { value: 'tsp', label: 'teaspoon(s)' },
-                    ]}
-                  />
-
-                  <Select
-                    label="Meal"
-                    value={mealType}
-                    onChange={(e) => setMealType(e.target.value as typeof mealType)}
-                    options={[
-                      { value: 'breakfast', label: 'Breakfast' },
-                      { value: 'lunch', label: 'Lunch' },
-                      { value: 'dinner', label: 'Dinner' },
-                      { value: 'snack', label: 'Snack' },
-                    ]}
-                  />
-                </div>
-
-                <div className="flex space-x-3">
-                  <Button
-                    onClick={addFoodEntry}
-                    loading={adding}
-                    disabled={!quantity}
-                  >
-                    Add to Diary
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setShowAddForm(false)
-                      setSelectedFood(null)
-                      setSearchQuery('')
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Meals by Type */}
-        {Object.entries(mealGroups).map(([mealName, mealEntries]) => (
-          <div key={mealName} className="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4 capitalize">
-              {mealName} {mealEntries.length > 0 && (
-                <span className="text-sm font-normal text-gray-500">
-                  ({mealEntries.reduce((sum, entry) => sum + entry.calories, 0).toFixed(0)} cal)
-                </span>
-              )}
-            </h2>
+          {/* Date Navigation */}
+          <div className="flex items-center justify-between">
+            <button 
+              onClick={() => changeDate('prev')}
+              className="p-2 rounded-full transition-colors active:scale-95"
+            >
+              <ChevronLeft className="h-5 w-5 text-gray-600" />
+            </button>
             
-            {mealEntries.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">
-                No {mealName} entries for this day
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {mealEntries.map((entry) => (
-                  <div key={entry.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">{entry.food_name}</h3>
-                      <p className="text-sm text-gray-600">
-                        {entry.quantity}{entry.unit} • {Math.round(entry.calories)} cal
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        P: {Math.round(entry.protein_g)}g • C: {Math.round(entry.carb_g)}g • F: {Math.round(entry.fat_g)}g
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteEntry(entry.id)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="flex items-center space-x-2">
+              <Calendar className="h-5 w-5 text-emerald-600" />
+              <span className="font-medium text-gray-900">
+                {selectedDate.toLocaleDateString('de-DE', { 
+                  weekday: 'long',
+                  day: 'numeric', 
+                  month: 'long' 
+                })}
+              </span>
+            </div>
+            
+            <button 
+              onClick={() => changeDate('next')}
+              className="p-2 rounded-full transition-colors active:scale-95"
+              disabled={selectedDate.toDateString() === new Date().toDateString()}
+            >
+              <ChevronRight className={`h-5 w-5 ${
+                selectedDate.toDateString() === new Date().toDateString() 
+                  ? 'text-gray-300' 
+                  : 'text-gray-600'
+              }`} />
+            </button>
           </div>
-        ))}
+
+          {/* Daily Summary */}
+          <div className="mt-4 p-4 bg-gradient-to-r from-emerald-50 to-purple-50 rounded-2xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-2xl font-bold text-gray-900">{totalCalories}</span>
+                <span className="text-sm text-gray-600 ml-1">kcal</span>
+              </div>
+              <div className="text-sm text-gray-600">
+                {entries.length} Einträge
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 py-6 space-y-6">
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+          </div>
+        ) : (
+          <>
+            {mealTypes.map((mealType) => {
+              const mealEntries = groupedEntries[mealType.key] || []
+              const mealCalories = mealEntries.reduce((sum, entry) => sum + entry.calories, 0)
+
+              return (
+                <div key={mealType.key} className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 overflow-hidden">
+                  {/* Meal Header */}
+                  <div className="p-6 border-b border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-2xl">{mealType.icon}</span>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{mealType.label}</h3>
+                          <p className="text-sm text-gray-600">{mealCalories} kcal</p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => router.push(`/diary/add?meal=${mealType.key}`)}
+                        className="p-2 bg-emerald-500 text-white rounded-xl transition-colors active:scale-95"
+                      >
+                        <Plus className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Meal Entries */}
+                  <div className="p-6">
+                    {mealEntries.length === 0 ? (
+                      <div className="text-center py-8">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <Plus className="h-8 w-8 text-gray-400" />
+                        </div>
+                        <p className="text-gray-500 text-sm">Keine Einträge für {mealType.label.toLowerCase()}</p>
+                        <button 
+                          onClick={() => router.push(`/diary/add?meal=${mealType.key}`)}
+                          className="mt-3 text-emerald-600 font-medium text-sm"
+                        >
+                          Erstes Lebensmittel hinzufügen
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {mealEntries.map((entry) => (
+                          <div 
+                            key={entry.id} 
+                            className="group flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl transition-all duration-200"
+                          >
+                            <div className="flex-1">
+                              <h4 className="font-medium text-gray-900">{entry.food_name}</h4>
+                              <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
+                                <span>{entry.quantity}{entry.unit}</span>
+                                <span>{entry.calories} kcal</span>
+                                <div className="flex items-center">
+                                  <Clock className="h-3 w-3 mr-1" />
+                                  {new Date(entry.created_at).toLocaleTimeString('de-DE', { 
+                                    hour: '2-digit', 
+                                    minute: '2-digit' 
+                                  })}
+                                </div>
+                              </div>
+                              
+                              {/* Nutrition Info */}
+                              <div className="flex items-center space-x-3 text-xs text-gray-500 mt-2">
+                                <span>P: {entry.protein_g}g</span>
+                                <span>K: {entry.carb_g}g</span>
+                                <span>F: {entry.fat_g}g</span>
+                              </div>
+                            </div>
+                            
+                            {/* Action Buttons */}
+                            <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button 
+                                onClick={() => router.push(`/diary/edit/${entry.id}`)}
+                                className="p-2 bg-blue-500 text-white rounded-xl transition-colors active:scale-95"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </button>
+                              <button 
+                                onClick={() => deleteEntry(entry.id)}
+                                className="p-2 bg-red-500 text-white rounded-xl transition-colors active:scale-95"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </>
+        )}
       </div>
     </div>
   )

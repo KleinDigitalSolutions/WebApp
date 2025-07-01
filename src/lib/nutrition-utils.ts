@@ -90,10 +90,10 @@ export function calculateBMI(weight_kg: number, height_cm: number): number {
 
 // Get BMI category
 export function getBMICategory(bmi: number): string {
-  if (bmi < 18.5) return 'Underweight'
-  if (bmi < 25) return 'Normal weight'
-  if (bmi < 30) return 'Overweight'
-  return 'Obese'
+  if (bmi < 18.5) return 'Untergewicht'
+  if (bmi < 25) return 'Normalgewicht'
+  if (bmi < 30) return 'Übergewicht'
+  return 'Adipositas'
 }
 
 // Format number with units

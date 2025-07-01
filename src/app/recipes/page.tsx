@@ -6,16 +6,16 @@ import Image from 'next/image'
 import { useAuthStore } from '@/store'
 import { Navigation } from '@/components/BottomNavBar'
 import { Button, Input, Select, LoadingSpinner } from '@/components/ui'
-import { SpoonacularRecipe } from '@/lib/spoonacular-api'
+import { Recipe } from '@/lib/themealdb-api'
 
 export default function RecipesPage() {
   const router = useRouter()
   const { user } = useAuthStore()
-  const [recipes, setRecipes] = useState<SpoonacularRecipe[]>([])
+  const [recipes, setRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedDiet, setSelectedDiet] = useState('')
-  const [selectedIntolerances, setSelectedIntolerances] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('')
+  const [selectedArea, setSelectedArea] = useState('')
 
   useEffect(() => {
     if (!user) {
@@ -34,32 +34,33 @@ export default function RecipesPage() {
       if (response.ok) {
         const data = await response.json()
         setRecipes(data.recipes || [])
+      } else {
+        console.error('Failed to load random recipes:', response.status)
+        setRecipes([])
       }
     } catch (error) {
       console.error('Error loading random recipes:', error)
+      setRecipes([])
     } finally {
       setLoading(false)
     }
   }
 
-  const searchRecipes = useCallback(async (query: string, diet?: string, intolerances?: string) => {
-    if (!query.trim()) {
-      loadRandomRecipes()
-      return
-    }
-
+  const searchRecipes = useCallback(async (query: string, category?: string, area?: string) => {
     setLoading(true)
     try {
-      const params = new URLSearchParams({
-        q: query,
-        ...(diet && { diet }),
-        ...(intolerances && { intolerances }),
-      })
+      const params = new URLSearchParams()
+      if (query && query.trim()) params.append('q', query)
+      if (category && category.trim()) params.append('category', category)
+      if (area && area.trim()) params.append('area', area)
 
       const response = await fetch(`/api/recipes/search?${params}`)
       if (response.ok) {
         const data = await response.json()
         setRecipes(data.recipes || [])
+      } else {
+        console.error('Failed to search recipes:', response.status)
+        setRecipes([])
       }
     } catch (error) {
       console.error('Error searching recipes:', error)
@@ -70,94 +71,112 @@ export default function RecipesPage() {
   }, [])
 
   const handleSearch = () => {
-    searchRecipes(searchQuery, selectedDiet, selectedIntolerances)
+    searchRecipes(searchQuery, selectedCategory, selectedArea)
   }
 
   useEffect(() => {
     const delayedSearch = setTimeout(() => {
-      if (searchQuery.trim()) {
-        searchRecipes(searchQuery, selectedDiet, selectedIntolerances)
+      if (searchQuery.trim() || selectedCategory || selectedArea) {
+        searchRecipes(searchQuery, selectedCategory, selectedArea)
       }
     }, 500)
 
     return () => clearTimeout(delayedSearch)
-  }, [searchQuery, selectedDiet, selectedIntolerances, searchRecipes])
+  }, [searchQuery, selectedCategory, selectedArea, searchRecipes])
 
-  const viewRecipe = (recipe: SpoonacularRecipe) => {
+  const viewRecipe = (recipe: Recipe) => {
     // For now, open the source URL in a new tab
     // In a full implementation, we'd create a detailed recipe page
     if (recipe.sourceUrl) {
       window.open(recipe.sourceUrl, '_blank')
+    } else if (recipe.youtubeUrl) {
+      window.open(recipe.youtubeUrl, '_blank')
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Navigation />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Recipe Discovery</h1>
-          <p className="text-gray-600">Find healthy recipes that match your dietary preferences</p>
+      <div className="w-full px-4 py-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Rezepte entdecken</h1>
+          <p className="text-gray-600 text-sm">Finde gesunde Rezepte, die zu deinen Ernährungszielen passen</p>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="md:col-span-2">
-              <Input
-                label="Search recipes"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Enter ingredients, dish name, or cuisine..."
-              />
-            </div>
+        <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg p-6 mb-6">
+          <div className="space-y-4">
+            <Input
+              label="Rezepte suchen"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Zutaten, Gericht oder Küche eingeben..."
+              className="rounded-xl border-green-100 focus:border-green-500 focus:ring-green-500"
+            />
 
             <Select
-              label="Diet"
-              value={selectedDiet}
-              onChange={(e) => setSelectedDiet(e.target.value)}
+              label="Kategorie"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
               options={[
-                { value: '', label: 'Any diet' },
-                { value: 'vegetarian', label: 'Vegetarian' },
-                { value: 'vegan', label: 'Vegan' },
-                { value: 'ketogenic', label: 'Ketogenic' },
-                { value: 'paleo', label: 'Paleo' },
-                { value: 'gluten free', label: 'Gluten Free' },
-                { value: 'dairy free', label: 'Dairy Free' },
-                { value: 'mediterranean', label: 'Mediterranean' },
-                { value: 'low carb', label: 'Low Carb' },
+                { value: '', label: 'Alle Kategorien' },
+                { value: 'Beef', label: 'Rindfleisch' },
+                { value: 'Chicken', label: 'Hähnchen' },
+                { value: 'Dessert', label: 'Dessert' },
+                { value: 'Lamb', label: 'Lamm' },
+                { value: 'Pasta', label: 'Pasta' },
+                { value: 'Pork', label: 'Schweinefleisch' },
+                { value: 'Seafood', label: 'Meeresfrüchte' },
+                { value: 'Side', label: 'Beilage' },
+                { value: 'Starter', label: 'Vorspeise' },
+                { value: 'Vegan', label: 'Vegan' },
+                { value: 'Vegetarian', label: 'Vegetarisch' },
               ]}
             />
 
             <Select
-              label="Intolerances"
-              value={selectedIntolerances}
-              onChange={(e) => setSelectedIntolerances(e.target.value)}
+              label="Küche"
+              value={selectedArea}
+              onChange={(e) => setSelectedArea(e.target.value)}
               options={[
-                { value: '', label: 'No restrictions' },
-                { value: 'dairy', label: 'Dairy' },
-                { value: 'egg', label: 'Egg' },
-                { value: 'gluten', label: 'Gluten' },
-                { value: 'grain', label: 'Grain' },
-                { value: 'peanut', label: 'Peanut' },
-                { value: 'seafood', label: 'Seafood' },
-                { value: 'sesame', label: 'Sesame' },
-                { value: 'shellfish', label: 'Shellfish' },
-                { value: 'soy', label: 'Soy' },
-                { value: 'sulfite', label: 'Sulfite' },
-                { value: 'tree nut', label: 'Tree Nut' },
-                { value: 'wheat', label: 'Wheat' },
+                { value: '', label: 'Alle Küchen' },
+                { value: 'American', label: 'Amerikanisch' },
+                { value: 'British', label: 'Britisch' },
+                { value: 'Canadian', label: 'Kanadisch' },
+                { value: 'Chinese', label: 'Chinesisch' },
+                { value: 'Croatian', label: 'Kroatisch' },
+                { value: 'Dutch', label: 'Niederländisch' },
+                { value: 'Egyptian', label: 'Ägyptisch' },
+                { value: 'French', label: 'Französisch' },
+                { value: 'Greek', label: 'Griechisch' },
+                { value: 'Indian', label: 'Indisch' },
+                { value: 'Irish', label: 'Irisch' },
+                { value: 'Italian', label: 'Italienisch' },
+                { value: 'Jamaican', label: 'Jamaikanisch' },
+                { value: 'Japanese', label: 'Japanisch' },
+                { value: 'Kenyan', label: 'Kenianisch' },
+                { value: 'Malaysian', label: 'Malaysisch' },
+                { value: 'Mexican', label: 'Mexikanisch' },
+                { value: 'Moroccan', label: 'Marokkanisch' },
+                { value: 'Polish', label: 'Polnisch' },
+                { value: 'Portuguese', label: 'Portugiesisch' },
+                { value: 'Russian', label: 'Russisch' },
+                { value: 'Spanish', label: 'Spanisch' },
+                { value: 'Thai', label: 'Thailändisch' },
+                { value: 'Tunisian', label: 'Tunesisch' },
+                { value: 'Turkish', label: 'Türkisch' },
+                { value: 'Vietnamese', label: 'Vietnamesisch' },
               ]}
             />
           </div>
 
-          <div className="mt-4 flex justify-between items-center">
-            <Button onClick={handleSearch} disabled={loading}>
-              Search Recipes
+          <div className="mt-6 flex space-x-3">
+            <Button onClick={handleSearch} disabled={loading} className="flex-1">
+              Rezepte suchen
             </Button>
-            <Button variant="outline" onClick={loadRandomRecipes} disabled={loading}>
-              Show Random Recipes
+            <Button variant="outline" onClick={loadRandomRecipes} disabled={loading} className="flex-1">
+              Zufällige Rezepte
             </Button>
           </div>
         </div>
@@ -170,13 +189,13 @@ export default function RecipesPage() {
         ) : recipes.length === 0 ? (
           <div className="text-center py-12">
             <span className="text-4xl mb-4 block">🍳</span>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No recipes found</h3>
-            <p className="text-gray-600">Try adjusting your search terms or filters</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Rezepte gefunden</h3>
+            <p className="text-gray-600">Versuche deine Suchbegriffe oder Filter anzupassen</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="space-y-4">
             {recipes.map((recipe) => (
-              <div key={recipe.id} className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow">
+              <div key={recipe.id} className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg overflow-hidden">
                 <div className="relative h-48">
                   {recipe.image ? (
                     <Image
@@ -190,33 +209,38 @@ export default function RecipesPage() {
                       }}
                     />
                   ) : (
-                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <div className="w-full h-full bg-green-50 flex items-center justify-center">
                       <span className="text-4xl">🍽️</span>
                     </div>
                   )}
-                  <div className="absolute top-2 right-2">
-                    <span className="bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
-                      {recipe.readyInMinutes} min
+                  <div className="absolute top-3 right-3">
+                    <span className="bg-green-600 text-white text-xs px-3 py-1 rounded-full">
+                      {recipe.category}
                     </span>
                   </div>
                 </div>
 
                 <div className="p-4">
-                  <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">
+                  <h3 className="font-medium text-gray-900 mb-3 text-lg leading-tight">
                     {recipe.title}
                   </h3>
                   
-                  <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
-                    <span>🍽️ {recipe.servings} servings</span>
-                    <span>⏱️ {recipe.readyInMinutes} min</span>
+                  <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+                    <span className="flex items-center space-x-1">
+                      <span>�</span>
+                      <span>{recipe.area}</span>
+                    </span>
+                    <span className="flex items-center space-x-1">
+                      <span>📖</span>
+                      <span>{recipe.category}</span>
+                    </span>
                   </div>
 
                   <Button
-                    size="sm"
-                    className="w-full"
+                    className="w-full py-3 text-sm"
                     onClick={() => viewRecipe(recipe)}
                   >
-                    View Recipe
+                    Rezept ansehen
                   </Button>
                 </div>
               </div>
@@ -225,20 +249,20 @@ export default function RecipesPage() {
         )}
 
         {/* Info Box */}
-        <div className="mt-12 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-medium text-blue-900 mb-2">Recipe Integration</h3>
-          <p className="text-blue-800 mb-4">
-            Soon you&apos;ll be able to add recipe ingredients directly to your food diary with one click! 
-            We&apos;re working on detailed nutrition analysis and portion control features.
+        <div className="mt-8 bg-white border border-green-200 rounded-2xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">Rezept-Integration</h3>
+          <p className="text-gray-700 mb-4 text-sm leading-relaxed">
+            Bald kannst du Rezept-Zutaten mit einem Klick direkt in dein Ernährungstagebuch übertragen! 
+            Wir arbeiten an detaillierten Nährwertanalysen und Portionskontrollen.
           </p>
-          <div className="text-sm text-blue-700">
-            <p><strong>Coming soon:</strong></p>
-            <ul className="list-disc list-inside mt-1 space-y-1">
-              <li>One-click recipe logging to diary</li>
-              <li>Detailed nutrition breakdown per serving</li>
-              <li>Portion size adjustments</li>
-              <li>Save favorite recipes</li>
-              <li>AI-powered recipe recommendations based on your goals</li>
+          <div className="text-sm text-gray-600">
+            <p className="font-medium text-gray-800 mb-2">Demnächst:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Ein-Klick Rezept-Logging ins Tagebuch</li>
+              <li>Detaillierte Nährwerte pro Portion</li>
+              <li>Portionsgrößen anpassen</li>
+              <li>Lieblingsrezepte speichern</li>
+              <li>KI-basierte Rezeptempfehlungen für deine Ziele</li>
             </ul>
           </div>
         </div>

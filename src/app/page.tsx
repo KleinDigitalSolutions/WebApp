@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store'
 import { Button } from '@/components/ui'
@@ -15,14 +15,13 @@ import {
   ArrowRight,
   Star,
   Zap,
-  Heart,
-  TrendingUp
+  TrendingUp,
+  Heart
 } from 'lucide-react'
 
 export default function LandingPage() {
   const router = useRouter()
   const { user } = useAuthStore()
-  const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -30,100 +29,75 @@ export default function LandingPage() {
     }
   }, [user, router])
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
   if (user) {
     return null // Prevents flash while redirecting
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50">
-      {/* Header */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white/80 backdrop-blur-md shadow-lg' : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center">
-                <Heart className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-purple-600 bg-clip-text text-transparent">
-                NutriWise
-              </span>
-            </div>
-            
-            <nav className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-600 hover:text-emerald-600 transition-colors">Features</a>
-              <a href="#how-it-works" className="text-gray-600 hover:text-emerald-600 transition-colors">So funktioniert&apos;s</a>
-              <a href="#benefits" className="text-gray-600 hover:text-emerald-600 transition-colors">Vorteile</a>
-            </nav>
-
-            <div className="flex items-center space-x-4">
-              <Button
-                onClick={() => router.push('/login')}
-                variant="ghost"
-                className="text-gray-600 hover:text-emerald-600"
-              >
-                Anmelden
-              </Button>
-              <Button
-                onClick={() => router.push('/register')}
-                className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6"
-              >
-                Kostenlos starten
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      {/* Hero Section - Mobile First */}
+      <section className="pt-16 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <div className="inline-flex items-center px-4 py-2 bg-emerald-100 rounded-full text-emerald-700 text-sm font-medium mb-8">
             <Sparkles className="w-4 h-4 mr-2" />
-            KI-gestützte Ernährungsbegleitung
+            Progressive Web App - überall verfügbar
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
             Deine{' '}
             <span className="bg-gradient-to-r from-emerald-600 to-purple-600 bg-clip-text text-transparent">
-              intelligente
+              mobile
             </span>
             <br />
-            Ernährungs-App
+            Ernährungs-Webapp
           </h1>
           
-          <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-            NutriWise nutzt künstliche Intelligenz, um deine Ernährung zu optimieren. 
-            Tracke Kalorien, entdecke Rezepte und erreiche deine Gesundheitsziele – 
-            alles in einer eleganten, benutzerfreundlichen App.
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            NutriWise ist eine <strong>Progressive Web App</strong>, die sich wie eine native App anfühlt. 
+            Nutze sie direkt im Browser auf deinem Handy - keine Installation erforderlich!
           </p>
+
+          {/* PWA Features */}
+          <div className="flex flex-wrap justify-center gap-4 mb-12 text-sm">
+            <div className="flex items-center px-4 py-2 bg-emerald-500/80 backdrop-blur-xl rounded-full shadow-lg border border-emerald-400/30 text-white">
+              <span className="w-2 h-2 bg-white rounded-full mr-2"></span>
+              Smartphone-optimiert
+            </div>
+            <div className="flex items-center px-4 py-2 bg-emerald-500/80 backdrop-blur-xl rounded-full shadow-lg border border-emerald-400/30 text-white">
+              <span className="w-2 h-2 bg-white rounded-full mr-2"></span>
+              Blitzschnell laden
+            </div>
+            <div className="flex items-center px-4 py-2 bg-emerald-500/80 backdrop-blur-xl rounded-full shadow-lg border border-emerald-400/30 text-white">
+              <span className="w-2 h-2 bg-white rounded-full mr-2"></span>
+              Sicher & privat
+            </div>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Button
               onClick={() => router.push('/register')}
               size="lg"
-              className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-4 text-lg"
+              className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 text-lg"
             >
-              Jetzt kostenlos starten
+              Jetzt im Browser öffnen
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             <Button
               onClick={() => router.push('/login')}
               variant="outline"
               size="lg"
-              className="border-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50 px-8 py-4 text-lg"
+              className="border-2 border-emerald-200 text-emerald-700 px-8 py-4 text-lg"
             >
-              Demo ansehen
+              Bereits dabei? Anmelden
             </Button>
+          </div>
+
+          {/* Mobile Usage Hint */}
+          <div className="mb-8 p-4 bg-gradient-to-r from-purple-50 to-emerald-50 rounded-2xl border border-purple-100">
+            <p className="text-sm text-gray-700">
+              <strong>Tipp:</strong> Öffne NutriWise auf deinem Handy und füge es zum Startbildschirm hinzu 
+              für ein App-ähnliches Erlebnis!
+            </p>
           </div>
 
           {/* Social Proof */}
@@ -147,7 +121,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-white/50">
+      <section className="py-20 bg-white/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -161,8 +135,8 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="group p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-              <div className="w-14 h-14 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+              <div className="w-14 h-14 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mb-6">
                 <Zap className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">KI-Ernährungsassistent</h3>
@@ -172,8 +146,8 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 2 */}
-            <div className="group p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-              <div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+              <div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6">
                 <Search className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Intelligente Lebensmittelsuche</h3>
@@ -183,8 +157,8 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 3 */}
-            <div className="group p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-              <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+              <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6">
                 <Target className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Automatisches Kalorienzählen</h3>
@@ -194,8 +168,8 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 4 */}
-            <div className="group p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-              <div className="w-14 h-14 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+              <div className="w-14 h-14 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-6">
                 <ChefHat className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Personalisierte Rezepte</h3>
@@ -205,8 +179,8 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 5 */}
-            <div className="group p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-              <div className="w-14 h-14 bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+              <div className="w-14 h-14 bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl flex items-center justify-center mb-6">
                 <BookOpen className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Digitales Ernährungstagebuch</h3>
@@ -216,8 +190,8 @@ export default function LandingPage() {
             </div>
 
             {/* Feature 6 */}
-            <div className="group p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-              <div className="w-14 h-14 bg-gradient-to-r from-pink-500 to-pink-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+              <div className="w-14 h-14 bg-gradient-to-r from-pink-500 to-pink-600 rounded-xl flex items-center justify-center mb-6">
                 <Smartphone className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Progressive Web App</h3>
@@ -230,7 +204,7 @@ export default function LandingPage() {
       </section>
 
       {/* How it Works Section */}
-      <section id="how-it-works" className="py-20">
+      <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -276,7 +250,7 @@ export default function LandingPage() {
       </section>
 
       {/* Benefits Section */}
-      <section id="benefits" className="py-20 bg-gradient-to-r from-emerald-50 to-purple-50">
+      <section className="py-20 bg-gradient-to-r from-emerald-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -362,7 +336,7 @@ export default function LandingPage() {
             <Button
               onClick={() => router.push('/register')}
               size="lg"
-              className="bg-white text-emerald-600 hover:bg-gray-50 px-8 py-4 text-lg font-semibold"
+              className="bg-white text-emerald-600 px-8 py-4 text-lg font-semibold"
             >
               Jetzt kostenlos registrieren
               <ArrowRight className="w-5 h-5 ml-2" />
@@ -371,7 +345,7 @@ export default function LandingPage() {
               onClick={() => router.push('/login')}
               variant="outline"
               size="lg"
-              className="border-2 border-white text-white hover:bg-white/10 px-8 py-4 text-lg"
+              className="border-2 border-white text-white px-8 py-4 text-lg"
             >
               Bereits dabei? Anmelden
             </Button>
@@ -403,18 +377,18 @@ export default function LandingPage() {
             <div>
               <h3 className="font-semibold mb-4">Produkt</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Preise</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Updates</a></li>
+                <li><a href="#features" className="active:text-white transition-colors">Features</a></li>
+                <li><a href="#" className="active:text-white transition-colors">Preise</a></li>
+                <li><a href="#" className="active:text-white transition-colors">Updates</a></li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold mb-4">Unternehmen</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Über uns</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Datenschutz</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Impressum</a></li>
+                <li><a href="#" className="active:text-white transition-colors">Über uns</a></li>
+                <li><a href="#" className="active:text-white transition-colors">Datenschutz</a></li>
+                <li><a href="#" className="active:text-white transition-colors">Impressum</a></li>
               </ul>
             </div>
           </div>

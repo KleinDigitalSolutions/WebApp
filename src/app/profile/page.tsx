@@ -113,7 +113,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         <Navigation />
         <div className="flex items-center justify-center py-12">
           <LoadingSpinner size="lg" />
@@ -123,60 +123,60 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Navigation />
       
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Your Profile</h1>
-          <p className="text-gray-600">
-            Help us personalize your nutrition journey by sharing some basic information.
+      <div className="w-full px-4 py-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Dein Profil</h1>
+          <p className="text-gray-600 text-sm">
+            Hilf uns, deine Ernährungsreise zu personalisieren
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-4">Grunddaten</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
               <Input
-                label="Age"
+                label="Alter"
                 type="number"
                 value={formData.age || ''}
                 onChange={(e) => handleInputChange('age', parseInt(e.target.value) || undefined)}
-                placeholder="Enter your age"
+                placeholder="Dein Alter eingeben"
                 min="13"
                 max="120"
               />
 
               <Select
-                label="Gender"
+                label="Geschlecht"
                 value={formData.gender || ''}
                 onChange={(e) => handleInputChange('gender', e.target.value as Profile['gender'])}
                 options={[
-                  { value: '', label: 'Select gender' },
-                  { value: 'male', label: 'Male' },
-                  { value: 'female', label: 'Female' },
-                  { value: 'other', label: 'Other' },
+                  { value: '', label: 'Geschlecht wählen' },
+                  { value: 'male', label: 'Männlich' },
+                  { value: 'female', label: 'Weiblich' },
+                  { value: 'other', label: 'Andere' },
                 ]}
               />
 
               <Input
-                label="Height (cm)"
+                label="Größe (cm)"
                 type="number"
                 value={formData.height_cm || ''}
                 onChange={(e) => handleInputChange('height_cm', parseFloat(e.target.value) || undefined)}
-                placeholder="Enter your height"
+                placeholder="Deine Größe eingeben"
                 min="100"
                 max="250"
               />
 
               <Input
-                label="Weight (kg)"
+                label="Gewicht (kg)"
                 type="number"
                 value={formData.weight_kg || ''}
                 onChange={(e) => handleInputChange('weight_kg', parseFloat(e.target.value) || undefined)}
-                placeholder="Enter your weight"
+                placeholder="Dein Gewicht eingeben"
                 min="30"
                 max="300"
                 step="0.1"
@@ -184,91 +184,93 @@ export default function ProfilePage() {
             </div>
 
             {bmi > 0 && (
-              <div className="mt-4 p-4 bg-blue-50 rounded-md">
-                <p className="text-sm text-blue-800">
+              <div className="mt-4 p-4 bg-green-50 rounded-xl border border-green-100">
+                <p className="text-sm text-green-800">
                   <strong>BMI:</strong> {bmi} ({getBMICategory(bmi)})
                 </p>
               </div>
             )}
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Activity & Goals</h2>
+          <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-4">Aktivität & Ziele</h2>
             
-            <div className="space-y-6">
+            <div className="space-y-4">
               <Select
-                label="Activity Level"
+                label="Aktivitätslevel"
                 value={formData.activity_level || ''}
                 onChange={(e) => handleInputChange('activity_level', e.target.value as Profile['activity_level'])}
                 options={[
-                  { value: '', label: 'Select activity level' },
-                  { value: 'sedentary', label: 'Sedentary (little or no exercise)' },
-                  { value: 'lightly_active', label: 'Lightly active (light exercise 1-3 days/week)' },
-                  { value: 'moderately_active', label: 'Moderately active (moderate exercise 3-5 days/week)' },
-                  { value: 'very_active', label: 'Very active (hard exercise 6-7 days/week)' },
-                  { value: 'extra_active', label: 'Extra active (very hard exercise, physical job)' },
+                  { value: '', label: 'Aktivitätslevel wählen' },
+                  { value: 'sedentary', label: 'Wenig aktiv (kaum Sport)' },
+                  { value: 'lightly_active', label: 'Leicht aktiv (1-3 Tage/Woche)' },
+                  { value: 'moderately_active', label: 'Mäßig aktiv (3-5 Tage/Woche)' },
+                  { value: 'very_active', label: 'Sehr aktiv (6-7 Tage/Woche)' },
+                  { value: 'extra_active', label: 'Extrem aktiv (täglich + körperliche Arbeit)' },
                 ]}
               />
 
               <Select
-                label="Primary Goal"
+                label="Hauptziel"
                 value={formData.goal || ''}
                 onChange={(e) => handleInputChange('goal', e.target.value as Profile['goal'])}
                 options={[
-                  { value: '', label: 'Select your goal' },
-                  { value: 'lose_weight', label: 'Lose weight' },
-                  { value: 'maintain_weight', label: 'Maintain current weight' },
-                  { value: 'gain_weight', label: 'Gain weight' },
-                  { value: 'build_muscle', label: 'Build muscle' },
+                  { value: '', label: 'Dein Ziel wählen' },
+                  { value: 'lose_weight', label: 'Gewicht verlieren' },
+                  { value: 'maintain_weight', label: 'Gewicht halten' },
+                  { value: 'gain_weight', label: 'Gewicht zunehmen' },
+                  { value: 'build_muscle', label: 'Muskeln aufbauen' },
                 ]}
               />
             </div>
           </div>
 
           {estimatedCalories > 0 && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Your Estimated Daily Targets</h2>
+            <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-4">Deine geschätzten Tagesziele</h2>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{estimatedCalories}</div>
-                  <div className="text-sm text-gray-500">Calories</div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-green-50 rounded-xl">
+                  <div className="text-2xl font-bold text-green-600">{estimatedCalories}</div>
+                  <div className="text-sm text-gray-600">Kalorien</div>
                 </div>
-                <div className="text-center">
+                <div className="text-center p-4 bg-green-50 rounded-xl">
                   <div className="text-2xl font-bold text-green-600">{macroTargets.protein}g</div>
-                  <div className="text-sm text-gray-500">Protein</div>
+                  <div className="text-sm text-gray-600">Protein</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-yellow-600">{macroTargets.carbs}g</div>
-                  <div className="text-sm text-gray-500">Carbs</div>
+                <div className="text-center p-4 bg-green-50 rounded-xl">
+                  <div className="text-2xl font-bold text-green-600">{macroTargets.carbs}g</div>
+                  <div className="text-sm text-gray-600">Kohlenhydrate</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">{macroTargets.fat}g</div>
-                  <div className="text-sm text-gray-500">Fat</div>
+                <div className="text-center p-4 bg-green-50 rounded-xl">
+                  <div className="text-2xl font-bold text-green-600">{macroTargets.fat}g</div>
+                  <div className="text-sm text-gray-600">Fett</div>
                 </div>
               </div>
 
-              <p className="text-sm text-gray-600 mt-4">
-                <strong>Note:</strong> These are estimates based on the Mifflin-St Jeor equation. 
-                Individual needs may vary. Consult with a healthcare professional for personalized advice.
+              <p className="text-xs text-gray-600 mt-4 p-3 bg-gray-50 rounded-xl">
+                <strong>Hinweis:</strong> Dies sind Schätzungen basierend auf der Mifflin-St Jeor Gleichung. 
+                Individuelle Bedürfnisse können variieren. Konsultiere einen Arzt für personalisierte Beratung.
               </p>
             </div>
           )}
 
-          <div className="flex justify-end space-x-4">
+          <div className="flex space-x-3 pt-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push('/')}
+              className="flex-1"
             >
-              Cancel
+              Abbrechen
             </Button>
             <Button
               type="submit"
               loading={saving}
               disabled={!formData.age || !formData.gender || !formData.height_cm || !formData.weight_kg || !formData.activity_level || !formData.goal}
+              className="flex-1"
             >
-              Save Profile
+              Profil speichern
             </Button>
           </div>
         </form>

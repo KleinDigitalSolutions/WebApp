@@ -5,15 +5,9 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'spoonacular.com',
+        hostname: 'www.themealdb.com',
         port: '',
-        pathname: '/recipeImages/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'img.spoonacular.com',
-        port: '',
-        pathname: '/**',
+        pathname: '/images/**',
       },
     ],
   },

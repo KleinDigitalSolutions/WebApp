@@ -31,9 +31,9 @@ export default function ChatPage() {
       const welcomeMessage: ChatMessageWithId = {
         id: 'welcome',
         role: 'assistant',
-        content: `Hello! I'm your AI nutrition coach. I'm here to help you with personalized nutrition advice, meal planning, and answering any questions about your diet and health goals.
+        content: `Hallo! Ich bin dein KI-Ernährungsberater. Ich helfe dir gerne mit personalisierten Ernährungstipps, Mahlzeitenplanung und beantworte alle Fragen zu deiner Ernährung und deinen Gesundheitszielen.
 
-${profile?.goal ? `I see your goal is to ${profile.goal.replace('_', ' ')}. ` : ''}How can I assist you today?`,
+${profile?.goal ? `Ich sehe, dein Ziel ist ${profile.goal.replace('_', ' ')}. ` : ''}Wie kann ich dir heute helfen?`,
         timestamp: new Date(),
       }
       setMessages([welcomeMessage])
@@ -99,7 +99,7 @@ ${profile?.goal ? `I see your goal is to ${profile.goal.replace('_', ' ')}. ` : 
       const errorMessage: ChatMessageWithId = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "I'm sorry, I encountered an error while processing your request. Please try again later.",
+        content: "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuche es später noch einmal.",
         timestamp: new Date(),
       }
       setMessages(prev => [...prev, errorMessage])
@@ -121,34 +121,35 @@ ${profile?.goal ? `I see your goal is to ${profile.goal.replace('_', ' ')}. ` : 
     const welcomeMessage: ChatMessageWithId = {
       id: 'welcome',
       role: 'assistant',
-      content: `Hello! I'm your AI nutrition coach. I'm here to help you with personalized nutrition advice, meal planning, and answering any questions about your diet and health goals.
+      content: `Hallo! Ich bin dein KI-Ernährungsberater. Ich helfe dir gerne mit personalisierten Ernährungstipps, Mahlzeitenplanung und beantworte alle Fragen zu deiner Ernährung und deinen Gesundheitszielen.
 
-${profile?.goal ? `I see your goal is to ${profile.goal.replace('_', ' ')}. ` : ''}How can I assist you today?`,
+${profile?.goal ? `Ich sehe, dein Ziel ist ${profile.goal.replace('_', ' ')}. ` : ''}Wie kann ich dir heute helfen?`,
       timestamp: new Date(),
     }
     setMessages([welcomeMessage])
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <Navigation />
       
-      <div className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
+      <div className="flex-1 w-full px-4 py-6 flex flex-col">
+        {/* Header */}
         <div className="mb-6 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">AI Nutrition Coach</h1>
-            <p className="text-gray-600">Get personalized nutrition advice and support</p>
+            <h1 className="text-2xl font-bold text-gray-900">KI-Ernährungsberater</h1>
+            <p className="text-gray-600 text-sm">Personalisierte Ernährungstipps & Beratung</p>
           </div>
           {messages.length > 1 && (
-            <Button variant="outline" onClick={clearChat}>
-              Clear Chat
+            <Button variant="outline" onClick={clearChat} className="text-sm">
+              Neu starten
             </Button>
           )}
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 bg-white rounded-lg shadow flex flex-col">
-          <div className="flex-1 p-6 overflow-y-auto max-h-96">
+        <div className="flex-1 backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg flex flex-col mb-4">
+          <div className="flex-1 p-4 overflow-y-auto">
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
@@ -156,16 +157,16 @@ ${profile?.goal ? `I see your goal is to ${profile.goal.replace('_', ' ')}. ` : 
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                    className={`max-w-[85%] px-4 py-3 rounded-2xl ${
                       message.role === 'user'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-900'
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-50 text-gray-900 border border-green-50'
                     }`}
                   >
-                    <div className="whitespace-pre-wrap">{message.content}</div>
+                    <div className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</div>
                     <div
-                      className={`text-xs mt-1 ${
-                        message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+                      className={`text-xs mt-2 ${
+                        message.role === 'user' ? 'text-green-100' : 'text-gray-500'
                       }`}
                     >
                       {message.timestamp.toLocaleTimeString([], {
@@ -179,10 +180,10 @@ ${profile?.goal ? `I see your goal is to ${profile.goal.replace('_', ' ')}. ` : 
               
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg">
+                  <div className="bg-gray-50 text-gray-900 px-4 py-3 rounded-2xl border border-green-50">
                     <div className="flex items-center space-x-2">
                       <LoadingSpinner size="sm" />
-                      <span>AI is thinking...</span>
+                      <span className="text-sm">KI denkt nach...</span>
                     </div>
                   </div>
                 </div>
@@ -192,46 +193,46 @@ ${profile?.goal ? `I see your goal is to ${profile.goal.replace('_', ' ')}. ` : 
           </div>
 
           {/* Input Area */}
-          <div className="border-t p-4">
+          <div className="border-t border-green-100 p-4">
             <div className="flex space-x-3">
               <textarea
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask me about nutrition, meal planning, or your dietary goals..."
-                className="flex-1 resize-none border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
+                placeholder="Frage mich zu Ernährung, Mahlzeiten oder deinen Zielen..."
+                className="flex-1 resize-none border border-green-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white text-sm"
                 rows={2}
                 disabled={loading}
               />
               <Button
                 onClick={sendMessage}
                 disabled={!inputMessage.trim() || loading}
-                className="self-end"
+                className="self-end px-6 py-3 text-sm"
               >
-                Send
+                Senden
               </Button>
             </div>
             <p className="text-xs text-gray-500 mt-2">
-              Press Enter to send, Shift+Enter for new line
+              Enter zum Senden, Shift+Enter für neue Zeile
             </p>
           </div>
         </div>
 
         {/* Suggested Questions */}
         {messages.length <= 1 && (
-          <div className="mt-6">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Suggested questions:</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <h3 className="text-sm font-medium text-gray-700 mb-3">Vorschläge:</h3>
+            <div className="space-y-2">
               {[
-                "What should I eat to reach my daily protein goals?",
-                "Can you suggest a healthy meal plan for this week?",
-                "How can I track my macronutrients effectively?",
-                "What are some healthy snack options for weight loss?",
+                "Was soll ich essen, um meine Proteinziele zu erreichen?",
+                "Kannst du mir einen gesunden Wochenplan erstellen?",
+                "Wie verfolge ich meine Makronährstoffe am besten?",
+                "Welche gesunden Snacks helfen beim Abnehmen?",
               ].map((question, index) => (
                 <button
                   key={index}
                   onClick={() => setInputMessage(question)}
-                  className="text-left p-3 bg-blue-50 hover:bg-blue-100 rounded-lg text-sm text-blue-700 transition-colors"
+                  className="w-full text-left p-4 backdrop-blur-sm bg-green-50/80 rounded-xl text-sm text-green-800 border border-green-100 shadow-sm active:bg-green-100/80"
                 >
                   {question}
                 </button>

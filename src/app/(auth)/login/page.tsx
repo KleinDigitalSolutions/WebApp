@@ -61,18 +61,18 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white flex items-center justify-center py-12 px-4">
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4">
           <div className="flex justify-between items-center py-6">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <ArrowLeft className="w-5 h-5 text-gray-600 group-hover:text-emerald-600 transition-colors" />
+            <Link href="/" className="flex items-center space-x-2">
+              <ArrowLeft className="w-5 h-5 text-gray-600" />
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
                   <Heart className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="text-2xl font-bold text-green-600">
                   NutriWise
                 </span>
               </div>
@@ -82,12 +82,12 @@ export default function LoginPage() {
       </div>
 
       {/* Login Form */}
-      <div className="max-w-md w-full space-y-8 bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-white/20">
+      <div className="max-w-md w-full space-y-8 backdrop-blur-sm bg-white/50 rounded-2xl shadow-lg p-8 border border-green-100">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 bg-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <Heart className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-purple-600 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold text-green-600">
             Willkommen zurück
           </h2>
           <p className="mt-3 text-gray-600">
@@ -104,7 +104,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="Deine E-Mail-Adresse"
-              className="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+              className="rounded-xl border-green-100 focus:border-green-500 focus:ring-green-500"
             />
             
             <Input
@@ -114,7 +114,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="Dein Passwort"
-              className="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+              className="rounded-xl border-green-100 focus:border-green-500 focus:ring-green-500"
             />
           </div>
 
@@ -128,7 +128,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               loading={loading}
-              className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold shadow-lg active:bg-green-700"
             >
               {loading ? 'Anmeldung läuft...' : 'Anmelden'}
             </Button>
@@ -146,7 +146,7 @@ export default function LoginPage() {
               type="button"
               variant="outline"
               onClick={handleGoogleLogin}
-              className="w-full border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 py-3 rounded-xl font-semibold transition-all duration-200"
+              className="w-full border-green-200 bg-green-50 text-green-700 py-3 rounded-xl font-semibold active:bg-green-100"
             >
               <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -161,7 +161,7 @@ export default function LoginPage() {
           <div className="text-center pt-4">
             <span className="text-gray-600">
               Noch kein Konto?{' '}
-              <Link href="/register" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+              <Link href="/register" className="font-semibold text-green-600">
                 Jetzt registrieren
               </Link>
             </span>

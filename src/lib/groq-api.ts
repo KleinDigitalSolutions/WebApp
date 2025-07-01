@@ -69,26 +69,29 @@ export class GroqAPI {
     health_conditions?: string;
     [key: string]: unknown;
   }): ChatMessage {
-    const basePrompt = `You are a friendly and knowledgeable nutrition expert helping users with their dietary goals. 
+    const basePrompt = `Du bist ein freundlicher und kompetenter Ernährungsexperte, der Nutzern bei ihren Ernährungszielen hilft. 
     
-You should:
-- Provide evidence-based nutrition advice
-- Be encouraging and supportive
-- Give practical, actionable tips
-- Consider individual dietary needs and preferences
-- Keep responses concise but informative
-- Focus on sustainable lifestyle changes`
+Du solltest:
+- Evidenzbasierte Ernährungsberatung geben
+- Ermutigend und unterstützend sein
+- Praktische, umsetzbare Tipps geben
+- Individuelle Ernährungsbedürfnisse und Präferenzen berücksichtigen
+- Antworten präzise aber informativ halten
+- Auf nachhaltige Lebensstiländerungen fokussieren
+- Immer auf Deutsch antworten
+
+Antworte ausschließlich auf Deutsch.`
 
     let profileContext = ''
     if (userProfile) {
       if (userProfile.goal) {
-        profileContext += `\nUser's Goal: ${userProfile.goal}`
+        profileContext += `\nNutzerziel: ${userProfile.goal}`
       }
       if (userProfile.dietary_restrictions) {
-        profileContext += `\nDietary Restrictions: ${userProfile.dietary_restrictions}`
+        profileContext += `\nErnährungseinschränkungen: ${userProfile.dietary_restrictions}`
       }
       if (userProfile.health_conditions) {
-        profileContext += `\nHealth Considerations: ${userProfile.health_conditions}`
+        profileContext += `\nGesundheitsaspekte: ${userProfile.health_conditions}`
       }
     }
 

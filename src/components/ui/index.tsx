@@ -79,14 +79,14 @@ export function Button({
   disabled,
   ...props 
 }: ButtonProps) {
-  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
   
   const variantClasses = {
-    primary: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500',
-    secondary: 'bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500',
-    outline: 'border border-gray-300 hover:border-gray-400 text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 focus:ring-gray-500',
-    ghost: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:ring-gray-500',
-    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500'
+    primary: 'bg-blue-600 text-white focus:ring-blue-500',
+    secondary: 'bg-gray-600 text-white focus:ring-gray-500',
+    outline: 'border border-gray-300 text-gray-700 bg-white focus:ring-gray-500',
+    ghost: 'text-gray-600 focus:ring-gray-500',
+    danger: 'bg-red-600 text-white focus:ring-red-500'
   }
 
   const sizeClasses = {
@@ -99,6 +99,14 @@ export function Button({
 
   return (
     <button
+      style={{
+        transition: 'none',
+        transform: 'none'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'none'
+        e.currentTarget.style.transition = 'none'
+      }}
       className={cn(
         baseClasses, 
         variantClasses[variant], 

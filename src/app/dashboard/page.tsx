@@ -1,26 +1,89 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase, DiaryEntry } from '@/lib/supabase'
 import { useAuthStore, useDiaryStore } from '@/store'
-import { LoadingSpinner, Button } from '@/components/ui'
 import { calculateDailyCalorieGoal, calculateMacroTargets } from '@/lib/nutrition-utils'
 import { 
   PlusCircle, 
-  Zap, 
-  Flame, 
   Droplet, 
   Beef, 
   Wheat, 
-  Salad, 
-  Heart,
   TrendingUp,
   Calendar,
-  Activity,
   Award,
-  Sparkles
+  Sparkles,
+  ChevronRight,
+  Camera,
+  Search,
+  RefreshCw
 } from 'lucide-react'
+
+interface PullToRefreshProps {
+  children: React.ReactNode
+  onRefresh: () => Promise<void>
+}
+
+function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [pullDistance, setPullDistance] = useState(0)
+  const [startY, setStartY] = useState(0)
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setStartY(e.touches[0].clientY)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const currentY = e.touches[0].clientY
+    const diff = currentY - startY
+    
+    if (diff > 0 && window.scrollY === 0) {
+      setPullDistance(Math.min(diff, 100))
+    }
+  }
+
+  const handleTouchEnd = async () => {
+    if (pullDistance > 60 && !isRefreshing) {
+      setIsRefreshing(true)
+      await onRefresh()
+      setIsRefreshing(false)
+    }
+    setPullDistance(0)
+  }
+
+  return (
+    <div
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className="relative"
+    >
+      {/* Pull to refresh indicator */}
+      {(pullDistance > 0 || isRefreshing) && (
+        <div 
+          className="absolute top-0 left-0 right-0 flex justify-center items-center bg-emerald-50 z-10"
+          style={{ 
+            height: pullDistance || (isRefreshing ? 60 : 0),
+            transition: isRefreshing ? 'height 0.3s ease' : 'none'
+          }}
+        >
+          <RefreshCw 
+            className={`h-6 w-6 text-emerald-600 ${isRefreshing ? 'animate-spin' : ''}`}
+            style={{ 
+              transform: `rotate(${pullDistance * 3.6}deg)`,
+              transition: isRefreshing ? 'transform 0.3s ease' : 'none'
+            }}
+          />
+        </div>
+      )}
+      
+      <div style={{ transform: `translateY(${pullDistance}px)` }}>
+        {children}
+      </div>
+    </div>
+  )
+}
 
 export default function Dashboard() {
   const router = useRouter()
@@ -29,392 +92,320 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [todayEntries, setTodayEntries] = useState<DiaryEntry[]>([])
 
+  const loadData = useCallback(async () => {
+    if (!user) return
+
+    try {
+      // Load user profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if (profileData) {
+        setProfile(profileData)
+        
+        // Calculate daily goals based on profile
+        const calorieGoal = calculateDailyCalorieGoal(profileData)
+        
+        const macroTargets = calculateMacroTargets(calorieGoal)
+        setDailyGoals({
+          calories: calorieGoal,
+          protein: macroTargets.protein,
+          carbs: macroTargets.carbs,
+          fat: macroTargets.fat
+        })
+      }
+
+      // Load today's entries
+      const today = new Date().toISOString().split('T')[0]
+      const { data: entries } = await supabase
+        .from('diary_entries')
+        .select('*')
+        .eq('user_id', user.id)
+        .gte('created_at', `${today}T00:00:00`)
+        .lt('created_at', `${today}T23:59:59`)
+
+      if (entries) {
+        setTodayEntries(entries)
+        setEntries(entries)
+      }
+    } catch (error) {
+      console.error('Error loading data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [user, setProfile, setDailyGoals, setEntries])
+
   useEffect(() => {
     if (!user) {
       router.push('/login')
       return
     }
-
-    const loadData = async () => {
-      try {
-        // Load user profile
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single()
-
-        if (profileData) {
-          setProfile(profileData)
-          
-          // Calculate daily goals based on profile
-          const calorieGoal = calculateDailyCalorieGoal(profileData)
-          const macroTargets = calculateMacroTargets(calorieGoal, profileData.goal)
-          
-          setDailyGoals({
-            calories: calorieGoal,
-            protein: macroTargets.protein,
-            carbs: macroTargets.carbs,
-            fat: macroTargets.fat,
-          })
-        }
-
-        // Load today's diary entries
-        const today = new Date().toISOString().split('T')[0]
-        const { data: diaryData } = await supabase
-          .from('diary_entries')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('entry_date', today)
-          .order('created_at', { ascending: false })
-
-        if (diaryData) {
-          setTodayEntries(diaryData)
-          setEntries(diaryData)
-        }
-      } catch (error) {
-        console.error('Error loading dashboard data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
     loadData()
-  }, [user, router, setProfile, setEntries, setDailyGoals])
+  }, [user, router, loadData])
 
-  // Calculate today's totals
-  const todayTotals = todayEntries.reduce(
-    (totals, entry) => ({
-      calories: totals.calories + entry.calories,
-      protein: totals.protein + entry.protein_g,
-      carbs: totals.carbs + entry.carb_g,
-      fat: totals.fat + entry.fat_g,
-    }),
-    { calories: 0, protein: 0, carbs: 0, fat: 0 }
-  )
+  // Calculate consumed nutrients
+  const consumedCalories = todayEntries.reduce((sum, entry) => sum + entry.calories, 0)
+  const consumedProtein = todayEntries.reduce((sum, entry) => sum + entry.protein_g, 0)
+  const consumedCarbs = todayEntries.reduce((sum, entry) => sum + entry.carb_g, 0)
+  const consumedFat = todayEntries.reduce((sum, entry) => sum + entry.fat_g, 0)
 
-  // Calculate completion percentages
-  const calorieProgress = (todayTotals.calories / dailyGoals.calories) * 100
-  const proteinProgress = (todayTotals.protein / dailyGoals.protein) * 100
-  const carbsProgress = (todayTotals.carbs / dailyGoals.carbs) * 100
-  const fatProgress = (todayTotals.fat / dailyGoals.fat) * 100
+  // Calculate percentages
+  const calorieProgress = dailyGoals.calories ? (consumedCalories / dailyGoals.calories) * 100 : 0
+  const proteinProgress = dailyGoals.protein ? (consumedProtein / dailyGoals.protein) * 100 : 0
+  const carbsProgress = dailyGoals.carbs ? (consumedCarbs / dailyGoals.carbs) * 100 : 0
+  const fatProgress = dailyGoals.fat ? (consumedFat / dailyGoals.fat) * 100 : 0
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50">
-        <div className="flex items-center justify-center py-12">
-          <LoadingSpinner size="lg" />
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
       </div>
     )
   }
 
-  const userName = user?.user_metadata.full_name || user?.email?.split('@')[0] || 'Nutzer'
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        {/* Header Section */}
-        <div className="mb-12">
-          <div className="text-center">
-            <div className="inline-flex items-center px-4 py-2 bg-emerald-100 rounded-full text-emerald-700 text-sm font-medium mb-6">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Dein persönliches Ernährungs-Dashboard
-            </div>
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4 leading-tight">
-              Hallo{' '}
-              <span className="bg-gradient-to-r from-emerald-600 to-purple-600 bg-clip-text text-transparent">
-                {userName}
-              </span>
-              ! 👋
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Hier ist deine Ernährungsübersicht für heute. Du machst großartige Fortschritte!
-            </p>
-          </div>
-        </div>
-
-        {/* Stats Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          
-          {/* Calories Card */}
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-300">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                <Flame className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Kalorien</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {Math.round(todayTotals.calories)}
-                  <span className="text-sm text-gray-500">/{Math.round(dailyGoals.calories)}</span>
+    <PullToRefresh onRefresh={loadData}>
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-gray-50">
+        {/* Mobile Header */}
+        <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-gray-100">
+          <div className="px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Guten Tag!
+                </h1>
+                <p className="text-sm text-gray-600 mt-1">
+                  {new Date().toLocaleDateString('de-DE', { 
+                    weekday: 'long', 
+                    day: 'numeric', 
+                    month: 'long' 
+                  })}
                 </p>
-              </div>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(calorieProgress, 100)}%` }}
-              />
-            </div>
-            <p className="text-xs text-gray-500 mt-2">{Math.round(calorieProgress)}% erreicht</p>
-          </div>
-
-          {/* Protein Card */}
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-300">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-                <Beef className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Protein</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {Math.round(todayTotals.protein)}g
-                  <span className="text-sm text-gray-500">/{Math.round(dailyGoals.protein)}g</span>
-                </p>
-              </div>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(proteinProgress, 100)}%` }}
-              />
-            </div>
-            <p className="text-xs text-gray-500 mt-2">{Math.round(proteinProgress)}% erreicht</p>
-          </div>
-
-          {/* Carbs Card */}
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-300">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center">
-                <Wheat className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Kohlenhydrate</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {Math.round(todayTotals.carbs)}g
-                  <span className="text-sm text-gray-500">/{Math.round(dailyGoals.carbs)}g</span>
-                </p>
-              </div>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(carbsProgress, 100)}%` }}
-              />
-            </div>
-            <p className="text-xs text-gray-500 mt-2">{Math.round(carbsProgress)}% erreicht</p>
-          </div>
-
-          {/* Fat Card */}
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-300">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <Droplet className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Fette</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {Math.round(todayTotals.fat)}g
-                  <span className="text-sm text-gray-500">/{Math.round(dailyGoals.fat)}g</span>
-                </p>
-              </div>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(fatProgress, 100)}%` }}
-              />
-            </div>
-            <p className="text-xs text-gray-500 mt-2">{Math.round(fatProgress)}% erreicht</p>
-          </div>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Left Column: Progress Overview */}
-          <div className="lg:col-span-2 space-y-8">
-            
-            {/* Daily Progress Card */}
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-white/20">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-purple-600 bg-clip-text text-transparent">
-                    Tagesfortschritt
-                  </h2>
-                  <p className="text-gray-600 mt-1">Deine Makronährstoff-Ziele im Überblick</p>
-                </div>
-                <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-purple-600 rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-white" />
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                {/* Overall Progress */}
-                <div className="text-center p-6 bg-gradient-to-r from-emerald-50 to-purple-50 rounded-xl">
-                  <div className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                    {Math.round((calorieProgress + proteinProgress + carbsProgress + fatProgress) / 4)}%
-                  </div>
-                  <p className="text-gray-600">Gesamtfortschritt heute</p>
-                </div>
-
-                {/* Detailed Macros */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Beef className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Protein</h3>
-                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
-                      <div 
-                        className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-700"
-                        style={{ width: `${Math.min(proteinProgress, 100)}%` }}
-                      />
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      {Math.round(todayTotals.protein)}g von {Math.round(dailyGoals.protein)}g
-                    </p>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Wheat className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Kohlenhydrate</h3>
-                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
-                      <div 
-                        className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-3 rounded-full transition-all duration-700"
-                        style={{ width: `${Math.min(carbsProgress, 100)}%` }}
-                      />
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      {Math.round(todayTotals.carbs)}g von {Math.round(dailyGoals.carbs)}g
-                    </p>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Droplet className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Fette</h3>
-                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
-                      <div 
-                        className="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-700"
-                        style={{ width: `${Math.min(fatProgress, 100)}%` }}
-                      />
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      {Math.round(todayTotals.fat)}g von {Math.round(dailyGoals.fat)}g
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Achievement Badge (if goals met) */}
-            {calorieProgress >= 80 && proteinProgress >= 80 && (
-              <div className="bg-gradient-to-r from-emerald-500 to-purple-600 rounded-2xl shadow-xl p-6 text-white">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
-                    <Award className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold">Fantastische Leistung! 🎉</h3>
-                    <p className="text-white/90">Du hast heute deine Ernährungsziele erreicht!</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Right Column: Actions & Log */}
-          <div className="space-y-8">
-            
-            {/* Quick Actions Card */}
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/20">
-              <div className="flex items-center mb-6">
-                <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                  <Zap className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-xl font-bold text-gray-900">Schnellaktionen</h2>
-              </div>
-              <div className="space-y-3">
-                <Button 
-                  onClick={() => router.push('/diary')}
-                  className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
-                >
-                  <PlusCircle className="w-5 h-5 mr-2" />
-                  Nahrung hinzufügen
-                </Button>
-                <Button 
-                  onClick={() => router.push('/recipes')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
-                >
-                  <Salad className="w-5 h-5 mr-2" />
-                  Rezepte entdecken
-                </Button>
-                <Button 
-                  onClick={() => router.push('/chat')}
-                  className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
-                >
-                  <Heart className="w-5 h-5 mr-2" />
-                  KI-Assistent
-                </Button>
-              </div>
-            </div>
-
-            {/* Today's Food Log */}
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/20">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                    <Calendar className="w-5 h-5 text-white" />
-                  </div>
-                  <h2 className="text-xl font-bold text-gray-900">Heutige Einträge</h2>
-                </div>
-                <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                  {todayEntries.length} Einträge
-                </span>
               </div>
               
-              <div className="space-y-3 max-h-64 overflow-y-auto">
-                {todayEntries.length > 0 ? (
-                  todayEntries.map(entry => (
-                    <div key={entry.id} className="flex justify-between items-center p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-purple-50 border border-emerald-100">
-                      <div>
-                        <p className="font-medium text-gray-900 capitalize">{entry.food_name}</p>
-                        <p className="text-sm text-gray-600">{entry.quantity || 100}g</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-emerald-600">{entry.calories} kcal</p>
-                        <p className="text-xs text-gray-500">
-                          P: {Math.round(entry.protein_g)}g | K: {Math.round(entry.carb_g)}g | F: {Math.round(entry.fat_g)}g
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Activity className="w-8 h-8 text-gray-400" />
-                    </div>
-                    <p className="text-gray-500 mb-4">Noch keine Einträge für heute</p>
-                    <Button 
-                      onClick={() => router.push('/diary')}
-                      size="sm"
-                      className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white"
-                    >
-                      Ersten Eintrag hinzufügen
-                    </Button>
+              {/* Achievement Badge */}
+              <div className="flex items-center space-x-2">
+                {calorieProgress >= 80 && calorieProgress <= 120 && (
+                  <div className="flex items-center px-3 py-1 bg-emerald-500 rounded-full shadow-lg">
+                    <Award className="h-4 w-4 text-white mr-1" />
+                    <span className="text-xs font-medium text-white">Ziel erreicht!</span>
                   </div>
                 )}
               </div>
             </div>
           </div>
         </div>
-      </main>
-    </div>
+
+      <div className="px-4 space-y-6 pb-6">
+        {/* Quick Stats Card */}
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Tagesübersicht</h2>
+            <div className="flex items-center text-sm text-emerald-600 font-medium">
+              <Calendar className="h-4 w-4 mr-1" />
+              Heute
+            </div>
+          </div>
+          
+          {/* Main Calorie Ring */}
+          <div className="flex items-center justify-center mb-6">
+            <div className="relative w-32 h-32">
+              <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  stroke="currentColor"
+                  strokeWidth="6"
+                  fill="transparent"
+                  className="text-gray-200"
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  stroke="url(#gradient)"
+                  strokeWidth="6"
+                  fill="transparent"
+                  strokeDasharray={`${2 * Math.PI * 45}`}
+                  strokeDashoffset={`${2 * Math.PI * 45 * (1 - Math.min(calorieProgress, 100) / 100)}`}
+                  className="transition-all duration-500 ease-out"
+                  strokeLinecap="round"
+                />
+                <defs>
+                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="100%" stopColor="#8b5cf6" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-2xl font-bold text-gray-900">{Math.round(consumedCalories)}</span>
+                <span className="text-xs text-gray-500">von {dailyGoals.calories}</span>
+                <span className="text-xs text-gray-500">kcal</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Macro Distribution */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="text-center p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
+              <div className="flex items-center justify-center mb-2">
+                <Beef className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div className="text-sm font-semibold text-gray-900">{Math.round(consumedProtein)}g</div>
+              <div className="text-xs text-gray-600">Protein</div>
+              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                <div 
+                  className="bg-emerald-500 h-1.5 rounded-full"
+                  style={{ width: `${Math.min(proteinProgress, 100)}%` }}
+                />
+              </div>
+            </div>
+            
+            <div className="text-center p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
+              <div className="flex items-center justify-center mb-2">
+                <Wheat className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div className="text-sm font-semibold text-gray-900">{Math.round(consumedCarbs)}g</div>
+              <div className="text-xs text-gray-600">Kohlenhydrate</div>
+              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                <div 
+                  className="bg-emerald-500 h-1.5 rounded-full"
+                  style={{ width: `${Math.min(carbsProgress, 100)}%` }}
+                />
+              </div>
+            </div>
+            
+            <div className="text-center p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
+              <div className="flex items-center justify-center mb-2">
+                <Droplet className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div className="text-sm font-semibold text-gray-900">{Math.round(consumedFat)}g</div>
+              <div className="text-xs text-gray-600">Fett</div>
+              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                <div 
+                  className="bg-emerald-500 h-1.5 rounded-full"
+                  style={{ width: `${Math.min(fatProgress, 100)}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Schnellaktionen</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <button 
+              onClick={() => router.push('/diary/add')}
+              className="flex items-center justify-center p-4 bg-emerald-500 rounded-2xl text-white shadow-lg"
+            >
+              <PlusCircle className="h-6 w-6 mr-2" />
+              <span className="font-medium">Hinzufügen</span>
+            </button>
+            
+            <button 
+              onClick={() => router.push('/diary/scan')}
+              className="flex items-center justify-center p-4 bg-white border border-gray-200 rounded-2xl text-gray-700 shadow-sm"
+            >
+              <Camera className="h-6 w-6 mr-2" />
+              <span className="font-medium">Scannen</span>
+            </button>
+            
+            <button 
+              onClick={() => router.push('/recipes')}
+              className="flex items-center justify-center p-4 bg-white border border-gray-200 rounded-2xl text-gray-700 shadow-sm"
+            >
+              <Search className="h-6 w-6 mr-2" />
+              <span className="font-medium">Rezepte</span>
+            </button>
+            
+            <button 
+              onClick={() => router.push('/chat')}
+              className="flex items-center justify-center p-4 bg-white border border-gray-200 rounded-2xl text-gray-700 shadow-sm"
+            >
+              <Sparkles className="h-6 w-6 mr-2" />
+              <span className="font-medium">KI-Berater</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Recent Meals */}
+        <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Heutige Mahlzeiten</h3>
+            <button 
+              onClick={() => router.push('/diary')}
+              className="flex items-center text-emerald-600 font-medium text-sm"
+            >
+              Alle anzeigen
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </button>
+          </div>
+          
+          {todayEntries.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <PlusCircle className="h-8 w-8 text-gray-400" />
+              </div>
+              <p className="text-gray-500 text-sm">Noch keine Mahlzeiten eingetragen</p>
+              <button 
+                onClick={() => router.push('/diary/add')}
+                className="mt-3 text-emerald-600 font-medium text-sm"
+              >
+                Erste Mahlzeit hinzufügen
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {todayEntries.slice(0, 3).map((entry) => (
+                <div key={entry.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl">
+                  <div className="flex-1">
+                    <h4 className="font-medium text-gray-900">{entry.food_name}</h4>
+                    <p className="text-sm text-gray-600">{entry.calories} kcal</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm text-gray-500">
+                      {new Date(entry.created_at).toLocaleTimeString('de-DE', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                      })}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Insights Card */}
+        <div className="bg-emerald-500 rounded-3xl p-6 text-white shadow-lg">
+          <div className="flex items-center mb-3">
+            <TrendingUp className="h-6 w-6 mr-2" />
+            <h3 className="text-lg font-semibold">Deine Fortschritte</h3>
+          </div>
+          <p className="text-emerald-100 text-sm mb-4">
+            {calorieProgress >= 80 && calorieProgress <= 120 
+              ? "Fantastisch! Du bist perfekt auf Kurs mit deinen Kalorienzielen."
+              : calorieProgress < 80 
+                ? "Du könntest noch etwas mehr essen, um deine Ziele zu erreichen."
+                : "Du hast deine Kalorienziele bereits überschritten. Achte auf die Balance."
+            }
+          </p>
+          <button 
+            onClick={() => router.push('/chat')}
+            className="flex items-center text-white font-medium"
+          >
+            Mehr Tipps erhalten
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </button>
+        </div>
+      </div>
+      </div>
+    </PullToRefresh>
   )
 }
