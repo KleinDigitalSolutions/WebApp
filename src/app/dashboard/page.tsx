@@ -4,9 +4,23 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase, DiaryEntry } from '@/lib/supabase'
 import { useAuthStore, useDiaryStore } from '@/store'
-import { ProgressBar, LoadingSpinner, Button } from '@/components/ui'
+import { LoadingSpinner, Button } from '@/components/ui'
 import { calculateDailyCalorieGoal, calculateMacroTargets } from '@/lib/nutrition-utils'
-import { PlusCircle, Zap, Flame, Droplet, Beef, Wheat, Salad } from 'lucide-react'
+import { 
+  PlusCircle, 
+  Zap, 
+  Flame, 
+  Droplet, 
+  Beef, 
+  Wheat, 
+  Salad, 
+  Heart,
+  TrendingUp,
+  Calendar,
+  Activity,
+  Award,
+  Sparkles
+} from 'lucide-react'
 
 export default function Dashboard() {
   const router = useRouter()
@@ -79,9 +93,15 @@ export default function Dashboard() {
     { calories: 0, protein: 0, carbs: 0, fat: 0 }
   )
 
+  // Calculate completion percentages
+  const calorieProgress = (todayTotals.calories / dailyGoals.calories) * 100
+  const proteinProgress = (todayTotals.protein / dailyGoals.protein) * 100
+  const carbsProgress = (todayTotals.carbs / dailyGoals.carbs) * 100
+  const fatProgress = (todayTotals.fat / dailyGoals.fat) * 100
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50">
         <div className="flex items-center justify-center py-12">
           <LoadingSpinner size="lg" />
         </div>
@@ -89,119 +109,306 @@ export default function Dashboard() {
     )
   }
 
+  const userName = user?.user_metadata.full_name || user?.email?.split('@')[0] || 'Nutzer'
+
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-      
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-            Good morning, {user?.user_metadata.full_name || 'User'}!
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">Here&apos;s your nutrition overview for today.</p>
-        </header>
+        
+        {/* Header Section */}
+        <div className="mb-12">
+          <div className="text-center">
+            <div className="inline-flex items-center px-4 py-2 bg-emerald-100 rounded-full text-emerald-700 text-sm font-medium mb-6">
+              <Sparkles className="w-4 h-4 mr-2" />
+              Dein persönliches Ernährungs-Dashboard
+            </div>
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4 leading-tight">
+              Hallo{' '}
+              <span className="bg-gradient-to-r from-emerald-600 to-purple-600 bg-clip-text text-transparent">
+                {userName}
+              </span>
+              ! 👋
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Hier ist deine Ernährungsübersicht für heute. Du machst großartige Fortschritte!
+            </p>
+          </div>
+        </div>
 
-        {/* Main Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Stats Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           
-          {/* Left Column: Calorie & Macro Summary */}
-          <div className="lg:col-span-2 space-y-8">
-            
-            {/* Calorie Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Calories</h2>
-                <div className="flex items-center text-lg font-semibold text-green-500">
-                  <Flame className="w-6 h-6 mr-2" />
-                  <span>{Math.round(todayTotals.calories)} / {Math.round(dailyGoals.calories)} kcal</span>
-                </div>
+          {/* Calories Card */}
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                <Flame className="w-6 h-6 text-white" />
               </div>
-              <ProgressBar value={todayTotals.calories} max={dailyGoals.calories} color="success" />
-            </div>
-
-            {/* Macros Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Macronutrients</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Protein */}
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center text-lg font-semibold text-blue-500 mb-2">
-                    <Beef className="w-6 h-6 mr-2" />
-                    <span>Protein</span>
-                  </div>
-                  <ProgressBar value={todayTotals.protein} max={dailyGoals.protein} color="primary" />
-                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                    {Math.round(todayTotals.protein)}g / {Math.round(dailyGoals.protein)}g
-                  </p>
-                </div>
-                {/* Carbs */}
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center text-lg font-semibold text-yellow-500 mb-2">
-                    <Wheat className="w-6 h-6 mr-2" />
-                    <span>Carbs</span>
-                  </div>
-                  <ProgressBar value={todayTotals.carbs} max={dailyGoals.carbs} color="warning" />
-                   <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                    {Math.round(todayTotals.carbs)}g / {Math.round(dailyGoals.carbs)}g
-                  </p>
-                </div>
-                {/* Fat */}
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center text-lg font-semibold text-red-500 mb-2">
-                    <Droplet className="w-6 h-6 mr-2" />
-                    <span>Fat</span>
-                  </div>
-                  <ProgressBar value={todayTotals.fat} max={dailyGoals.fat} color="danger" />
-                   <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                    {Math.round(todayTotals.fat)}g / {Math.round(dailyGoals.fat)}g
-                  </p>
-                </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-600">Kalorien</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {Math.round(todayTotals.calories)}
+                  <span className="text-sm text-gray-500">/{Math.round(dailyGoals.calories)}</span>
+                </p>
               </div>
             </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(calorieProgress, 100)}%` }}
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-2">{Math.round(calorieProgress)}% erreicht</p>
           </div>
 
-          {/* Right Column: Quick Actions & Today's Log */}
+          {/* Protein Card */}
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                <Beef className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-600">Protein</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {Math.round(todayTotals.protein)}g
+                  <span className="text-sm text-gray-500">/{Math.round(dailyGoals.protein)}g</span>
+                </p>
+              </div>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(proteinProgress, 100)}%` }}
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-2">{Math.round(proteinProgress)}% erreicht</p>
+          </div>
+
+          {/* Carbs Card */}
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center">
+                <Wheat className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-600">Kohlenhydrate</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {Math.round(todayTotals.carbs)}g
+                  <span className="text-sm text-gray-500">/{Math.round(dailyGoals.carbs)}g</span>
+                </p>
+              </div>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(carbsProgress, 100)}%` }}
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-2">{Math.round(carbsProgress)}% erreicht</p>
+          </div>
+
+          {/* Fat Card */}
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/20 hover:shadow-2xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <Droplet className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-600">Fette</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {Math.round(todayTotals.fat)}g
+                  <span className="text-sm text-gray-500">/{Math.round(dailyGoals.fat)}g</span>
+                </p>
+              </div>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(fatProgress, 100)}%` }}
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-2">{Math.round(fatProgress)}% erreicht</p>
+          </div>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Left Column: Progress Overview */}
+          <div className="lg:col-span-2 space-y-8">
+            
+            {/* Daily Progress Card */}
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-white/20">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-purple-600 bg-clip-text text-transparent">
+                    Tagesfortschritt
+                  </h2>
+                  <p className="text-gray-600 mt-1">Deine Makronährstoff-Ziele im Überblick</p>
+                </div>
+                <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-purple-600 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {/* Overall Progress */}
+                <div className="text-center p-6 bg-gradient-to-r from-emerald-50 to-purple-50 rounded-xl">
+                  <div className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                    {Math.round((calorieProgress + proteinProgress + carbsProgress + fatProgress) / 4)}%
+                  </div>
+                  <p className="text-gray-600">Gesamtfortschritt heute</p>
+                </div>
+
+                {/* Detailed Macros */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Beef className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Protein</h3>
+                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                      <div 
+                        className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-700"
+                        style={{ width: `${Math.min(proteinProgress, 100)}%` }}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {Math.round(todayTotals.protein)}g von {Math.round(dailyGoals.protein)}g
+                    </p>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Wheat className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Kohlenhydrate</h3>
+                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                      <div 
+                        className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-3 rounded-full transition-all duration-700"
+                        style={{ width: `${Math.min(carbsProgress, 100)}%` }}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {Math.round(todayTotals.carbs)}g von {Math.round(dailyGoals.carbs)}g
+                    </p>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Droplet className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Fette</h3>
+                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                      <div 
+                        className="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-700"
+                        style={{ width: `${Math.min(fatProgress, 100)}%` }}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {Math.round(todayTotals.fat)}g von {Math.round(dailyGoals.fat)}g
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Achievement Badge (if goals met) */}
+            {calorieProgress >= 80 && proteinProgress >= 80 && (
+              <div className="bg-gradient-to-r from-emerald-500 to-purple-600 rounded-2xl shadow-xl p-6 text-white">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+                    <Award className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold">Fantastische Leistung! 🎉</h3>
+                    <p className="text-white/90">Du hast heute deine Ernährungsziele erreicht!</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Actions & Log */}
           <div className="space-y-8">
+            
             {/* Quick Actions Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
-              <div className="space-y-4">
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/20">
+              <div className="flex items-center mb-6">
+                <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                  <Zap className="w-5 h-5 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">Schnellaktionen</h2>
+              </div>
+              <div className="space-y-3">
                 <Button 
                   onClick={() => router.push('/diary')}
-                  className="w-full flex items-center justify-center text-lg bg-green-500 hover:bg-green-600 text-white"
+                  className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
-                  <PlusCircle className="w-6 h-6 mr-2" />
-                  Add Food to Diary
+                  <PlusCircle className="w-5 h-5 mr-2" />
+                  Nahrung hinzufügen
                 </Button>
-                 <Button 
+                <Button 
                   onClick={() => router.push('/recipes')}
-                  className="w-full flex items-center justify-center text-lg bg-blue-500 hover:bg-blue-600 text-white"
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
-                  <Salad className="w-6 h-6 mr-2" />
-                  Browse Recipes
+                  <Salad className="w-5 h-5 mr-2" />
+                  Rezepte entdecken
                 </Button>
-                 <Button 
+                <Button 
                   onClick={() => router.push('/chat')}
-                  className="w-full flex items-center justify-center text-lg bg-purple-500 hover:bg-purple-600 text-white"
+                  className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
-                  <Zap className="w-6 h-6 mr-2" />
-                  Chat with AI Assistant
+                  <Heart className="w-5 h-5 mr-2" />
+                  KI-Assistent
                 </Button>
               </div>
             </div>
 
-            {/* Today's Log Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Today&apos;s Log</h2>
-              <div className="space-y-4 max-h-60 overflow-y-auto">
+            {/* Today's Food Log */}
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/20">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                    <Calendar className="w-5 h-5 text-white" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">Heutige Einträge</h2>
+                </div>
+                <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                  {todayEntries.length} Einträge
+                </span>
+              </div>
+              
+              <div className="space-y-3 max-h-64 overflow-y-auto">
                 {todayEntries.length > 0 ? (
                   todayEntries.map(entry => (
-                    <div key={entry.id} className="flex justify-between items-center p-2 rounded-lg bg-gray-50 dark:bg-gray-700">
-                      <span className="font-medium capitalize">{entry.food_name}</span>
-                      <span className="font-semibold text-green-500">{entry.calories} kcal</span>
+                    <div key={entry.id} className="flex justify-between items-center p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-purple-50 border border-emerald-100">
+                      <div>
+                        <p className="font-medium text-gray-900 capitalize">{entry.food_name}</p>
+                        <p className="text-sm text-gray-600">{entry.quantity || 100}g</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-emerald-600">{entry.calories} kcal</p>
+                        <p className="text-xs text-gray-500">
+                          P: {Math.round(entry.protein_g)}g | K: {Math.round(entry.carb_g)}g | F: {Math.round(entry.fat_g)}g
+                        </p>
+                      </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-500 dark:text-gray-400 text-center py-4">No entries for today.</p>
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Activity className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <p className="text-gray-500 mb-4">Noch keine Einträge für heute</p>
+                    <Button 
+                      onClick={() => router.push('/diary')}
+                      size="sm"
+                      className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white"
+                    >
+                      Ersten Eintrag hinzufügen
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
