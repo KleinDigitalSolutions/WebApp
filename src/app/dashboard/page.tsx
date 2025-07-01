@@ -91,6 +91,8 @@ export default function Dashboard() {
   const { dailyGoals, setEntries, setDailyGoals } = useDiaryStore()
   const [loading, setLoading] = useState(true)
   const [todayEntries, setTodayEntries] = useState<DiaryEntry[]>([])
+  const [waterIntake, setWaterIntake] = useState(0)
+  const [waterGoal, setWaterGoal] = useState(2000) // 2L = 2000ml
 
   // Funktion für zeitbasierte Begrüßung
   const getGreeting = () => {
@@ -183,6 +185,20 @@ export default function Dashboard() {
         setTodayEntries(entries)
         setEntries(entries)
       }
+
+      // Load water intake for today
+      try {
+        const response = await fetch(`/api/water?userId=${user.id}&date=${today}`)
+        const data = await response.json()
+        
+        if (response.ok) {
+          setWaterIntake(data.amount_ml || 0)
+          setWaterGoal(data.daily_goal_ml || 2000)
+        }
+      } catch (error) {
+        console.error('Error loading water intake:', error)
+      }
+      
     } catch (error) {
       console.error('Error loading data:', error)
     } finally {
@@ -209,6 +225,7 @@ export default function Dashboard() {
   const proteinProgress = dailyGoals.protein ? (consumedProtein / dailyGoals.protein) * 100 : 0
   const carbsProgress = dailyGoals.carbs ? (consumedCarbs / dailyGoals.carbs) * 100 : 0
   const fatProgress = dailyGoals.fat ? (consumedFat / dailyGoals.fat) * 100 : 0
+  const waterProgress = waterGoal ? (waterIntake / waterGoal) * 100 : 0
 
   if (loading) {
     return (
@@ -238,12 +255,18 @@ export default function Dashboard() {
                 </p>
               </div>
               
-              {/* Achievement Badge */}
+              {/* Achievement Badges */}
               <div className="flex items-center space-x-2">
                 {calorieProgress >= 80 && calorieProgress <= 120 && (
-                  <div className="flex items-center px-3 py-1 bg-emerald-500 rounded-full shadow-lg">
-                    <Award className="h-4 w-4 text-white mr-1" />
-                    <span className="text-xs font-medium text-white">Ziel erreicht!</span>
+                  <div className="flex items-center px-2 py-1 bg-emerald-500 rounded-full shadow-lg">
+                    <Award className="h-3 w-3 text-white mr-1" />
+                    <span className="text-xs font-medium text-white">Kalorien</span>
+                  </div>
+                )}
+                {waterProgress >= 80 && (
+                  <div className="flex items-center px-2 py-1 bg-blue-500 rounded-full shadow-lg">
+                    <Droplet className="h-3 w-3 text-white mr-1" />
+                    <span className="text-xs font-medium text-white">Wasser</span>
                   </div>
                 )}
               </div>
@@ -262,42 +285,89 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Main Calorie Ring */}
-          <div className="flex items-center justify-center mb-6">
-            <div className="relative w-32 h-32">
-              <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="45"
-                  stroke="currentColor"
-                  strokeWidth="6"
-                  fill="transparent"
-                  className="text-gray-200"
-                />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="45"
-                  stroke="url(#gradient)"
-                  strokeWidth="6"
-                  fill="transparent"
-                  strokeDasharray={`${2 * Math.PI * 45}`}
-                  strokeDashoffset={`${2 * Math.PI * 45 * (1 - Math.min(calorieProgress, 100) / 100)}`}
-                  className="transition-all duration-500 ease-out"
-                  strokeLinecap="round"
-                />
-                <defs>
-                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#10b981" />
-                    <stop offset="100%" stopColor="#8b5cf6" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold text-gray-900">{Math.round(consumedCalories)}</span>
-                <span className="text-xs text-gray-500">von {dailyGoals.calories}</span>
-                <span className="text-xs text-gray-500">kcal</span>
+          {/* Main Progress Rings */}
+          <div className="flex items-center justify-center space-x-8 mb-6">
+            {/* Calorie Ring */}
+            <div className="flex flex-col items-center">
+              <div className="relative w-28 h-28">
+                <svg className="w-28 h-28 transform -rotate-90" viewBox="0 0 100 100">
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    stroke="currentColor"
+                    strokeWidth="6"
+                    fill="transparent"
+                    className="text-gray-200"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    stroke="url(#calorieGradient)"
+                    strokeWidth="6"
+                    fill="transparent"
+                    strokeDasharray={`${2 * Math.PI * 45}`}
+                    strokeDashoffset={`${2 * Math.PI * 45 * (1 - Math.min(calorieProgress, 100) / 100)}`}
+                    className="transition-all duration-500 ease-out"
+                    strokeLinecap="round"
+                  />
+                  <defs>
+                    <linearGradient id="calorieGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#10b981" />
+                      <stop offset="100%" stopColor="#8b5cf6" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-lg font-bold text-gray-900">{Math.round(consumedCalories)}</span>
+                  <span className="text-xs text-gray-500">kcal</span>
+                </div>
+              </div>
+              <div className="text-center mt-2">
+                <div className="text-xs text-gray-500">von {dailyGoals.calories}</div>
+              </div>
+            </div>
+
+            {/* Water Ring */}
+            <div className="flex flex-col items-center">
+              <div className="relative w-28 h-28">
+                <svg className="w-28 h-28 transform -rotate-90" viewBox="0 0 100 100">
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    stroke="currentColor"
+                    strokeWidth="6"
+                    fill="transparent"
+                    className="text-gray-200"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    stroke="url(#waterGradient)"
+                    strokeWidth="6"
+                    fill="transparent"
+                    strokeDasharray={`${2 * Math.PI * 45}`}
+                    strokeDashoffset={`${2 * Math.PI * 45 * (1 - Math.min(waterProgress, 100) / 100)}`}
+                    className="transition-all duration-500 ease-out"
+                    strokeLinecap="round"
+                  />
+                  <defs>
+                    <linearGradient id="waterGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#06b6d4" />
+                      <stop offset="100%" stopColor="#3b82f6" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-lg font-bold text-gray-900">{Math.round(waterIntake / 100) / 10}L</span>
+                  <span className="text-xs text-gray-500">Wasser</span>
+                </div>
+              </div>
+              <div className="text-center mt-2">
+                <div className="text-xs text-gray-500">von {waterGoal / 1000}L</div>
               </div>
             </div>
           </div>
@@ -441,11 +511,15 @@ export default function Dashboard() {
             <h3 className="text-lg font-semibold">Deine Fortschritte</h3>
           </div>
           <p className="text-emerald-100 text-sm mb-4">
-            {calorieProgress >= 80 && calorieProgress <= 120 
-              ? "Fantastisch! Du bist perfekt auf Kurs mit deinen Kalorienzielen."
-              : calorieProgress < 80 
-                ? "Du könntest noch etwas mehr essen, um deine Ziele zu erreichen."
-                : "Du hast deine Kalorienziele bereits überschritten. Achte auf die Balance."
+            {calorieProgress >= 80 && calorieProgress <= 120 && waterProgress >= 80
+              ? "Fantastisch! Du bist perfekt auf Kurs mit deinen Kalorien- und Wasserzielen."
+              : calorieProgress >= 80 && calorieProgress <= 120
+                ? "Tolle Kalorienbalance! Vergiss nicht genug zu trinken."
+                : waterProgress >= 80
+                  ? "Super Wasserzufuhr! Achte auch auf deine Kalorienziele."
+                  : calorieProgress < 80 
+                    ? "Du könntest noch etwas mehr essen und trinken, um deine Ziele zu erreichen."
+                    : "Du hast deine Kalorienziele bereits überschritten. Achte auf die Balance."
             }
           </p>
           <button 
