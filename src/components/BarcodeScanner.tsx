@@ -22,11 +22,23 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
         setIsLoading(true)
         setError(null)
 
-        // Prüfe Kamera-Permission
-        const permission = await navigator.permissions.query({ name: 'camera' as PermissionName })
-
-        if (permission.state === 'denied') {
-          setError('Kamera-Zugriff verweigert. Bitte erlaube den Kamera-Zugriff in den Browser-Einstellungen.')
+        // Explizit um Kamera-Zugriff bitten (wichtig für mobile Browser!)
+        let stream: MediaStream
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: { ideal: 'environment' }, // Rückkamera bevorzugen
+              width: { min: 640, ideal: 1280 },
+              height: { min: 480, ideal: 720 }
+            }
+          })
+          console.log('✅ Kamera-Zugriff erteilt')
+          
+          // Stream wieder stoppen, Quagga übernimmt das Management
+          stream.getTracks().forEach(track => track.stop())
+        } catch (err) {
+          console.error('❌ Kamera-Zugriff verweigert:', err)
+          setError('Kamera-Zugriff erforderlich. Bitte erlaube den Zugriff und lade die Seite neu.')
           setIsLoading(false)
           return
         }
@@ -38,32 +50,30 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
           return
         }
 
-        // Quagga2 Konfiguration für deutsche EAN-13 Barcodes
+        // Quagga2 Konfiguration für mobile Browser optimiert
         const config = {
           inputStream: {
             name: 'Live',
             type: 'LiveStream' as const,
             target: scannerRef.current,
             constraints: {
-              width: { min: 640, ideal: 1280 },
-              height: { min: 480, ideal: 720 },
-              facingMode: 'environment', // Rückkamera bevorzugen
+              width: { min: 320, ideal: 640, max: 1280 },
+              height: { min: 240, ideal: 480, max: 720 },
+              facingMode: 'environment', // Rückkamera für Barcode-Scanning
               aspectRatio: { min: 1, max: 2 }
             },
-            area: { // Scan-Bereich einschränken für bessere Performance
-              top: '20%',
-              right: '10%', 
-              left: '10%',
-              bottom: '20%'
+            area: { // Scan-Bereich optimiert für mobile
+              top: '25%',
+              right: '15%', 
+              left: '15%',
+              bottom: '25%'
             }
           },
           decoder: {
             readers: [
-              'ean_reader' as const,    // EAN-13, EAN-8 (deutsche Barcodes)
-              'ean_8_reader' as const,  // Explizit EAN-8
-              'code_128_reader' as const, // Code 128 (häufig bei deutschen Produkten)
-              'upc_reader' as const,    // UPC-A (internationale Produkte)
-              'upc_e_reader' as const   // UPC-E
+              'ean_reader' as const,      // EAN-13 (Standard deutsche Barcodes)
+              'ean_8_reader' as const,    // EAN-8 (kurze Barcodes)
+              'code_128_reader' as const  // Code 128 (deutsche Supermärkte)
             ],
             debug: {
               drawBoundingBox: true,
@@ -76,8 +86,8 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
             patchSize: 'medium',
             halfSample: true
           },
-          numOfWorkers: 2,
-          frequency: 10,
+          numOfWorkers: navigator.hardwareConcurrency > 2 ? 2 : 1, // CPU-optimiert
+          frequency: 10, // Scan-Frequenz für mobile
           locate: true
         }
 
@@ -183,15 +193,41 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
         {error && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-20">
             <div className="text-center text-white max-w-md mx-4">
-              <div className="text-red-400 text-6xl mb-4">⚠️</div>
-              <h3 className="text-xl font-semibold mb-2">Kamera-Fehler</h3>
+              <div className="text-red-400 text-6xl mb-4">📱</div>
+              <h3 className="text-xl font-semibold mb-2">Kamera-Zugriff erforderlich</h3>
               <p className="text-white/80 mb-6">{error}</p>
-              <button
-                onClick={handleClose}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
-              >
-                Zurück
-              </button>
+              <div className="space-y-3">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="w-full px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
+                >
+                  🔄 Erneut versuchen
+                </button>
+                <button
+                  onClick={onClose}
+                  className="w-full px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+                >
+                  ❌ Schließen
+                </button>
+              </div>
+              <div className="mt-4 text-xs text-white/60">
+                <p>📱 <strong>Mobile Browser:</strong> Erlaube Kamera-Zugriff in den Browser-Einstellungen</p>
+                <p>💡 <strong>Tipp:</strong> Teste mit verschiedenen Browsern (Chrome, Safari, Firefox)</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!error && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-10">
+            <div className="text-center text-white max-w-md mx-4">
+              <div className="text-6xl mb-4">📷</div>
+              <h3 className="text-xl font-semibold mb-2">Barcode Scanner</h3>
+              <p className="text-white/80 mb-4">Halte den Barcode in den weißen Rahmen</p>
+              <div className="text-xs text-white/60">
+                <p>✅ EAN-13, EAN-8, Code-128 werden unterstützt</p>
+                <p>🇩🇪 Optimiert für deutsche Supermarkt-Produkte</p>
+              </div>
             </div>
           </div>
         )}
