@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Search, Camera, Barcode, Plus, Minus } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
+import BarcodeScanner from '@/components/BarcodeScanner'
 
 interface FoodItem {
   code: string
@@ -44,6 +45,7 @@ function AddFoodContent() {
   const [quantity, setQuantity] = useState(100)
   const [adding, setAdding] = useState(false)
   const [mealType, setMealType] = useState<string>('breakfast')
+  const [showScanner, setShowScanner] = useState(false)
 
   useEffect(() => {
     const meal = searchParams.get('meal')
@@ -70,6 +72,48 @@ function AddFoodContent() {
     } catch (error) {
       console.error('Search error:', error)
       setSearchResults([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleBarcodeScanned = async (barcode: string) => {
+    console.log('🔍 Barcode gescannt:', barcode)
+    setShowScanner(false)
+    setLoading(true)
+
+    try {
+      const response = await fetch(`/api/food/barcode?barcode=${encodeURIComponent(barcode)}`)
+      const data = await response.json()
+
+      if (data.success && data.product) {
+        // Konvertiere API-Antwort zu unserem FoodItem Format
+        const foodItem: FoodItem = {
+          code: data.product.code,
+          product_name: data.product.name,
+          image_url: data.product.image_url,
+          nutriments: {
+            'energy-kcal_100g': data.product.nutrition.calories_per_100g,
+            'proteins_100g': data.product.nutrition.protein_per_100g,
+            'carbohydrates_100g': data.product.nutrition.carbs_per_100g,
+            'fat_100g': data.product.nutrition.fat_per_100g,
+            'fiber_100g': data.product.nutrition.fiber_per_100g,
+            'sugars_100g': data.product.nutrition.sugar_per_100g,
+            'salt_100g': data.product.nutrition.salt_per_100g
+          }
+        }
+
+        setSelectedFood(foodItem)
+        setSearchResults([foodItem]) // Zeige das gescannte Produkt in den Ergebnissen
+        
+        // UI-Feedback
+        alert(`✅ Produkt gefunden: ${data.product.name}`)
+      } else {
+        alert(`❌ Produkt mit Barcode ${barcode} nicht gefunden. ${data.message || 'Versuche es mit der Textsuche.'}`)
+      }
+    } catch (error) {
+      console.error('Fehler beim Barcode-Lookup:', error)
+      alert('❌ Fehler beim Scannen. Versuche es erneut.')
     } finally {
       setLoading(false)
     }
@@ -161,7 +205,10 @@ function AddFoodContent() {
       <div className="px-4 py-6 space-y-6">
         {/* Quick Actions */}
         <div className="grid grid-cols-3 gap-3">
-          <button className="flex flex-col items-center p-4 bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform">
+          <button 
+            onClick={handleSearch}
+            className="flex flex-col items-center p-4 bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform"
+          >
             <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-2">
               <Search className="h-6 w-6 text-white" />
             </div>
@@ -175,7 +222,10 @@ function AddFoodContent() {
             <span className="text-sm font-medium text-gray-700">Foto</span>
           </button>
           
-          <button className="flex flex-col items-center p-4 bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform">
+          <button 
+            onClick={() => setShowScanner(true)}
+            className="flex flex-col items-center p-4 bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform"
+          >
             <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-2">
               <Barcode className="h-6 w-6 text-white" />
             </div>
@@ -324,6 +374,13 @@ function AddFoodContent() {
           </div>
         )}
       </div>
+
+      {/* Barcode Scanner */}
+      <BarcodeScanner
+        isActive={showScanner}
+        onScan={handleBarcodeScanned}
+        onClose={() => setShowScanner(false)}
+      />
     </div>
   )
 }

@@ -431,7 +431,7 @@ export default function Dashboard() {
             </button>
             
             <button 
-              onClick={() => router.push('/diary/scan')}
+              onClick={() => router.push('/scanner')}
               className="flex items-center justify-center p-4 bg-white border border-gray-200 rounded-2xl text-gray-700 shadow-sm"
             >
               <Camera className="h-6 w-6 mr-2" />

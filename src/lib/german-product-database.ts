@@ -2403,4 +2403,8 @@ export class GermanProductDatabase {
     const shuffled = [...this.products].sort(() => 0.5 - Math.random())
     return shuffled.slice(0, count)
   }
+
+  static findByBarcode(barcode: string): GermanProductDB | null {
+    return this.products.find(product => product.code === barcode) || null
+  }
 }
