@@ -47,10 +47,19 @@ export class OpenFoodFactsAPI {
               const productName = product.product_name.toLowerCase()
               const searchTerm = query.toLowerCase()
               
+              // Exclude irrelevant products
+              if (this.isIrrelevantProduct(productName, searchTerm)) {
+                return false
+              }
+              
+              // Must have some nutrition data to be relevant
+              if (!this.containsNutritionData(product)) {
+                return false
+              }
+              
               // Basic relevance check
               return productName.includes(searchTerm) || 
-                     this.isRelevantProduct(productName, searchTerm) ||
-                     this.containsNutritionData(product)
+                     this.isRelevantProduct(productName, searchTerm)
             })
             
             // Add relevant products, avoiding duplicates
@@ -73,6 +82,14 @@ export class OpenFoodFactsAPI {
       // If still no results, add some hardcoded examples for common foods
       if (products.length === 0) {
         products = this.getFallbackProducts(query)
+      }
+
+      // If we have very few results for common foods, add fallbacks
+      if (products.length < 3 && this.isCommonFood(query)) {
+        const fallbackProducts = this.getFallbackProducts(query)
+        const existingCodes = new Set(products.map(p => p.code))
+        const newFallbacks = fallbackProducts.filter(p => !existingCodes.has(p.code))
+        products = [...products, ...newFallbacks]
       }
 
       // Filter out products with incomplete data
@@ -169,10 +186,39 @@ export class OpenFoodFactsAPI {
             'proteins_100g': 3.4,
             'carbohydrates_100g': 4.8,
             'fat_100g': 3.5,
-            'sugars_100g': 4.8
+            'sugars_100g': 4.8,
+            'salt_100g': 0.1
           },
           serving_size: '200ml',
           serving_quantity: 200
+        },
+        {
+          code: 'fallback_milk_2',
+          product_name: 'Fettarme Milch 1,5% Fett',
+          nutriments: {
+            'energy-kcal_100g': 47,
+            'proteins_100g': 3.4,
+            'carbohydrates_100g': 4.9,
+            'fat_100g': 1.5,
+            'sugars_100g': 4.9,
+            'salt_100g': 0.1
+          },
+          serving_size: '200ml',
+          serving_quantity: 200
+        },
+        {
+          code: 'fallback_milk_3',
+          product_name: 'H-Milch 3,5% Fett',
+          nutriments: {
+            'energy-kcal_100g': 64,
+            'proteins_100g': 3.4,
+            'carbohydrates_100g': 4.8,
+            'fat_100g': 3.5,
+            'sugars_100g': 4.8,
+            'salt_100g': 0.1
+          },
+          serving_size: '250ml',
+          serving_quantity: 250
         }
       ]
     }
@@ -190,14 +236,14 @@ export class OpenFoodFactsAPI {
   private isRelevantProduct(productName: string, searchTerm: string): boolean {
     // Define food category mappings for better relevance
     const foodCategories: { [key: string]: string[] } = {
-      'joghurt': ['yogurt', 'yoghurt', 'yaourt', 'jogurt', 'milch'],
-      'brot': ['bread', 'brød', 'pain', 'pane', 'weizen', 'vollkorn'],
-      'milch': ['milk', 'lait', 'latte', 'molke', 'joghurt'],
-      'käse': ['cheese', 'fromage', 'formaggio', 'queso', 'frischkäse'],
+      'joghurt': ['yogurt', 'yoghurt', 'yaourt', 'jogurt', 'fermentiert', 'alpro', 'soja'],
+      'brot': ['bread', 'brød', 'pain', 'pane', 'weizen', 'vollkorn', 'scheibe', 'toast'],
+      'milch': ['milk', 'lait', 'latte', 'leche', 'vollmilch', 'h-milch', 'frischmilch', 'molke', 'laktose'],
+      'käse': ['cheese', 'fromage', 'formaggio', 'queso', 'frischkäse', 'hartkäse'],
       'apfel': ['apple', 'pomme', 'mela', 'manzana', 'frucht'],
       'banane': ['banana', 'banane', 'banana', 'plátano'],
-      'reis': ['rice', 'riz', 'riso', 'arroz', 'basmati'],
-      'nudeln': ['pasta', 'noodles', 'pâtes', 'spaghetti', 'tagliatelle']
+      'reis': ['rice', 'riz', 'riso', 'arroz', 'basmati', 'jasmin'],
+      'nudeln': ['pasta', 'noodles', 'pâtes', 'spaghetti', 'tagliatelle', 'penne']
     }
 
     const category = foodCategories[searchTerm]
@@ -205,7 +251,68 @@ export class OpenFoodFactsAPI {
       return category.some(keyword => productName.includes(keyword))
     }
 
+    // Additional relevance for specific searches
+    if (searchTerm.includes('milch') && (
+      productName.includes('entier') || // French for whole milk
+      productName.includes('uht') ||
+      productName.includes('frais') ||
+      productName.includes('bio') ||
+      productName.includes('3,5') ||
+      productName.includes('1,5')
+    )) {
+      return true
+    }
+
     return false
+  }
+
+  private isIrrelevantProduct(productName: string, searchTerm: string): boolean {
+    // Exclude water and non-food items for food searches
+    const irrelevantItems = [
+      'wasser', 'water', 'eau', 'acqua', 'agua',
+      'mineralwasser', 'mineral water',
+      'sprudel', 'sparkling', 'gazeux', 'gassata',
+      'limonade', 'lemonade', 'soda', 'cola',
+      'energy drink', 'energydrink'
+    ]
+    
+    // For milk searches, exclude non-dairy items
+    if (searchTerm.includes('milch') || searchTerm.includes('milk')) {
+      const milkIrrelevant = [
+        'wasser', 'water', 'mineralwasser', 'sprudel',
+        'saft', 'juice', 'tee', 'tea', 'kaffee', 'coffee'
+      ]
+      if (milkIrrelevant.some(item => productName.includes(item))) {
+        return true
+      }
+    }
+    
+    // For yogurt searches, exclude non-dairy items
+    if (searchTerm.includes('joghurt') || searchTerm.includes('yogurt')) {
+      const yogurtIrrelevant = [
+        'wasser', 'water', 'mineralwasser', 'sprudel',
+        'saft', 'juice', 'tee', 'tea', 'kaffee', 'coffee',
+        'käse', 'cheese' // unless it's specifically yogurt cheese
+      ]
+      if (yogurtIrrelevant.some(item => productName.includes(item)) && 
+          !productName.includes('joghurt') && !productName.includes('yogurt')) {
+        return true
+      }
+    }
+    
+    // For bread searches, exclude drinks and other non-bread items
+    if (searchTerm.includes('brot') || searchTerm.includes('bread')) {
+      const breadIrrelevant = [
+        'wasser', 'water', 'milch', 'milk', 'saft', 'juice',
+        'joghurt', 'yogurt', 'käse', 'cheese'
+      ]
+      if (breadIrrelevant.some(item => productName.includes(item))) {
+        return true
+      }
+    }
+    
+    // General irrelevant items
+    return irrelevantItems.some(item => productName.includes(item))
   }
 
   async getProductByBarcode(barcode: string): Promise<FoodProduct | null> {
@@ -239,5 +346,10 @@ export class OpenFoodFactsAPI {
       fiber: Math.round((nutriments['fiber_100g'] || 0) * factor * 10) / 10,
       sugar: Math.round((nutriments['sugars_100g'] || 0) * factor * 10) / 10,
     }
+  }
+
+  private isCommonFood(query: string): boolean {
+    const commonFoods = ['milch', 'milk', 'joghurt', 'yogurt', 'brot', 'bread', 'käse', 'cheese']
+    return commonFoods.some(food => query.toLowerCase().includes(food))
   }
 }
