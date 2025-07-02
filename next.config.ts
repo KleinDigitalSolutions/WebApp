@@ -5,9 +5,27 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'www.themealdb.com',
+        hostname: 'www.lecker.de',
         port: '',
-        pathname: '/images/**',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.lecker.de',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.lecker.de',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.lecker.de',
+        port: '',
+        pathname: '/**',
       },
     ],
   },

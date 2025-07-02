@@ -60,16 +60,11 @@ async function scrapeLeckerCategory(categoryUrl: string, category: string) {
         console.log('Übersprungen (Duplikat):', recipe.title);
         continue;
       }
-      const detail = await axios.get<string>(recipe.link)
-      const $d = cheerio.load(detail.data as string)
-      const ingredients = $d('.o-Ingredients__listItem').map((_, el) => $d(el).text().trim()).get()
-      recipe.ingredients = ingredients
       const { error } = await supabase.from('recipes').insert([
         {
           title: recipe.title,
           image_url: recipe.image,
           link: recipe.link,
-          ingredients: '{' + recipe.ingredients.map((i: string) => `"${i.replace(/"/g, '\"')}"`).join(',') + '}',
           category: recipe.category,
           source: 'lecker'
         }
@@ -115,10 +110,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const cat = process.argv[3] || ''
   const multi = process.argv[4] === 'multi'
   const startPage = parseInt(process.argv[5] || '1', 10)
-  if (!url) throw new Error('Bitte Kategorie-URL angeben!')
-  if (multi) {
-    scrapeLeckerCategoryMulti(url, cat, 10, startPage)
+  const maxPages = parseInt(process.argv[6] || '10', 10)
+  const updateDetails = process.argv[2] === 'update-details'
+  if (updateDetails) {
+    console.log('Das Nachscrapen von Zutaten und Anleitung ist deaktiviert. Bitte Scraper ohne update-details-Flag nutzen.')
+    process.exit(0)
   } else {
-    scrapeLeckerCategory(url, cat)
+    if (!url) throw new Error('Bitte Kategorie-URL angeben!')
+    if (multi) {
+      scrapeLeckerCategoryMulti(url, cat, maxPages, startPage)
+    } else {
+      scrapeLeckerCategory(url, cat)
+    }
   }
 }

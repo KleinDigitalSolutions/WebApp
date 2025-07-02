@@ -171,6 +171,7 @@ export default function RecipesPage() {
                   rel="noopener noreferrer"
                   className="block relative w-full aspect-[4/3] bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
                   tabIndex={0}
+                  style={{ cursor: 'pointer' }}
                 >
                   {recipe.image_url ? (
                     <img
@@ -201,8 +202,8 @@ export default function RecipesPage() {
                     href={recipe.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium text-gray-900 text-base leading-tight line-clamp-2 hover:underline focus:outline-none focus:ring-2 focus:ring-green-500"
-                    style={{ minHeight: '2.5em' }}
+                    className="font-medium text-gray-900 text-base leading-tight line-clamp-2 hover:underline focus:outline-none focus:ring-2 focus:ring-green-500 text-left"
+                    style={{ minHeight: '2.5em', cursor: 'pointer' }}
                   >
                     {recipe.title}
                   </a>

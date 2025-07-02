@@ -441,28 +441,28 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
             onClick={() => addWater(100)}
             className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95"
           >
-            <div className="text-lg mb-1">🥃</div>
+            <span className="text-2xl block mb-1">🥛</span>
             <div className="text-xs font-medium text-gray-700">100ml</div>
           </button>
           <button
             onClick={() => addWater(250)}
             className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95"
           >
-            <div className="text-lg mb-1">🥛</div>
+            <span className="text-2xl block mb-1">🥛</span>
             <div className="text-xs font-medium text-gray-700">250ml</div>
           </button>
           <button
             onClick={() => addWater(500)}
             className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95"
           >
-            <div className="text-lg mb-1">🍶</div>
+            <span className="text-2xl block mb-1">🥛</span>
             <div className="text-xs font-medium text-gray-700">500ml</div>
           </button>
           <button
             onClick={() => addWater(750)}
             className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95"
           >
-            <div className="text-lg mb-1">🍼</div>
+            <span className="text-2xl block mb-1">🥛</span>
             <div className="text-xs font-medium text-gray-700">750ml</div>
           </button>
         </div>

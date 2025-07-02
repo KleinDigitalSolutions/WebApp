@@ -217,24 +217,10 @@ export default function LandingPage() {
                 <QrCode className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Barcode-Scanner</h3>
                 <p className="text-emerald-50 leading-relaxed">
-                  Scanne jeden Barcode und erhalte sofort Nährwerte! Mit 2500+ deutschen Produkten
-                  (Ferrero, Milka, EDEKA, REWE, ALDI) in unserer Datenbank.
+                  Scanne jeden Barcode und erhalte sofort Nährwerte! Mit deutschen Produkten in unserer Datenbank.
                 </p>
                 <div className="mt-4 text-sm text-emerald-100 font-medium">
                   Mobile & Safari optimiert • PWA-kompatibel
-                </div>
-              </div>
-
-              {/* Feature 6: Deutsche Produktdatenbank */}
-              <div className="relative p-6 md:p-5 lg:p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg transition-all duration-200 md:hover:scale-[1.03] lg:hover:scale-[1.03] min-h-0 h-auto flex flex-col">
-                <Database className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
-                <h3 className="text-xl font-semibold text-white mb-3">Deutsche Produktdatenbank</h3>
-                <p className="text-emerald-50 leading-relaxed">
-                  Über 2500 Produkte aus OpenFoodFacts. Alle großen Marken: Haribo, Kinder, ja!,
-                  K-Classic, Coca-Cola, Dr. Oetker und viele mehr.
-                </p>
-                <div className="mt-4 text-sm text-emerald-100 font-medium">
-                  Kontinuierlich erweitert • Automatischer Import
                 </div>
               </div>
             </div>

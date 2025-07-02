@@ -200,6 +200,46 @@ const majorGermanBrands = [
 - **API-Performance-Monitoring** für OpenFoodFacts-Aufrufe
 - **User-Analytics** für Scanner-Nutzung und beliebte Produkte
 
+## 🚀 Geplante Features & TODOs (inspiriert von Yazio, Lifesum, MyFitnessPal, Cronometer, FDDB, Foodvisor)
+
+### 1. Foto-Tracking & KI-Bilderkennung
+- Nutzer können Mahlzeiten fotografieren, KI erkennt Lebensmittel & schätzt Nährwerte
+- Umsetzung: KI-API anbinden, Frontend-Upload, Bildanalyse
+- TODO: KI-API auswählen, Frontend-Flow bauen, Backend-Integration
+
+### 2. Intelligente Rezeptvorschläge
+- KI schlägt Rezepte vor, passend zu Zielen, Unverträglichkeiten, bisherigen Einträgen
+- Resteverwertung: Rezepte auf Basis vorhandener Zutaten
+- TODO: Rezeptdatenbank erweitern, KI-Logik anpassen, UI für Vorschläge
+
+### 4. Fortschritts- & Motivations-Features
+- Visualisierung von Trends (Makroverteilung, Mikronährstoff-Deckung, Gewicht)
+- Life Score / Ernährungs-Score als tägliche/wöchentliche Bewertung
+- Erfolge/Badges für gesunde Gewohnheiten (Gamification)
+- TODO: Score-Logik, Badges, neue Diagramme im Dashboard
+
+### 5. Community & Social
+- Rezepte, Mahlzeiten oder Tagebucheinträge mit Freunden teilen
+- Öffentliche Challenges, Ranglisten, Erfahrungsberichte
+- Fragen & Antworten Bereich (wie FDDB)
+- TODO: Sharing-Mechanismus, Challenge-Logik, Community-Bereich
+
+### 7. Integration & Export
+- Datenexport als PDF/CSV für Arzt/Ernährungsberatung
+- Integration mit Google Fit (Web möglich), Apple Health/Samsung Health nur mit nativer App (Web: nur Export/Import)
+- TODO: Export-Feature bauen, ggf. OAuth/Import-Flow für Google Fit
+
+### 8. Wissensbereich & Tipps
+- Tägliche Ernährungs-Tipps, Mythen-Check, Blog-Artikel
+- Lexikon für Nährstoffe, Lebensmittelgruppen, Allergene
+- TODO: Content-DB, UI für Tipps/Lexikon, KI-Integration für Tipps
+
+### 9. Premium-Features (Monetarisierung)
+- Erweiterte Analysen, individuelle Ernährungspläne, Rezeptdatenbank, Experten-Chat
+- TODO: Feature-Flag, Paywall, Stripe-Integration prüfen
+
+# Hinweis: Schrittzähler & Wearable-Sync nur eingeschränkt als Web-App möglich (Apple/Samsung kostenpflichtig, Google Fit Web-API möglich)
+
 # Supabase Tabellenstruktur (automatisch generiert)
 
 ```
