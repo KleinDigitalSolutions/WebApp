@@ -263,12 +263,6 @@ export default function Dashboard() {
                     <span className="text-xs font-medium text-white">Kalorien</span>
                   </div>
                 )}
-                {waterProgress >= 80 && (
-                  <div className="flex items-center px-2 py-1 bg-blue-500 rounded-full shadow-lg">
-                    <Droplet className="h-3 w-3 text-white mr-1" />
-                    <span className="text-xs font-medium text-white">Wasser</span>
-                  </div>
-                )}
               </div>
             </div>
           </div>

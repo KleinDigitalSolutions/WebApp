@@ -17,7 +17,7 @@ function getSupabaseAdmin() {
 export async function POST(request: NextRequest) {
   try {
     const supabaseAdmin = getSupabaseAdmin()
-    let { messages, userProfile, userId } = await request.json()
+    const { messages, userProfile, userId } = await request.json()
 
     // Intolerances auslesen und als Text an health_conditions anhängen
     if (userProfile && Array.isArray(userProfile.intolerances) && userProfile.intolerances.length > 0) {

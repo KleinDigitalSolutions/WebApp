@@ -7,7 +7,6 @@ import { Button } from '@/components/ui'
 import {
   QrCode,
   Brain,
-  Database,
   ArrowRight,
   ChevronDown,
   Target,
@@ -110,26 +109,7 @@ export default function LandingPage() {
                   style={{ perspective: '1000px' }}
                 >
                   <span className="relative inline-block">
-                    TrackF
-                    <span className="inline-block relative">
-                      o
-                      <span className="inline-block relative">
-                        o
-                        <span className="absolute -top-4 left-1/2 -translate-x-1/2 animate-hat-drop-simple" style={{ zIndex: 2 }}>
-                          {/* SVG Kochmütze (ursprünglich, minimalistisch) */}
-                          <svg width="38" height="28" viewBox="0 0 38 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <ellipse cx="19" cy="20" rx="13" ry="7" fill="#fff"/>
-                            <ellipse cx="19" cy="10" rx="16" ry="10" fill="#fff"/>
-                            <ellipse cx="8" cy="13" rx="4" ry="3" fill="#fff"/>
-                            <ellipse cx="30" cy="13" rx="4" ry="3" fill="#fff"/>
-                            <rect x="11" y="20" width="16" height="5" rx="2.5" fill="#e5e7eb"/>
-                            <ellipse cx="19" cy="25" rx="8" ry="2" fill="#e5e7eb"/>
-                            <ellipse cx="19" cy="7" rx="7" ry="4" fill="#f3f4f6"/>
-                          </svg>
-                        </span>
-                      </span>
-                    </span>
-                    d
+                    TrackFood
                   </span>
                 </h1>
               </div>
