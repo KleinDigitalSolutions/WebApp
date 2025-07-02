@@ -1,12 +1,15 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { useAuthStore } from '@/store'
 import { Navigation } from '@/components/BottomNavBar'
 import { Button, Input, Select, LoadingSpinner } from '@/components/ui'
 import { Recipe } from '@/lib/themealdb-api'
+
+const SPOONACULAR_CACHE_KEY = 'spoonacular_recipes_cache_v1'
+const SPOONACULAR_CACHE_DATE_KEY = 'spoonacular_recipes_cache_date_v1'
 
 export default function RecipesPage() {
   const router = useRouter()
@@ -22,24 +25,34 @@ export default function RecipesPage() {
       router.push('/login')
       return
     }
-
-    // Load some random recipes on initial load
-    loadRandomRecipes()
+    // Rezepte aus Cache laden, sonst von Spoonacular holen
+    const today = new Date().toISOString().split('T')[0]
+    const cached = localStorage.getItem(SPOONACULAR_CACHE_KEY)
+    const cachedDate = localStorage.getItem(SPOONACULAR_CACHE_DATE_KEY)
+    if (cached && cachedDate === today) {
+      setRecipes(JSON.parse(cached))
+    } else {
+      loadRandomRecipes()
+    }
   }, [user, router])
 
   const loadRandomRecipes = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/recipes/random?number=12')
-      if (response.ok) {
-        const data = await response.json()
-        setRecipes(data.recipes || [])
-      } else {
-        console.error('Failed to load random recipes:', response.status)
-        setRecipes([])
+      // Erst Spoonacular versuchen
+      let response = await fetch('/api/recipes/spoonacular?number=12')
+      let data = await response.json()
+      if (!data.recipes || data.recipes.length === 0) {
+        // Fallback: TheMealDB
+        response = await fetch('/api/recipes/random?number=12')
+        data = await response.json()
       }
+      setRecipes(data.recipes || [])
+      // Cache für heute speichern
+      localStorage.setItem(SPOONACULAR_CACHE_KEY, JSON.stringify(data.recipes || []))
+      localStorage.setItem(SPOONACULAR_CACHE_DATE_KEY, new Date().toISOString().split('T')[0])
     } catch (error) {
-      console.error('Error loading random recipes:', error)
+      console.error('Error loading recipes:', error)
       setRecipes([])
     } finally {
       setLoading(false)
@@ -189,13 +202,15 @@ export default function RecipesPage() {
           <div className="space-y-4">
             {recipes.map((recipe, index) => (
               <div key={`${recipe.id}-${index}`} className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg overflow-hidden">
-                <div className="relative h-48">
+                <div className="w-full bg-gray-100 flex items-center justify-center" style={{ aspectRatio: '4/3' }}>
                   {recipe.image ? (
                     <Image
                       src={recipe.image}
                       alt={recipe.title}
-                      fill
-                      className="object-cover"
+                      width={320}
+                      height={240}
+                      className="w-full h-full object-cover rounded-2xl"
+                      style={{ maxWidth: '100%', maxHeight: '100%' }}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement
                         target.src = '/placeholder-recipe.jpg'
@@ -219,18 +234,11 @@ export default function RecipesPage() {
                   </h3>
                   
                   <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
-                    <span className="flex items-center space-x-1">
-                      <span>�</span>
-                      <span>{recipe.area}</span>
-                    </span>
-                    <span className="flex items-center space-x-1">
-                      <span>📖</span>
-                      <span>{recipe.category}</span>
-                    </span>
+                    <span>{recipe.area}</span>
                   </div>
 
                   <Button
-                    className="w-full py-3 text-sm"
+                    className="w-full py-2 text-xs"
                     onClick={() => viewRecipe(recipe)}
                   >
                     Rezept ansehen
