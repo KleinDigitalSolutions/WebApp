@@ -19,10 +19,10 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "NutriWise - Barcode-Scanner & KI-Ernährungsberatung | 2500+ Deutsche Produkte",
-    template: "%s | NutriWise"
+    default: "TrackFood - Barcode-Scanner & KI-Ernährungsberatung | 2500+ Deutsche Produkte",
+    template: "%s | TrackFood"
   },
-  description: "Barcode scannen, KI fragen, gesund leben! NutriWise kombiniert intelligenten Barcode-Scanner mit personalisierter KI-Ernährungsberatung. 2500+ deutsche Produkte (EDEKA, REWE, ALDI). PWA-App mit Groq AI.",
+  description: "Barcode scannen, KI fragen, gesund leben! TrackFood kombiniert intelligenten Barcode-Scanner mit personalisierter KI-Ernährungsberatung. 2500+ deutsche Produkte (EDEKA, REWE, ALDI). PWA-App mit Groq AI.",
   keywords: [
     "Barcode Scanner Ernährung",
     "KI Ernährungsberatung",
@@ -37,10 +37,10 @@ export const metadata: Metadata = {
     "Nährstoff-Tracking KI",
     "Personalisierte Ernährung"
   ],
-  authors: [{ name: "NutriWise Team" }],
-  creator: "NutriWise",
-  publisher: "NutriWise",
-  metadataBase: new URL("https://nutriwise-app.vercel.app"),
+  authors: [{ name: "TrackFood Team" }],
+  creator: "TrackFood",
+  publisher: "TrackFood",
+  metadataBase: new URL("https://trackfood-app.vercel.app"),
   alternates: {
     canonical: "/",
     languages: {
@@ -51,22 +51,22 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "de_DE",
-    url: "https://nutriwise-app.vercel.app",
-    title: "NutriWise - Barcode-Scanner & KI-Ernährungsberatung | 2500+ Deutsche Produkte",
+    url: "https://trackfood-app.vercel.app",
+    title: "TrackFood - Barcode-Scanner & KI-Ernährungsberatung | 2500+ Deutsche Produkte",
     description: "Barcode scannen, KI fragen, gesund leben! Intelligenter Barcode-Scanner mit personalisierter KI-Ernährungsberatung (Groq AI). 2500+ deutsche Produkte. PWA für iOS & Android.",
-    siteName: "NutriWise",
+    siteName: "TrackFood",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "NutriWise - Barcode-Scanner mit KI-Ernährungsberatung"
+        alt: "TrackFood - Barcode-Scanner mit KI-Ernährungsberatung"
       }
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "NutriWise - Barcode-Scanner & KI-Ernährungsberatung",
+    title: "TrackFood - Barcode-Scanner & KI-Ernährungsberatung",
     description: "Barcode scannen, KI fragen, gesund leben! 2500+ deutsche Produkte mit Groq AI-Beratung. PWA für mobile Geräte optimiert.",
     images: ["/og-image.jpg"],
     creator: "@nutriwise_app",

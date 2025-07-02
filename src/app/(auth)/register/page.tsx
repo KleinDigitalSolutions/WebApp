@@ -124,7 +124,7 @@ export default function RegisterPage() {
                   <Heart className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-2xl font-bold text-green-600">
-                  NutriWise
+                  TrackFood
                 </span>
               </div>
             </Link>
@@ -138,7 +138,7 @@ export default function RegisterPage() {
             <Heart className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-3xl font-bold text-green-600">
-            Bei NutriWise anmelden
+            Bei TrackFood anmelden
           </h2>
           <p className="mt-3 text-gray-600">
             Starte heute deine Ernährungsreise

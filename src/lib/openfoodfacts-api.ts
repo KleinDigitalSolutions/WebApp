@@ -56,7 +56,7 @@ export interface NormalizedProduct {
 
 export class OpenFoodFactsAPI {
   private static readonly BASE_URL = 'https://world.openfoodfacts.org/api/v2'
-  private static readonly USER_AGENT = 'NutriWise/1.0 (contact@nutriwise.app)'
+  private static readonly USER_AGENT = 'TrackFood/1.0 (contact@trackfood.app)'
 
   /**
    * Sucht Produkt per Barcode in OpenFoodFacts Datenbank

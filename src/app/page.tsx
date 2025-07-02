@@ -15,7 +15,7 @@ import {
 export default function LandingPage() {
   const router = useRouter()
   const { user } = useAuthStore()
-  const targetName = "NutriWise"
+  const targetName = "TrackFood"
 
   useEffect(() => {
     if (user) {
@@ -55,12 +55,12 @@ export default function LandingPage() {
           white-space: nowrap;
           color: #10b981;
         }
-        .nutriwise-animate {
+        .trackfood-animate {
           opacity: 0;
           transform: translateY(32px) scale(0.98);
-          animation: nutriwiseFadeUp 1.1s cubic-bezier(.33,1.02,.47,.98) 0.1s forwards;
+          animation: trackfoodFadeUp 1.1s cubic-bezier(.33,1.02,.47,.98) 0.1s forwards;
         }
-        @keyframes nutriwiseFadeUp {
+        @keyframes trackfoodFadeUp {
           to {
             opacity: 1;
             transform: translateY(0) scale(1);
@@ -86,7 +86,7 @@ export default function LandingPage() {
           <div className="text-center z-10">
             <div className="mb-8">
               <h1 
-                className="text-6xl md:text-8xl font-bold text-white mb-4 hero-title-glow nutriwise-animate" 
+                className="text-6xl md:text-8xl font-bold text-white mb-4 hero-title-glow trackfood-animate" 
                 data-text={targetName}
                 style={{ 
                   display: 'flex', 
@@ -122,7 +122,7 @@ export default function LandingPage() {
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 Von intelligentem Barcode-Scanning bis hin zu personalisierten KI-Empfehlungen – 
-                NutriWise macht gesunde Ernährung einfach und smart.
+                TrackFood macht gesunde Ernährung einfach und smart.
               </p>
             </div>
             <div className="grid grid-cols-1 gap-8">
@@ -210,7 +210,7 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <div className="text-center text-gray-400">
-                <p>&copy; 2024 NutriWise. Alle Rechte vorbehalten.</p>
+                <p>&copy; 2024 TrackFood. Alle Rechte vorbehalten.</p>
                 <p className="text-sm mt-2">
                   Powered by Groq AI, OpenFoodFacts & Supabase
                 </p>

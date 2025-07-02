@@ -73,7 +73,7 @@ export default function LoginPage() {
                   <Heart className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-2xl font-bold text-green-600">
-                  NutriWise
+                  TrackFood
                 </span>
               </div>
             </Link>
