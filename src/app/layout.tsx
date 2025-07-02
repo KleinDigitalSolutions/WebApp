@@ -111,9 +111,9 @@ export default function RootLayout({
         <meta name="application-name" content="TrackFood" />
         <meta name="msapplication-TileColor" content="#10b981" />
         <meta name="msapplication-tap-highlight" content="no" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons8-organic-food-ios-17-outlined-32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons8-organic-food-ios-17-outlined-16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons8-organic-food-100.png" />
         <link rel="manifest" href="/manifest.json" />
         {/* Structured Data for SEO */}
         <script
