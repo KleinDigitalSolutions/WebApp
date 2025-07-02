@@ -42,17 +42,17 @@ export default function RecipesPage() {
   }, [user, router])
 
   // Favoriten für User laden
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      if (!user) return
-      const { data, error } = await supabase
-        .from('recipe_favorites')
-        .select('recipe_id')
-        .eq('user_id', user.id)
-      if (!error && data) {
-        setFavoriteIds(data.map((f: { recipe_id: string }) => f.recipe_id))
-      }
+  const fetchFavorites = async () => {
+    if (!user) return
+    const { data, error } = await supabase
+      .from('recipe_favorites')
+      .select('recipe_id')
+      .eq('user_id', user.id)
+    if (!error && data) {
+      setFavoriteIds(data.map((f: { recipe_id: string }) => f.recipe_id))
     }
+  }
+  useEffect(() => {
     fetchFavorites()
   }, [user])
 
@@ -163,24 +163,31 @@ export default function RecipesPage() {
     return () => clearTimeout(delayedSearch)
   }, [searchQuery, selectedCategory, filterKeyword])
 
-  // Favorit toggeln
+  // Favorit toggeln (optimistisches UI, Best Practice)
   const toggleFavorite = async (recipeId: string) => {
     if (!user) return
     setFavLoading(recipeId)
+    // Optimistisch updaten
     if (favoriteIds.includes(recipeId)) {
-      // Entfernen
-      await supabase
+      setFavoriteIds((prev) => prev.filter((id) => id !== recipeId))
+      const { error } = await supabase
         .from('recipe_favorites')
         .delete()
         .eq('user_id', user.id)
         .eq('recipe_id', recipeId)
-      setFavoriteIds(favoriteIds.filter((id) => id !== recipeId))
+      if (error) {
+        // Bei Fehler zurücksetzen
+        await fetchFavorites()
+      }
     } else {
-      // Hinzufügen
-      await supabase
+      setFavoriteIds((prev) => [...prev, recipeId])
+      const { error } = await supabase
         .from('recipe_favorites')
         .insert({ user_id: user.id, recipe_id: recipeId })
-      setFavoriteIds([...favoriteIds, recipeId])
+      if (error) {
+        // Bei Fehler zurücksetzen
+        await fetchFavorites()
+      }
     }
     setFavLoading(null)
   }
