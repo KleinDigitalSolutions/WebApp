@@ -153,4 +153,22 @@ const CookieConsent = () => {
   );
 };
 
+// Custom Hook: Analytics Consent
+export function useAnalyticsConsent() {
+  const cookieConsentKey = 'trackfood_cookie_consent_v1';
+  const [analyticsGranted, setAnalyticsGranted] = useState<boolean>(false);
+  useEffect(() => {
+    const consent = localStorage.getItem(cookieConsentKey);
+    if (consent) {
+      try {
+        const parsed = JSON.parse(consent);
+        setAnalyticsGranted(parsed.analytics_storage === 'granted');
+      } catch {
+        setAnalyticsGranted(false);
+      }
+    }
+  }, []);
+  return analyticsGranted;
+}
+
 export default CookieConsent;
