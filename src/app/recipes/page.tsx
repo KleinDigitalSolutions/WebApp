@@ -30,6 +30,7 @@ export default function RecipesPage() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([])
   const [favLoading, setFavLoading] = useState<string | null>(null)
   const [categories, setCategories] = useState<string[]>([])
+  const [categoryCounts, setCategoryCounts] = useState<{ [cat: string]: number }>({})
   const [filterKeyword, setFilterKeyword] = useState('')
 
   useEffect(() => {
@@ -74,7 +75,14 @@ export default function RecipesPage() {
         from += batch
       }
       const unique = Array.from(new Set(all)).filter(Boolean)
+      // Zähle die Anzahl der Rezepte pro Kategorie
+      const counts: { [cat: string]: number } = {}
+      for (const cat of all) {
+        if (!cat) continue
+        counts[cat] = (counts[cat] || 0) + 1
+      }
       setCategories(unique.sort())
+      setCategoryCounts(counts)
     }
     fetchCategories()
   }, [])
@@ -205,7 +213,7 @@ export default function RecipesPage() {
               }}
               type="button"
             >
-              {cat}
+              {cat} <span className="ml-1 text-xs text-green-700/70">({categoryCounts[cat] || 0})</span>
             </button>
           ))}
         </div>
