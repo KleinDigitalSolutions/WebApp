@@ -15,6 +15,7 @@ import {
   Dumbbell
 } from 'lucide-react'
 import DesktopNotice from '@/components/DesktopNotice'
+import GoogleLoginButton from '@/components/GoogleLoginButton'
 
 export default function LandingPage() {
   const router = useRouter()
@@ -253,6 +254,9 @@ export default function LandingPage() {
               >
                 Bereits registriert? Anmelden
               </Button>
+              <div className="mt-2">
+                <GoogleLoginButton />
+              </div>
             </div>
           </div>
         </section>
