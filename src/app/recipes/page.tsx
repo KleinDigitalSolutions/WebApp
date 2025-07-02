@@ -139,11 +139,11 @@ export default function RecipesPage() {
                 if (selectedCategory !== cat) {
                   setSelectedCategory(cat)
                   setFilterKeyword('')
-                  loadRecipes(searchQuery, cat, filterKeyword)
+                  // Kein direkter loadRecipes-Aufruf mehr!
                 } else {
                   setSelectedCategory('')
                   setFilterKeyword('')
-                  loadRecipes(searchQuery, '', filterKeyword)
+                  // Kein direkter loadRecipes-Aufruf mehr!
                 }
               }}
               type="button"
@@ -196,16 +196,19 @@ export default function RecipesPage() {
                     {recipe.category}
                   </span>
                 </a>
-                <div className="p-2">
+                <div className="p-2 flex flex-col min-h-[64px]">
                   <a
                     href={recipe.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium text-gray-900 text-base leading-tight truncate hover:underline focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="font-medium text-gray-900 text-base leading-tight line-clamp-2 hover:underline focus:outline-none focus:ring-2 focus:ring-green-500"
+                    style={{ minHeight: '2.5em' }}
                   >
                     {recipe.title}
                   </a>
-                  <div className="text-xs text-gray-500 mt-1 truncate">{recipe.ingredients && recipe.ingredients.join(', ')}</div>
+                  <div className="text-xs text-gray-500 mt-1 truncate max-w-full" style={{ minHeight: '1.25em' }}>
+                    {recipe.ingredients && recipe.ingredients.join(', ')}
+                  </div>
                 </div>
               </div>
             ))}

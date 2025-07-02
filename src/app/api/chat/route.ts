@@ -126,25 +126,45 @@ WICHTIG FÜR KI-ANALYSE:
 - Bewerte die Regelmäßigkeit der Mahlzeiten
 - Gib konkrete, umsetzbare Verbesserungsvorschläge
 `
+        } else {
+          // Kein Eintrag vorhanden: expliziter Hinweis für die KI
+          diaryContext = `\n⚠️ Es liegen keine Ernährungstagebuch-Einträge der letzten 7 Tage vor. Bitte weise den Nutzer freundlich darauf hin, dass für eine Analyse erst Einträge erfasst werden müssen. Gib ggf. Tipps, wie und warum man Mahlzeiten eintragen sollte.`
         }
+        // --- Erweiterte Prompt-Logik für Eventualitäten ---
+        // KI soll auch auf unplausible Werte, Zielkonflikte, Frust, Allergien usw. achten
+        diaryContext += `\n\nWEITERE HINWEISE FÜR DIE KI:
+- Wenn Werte unrealistisch wirken (z.B. 0 kcal, 10000 kcal, negative Werte), weise freundlich darauf hin und gib Tipps zur Korrektur.
+- Erkennst du sehr einseitige Ernährung, motiviere zu mehr Vielfalt.
+- Wenn mehrere Tage keine Einträge vorhanden sind, erinnere freundlich an die Vorteile regelmäßiger Dokumentation.
+- Bei Frust, Stress oder Demotivation reagiere empathisch und motivierend.
+- Berücksichtige Allergien, Ziele und Einschränkungen aus dem Nutzerprofil bei allen Empfehlungen.
+- Erkenne Zielkonflikte (z.B. Abnehmen, aber hoher Zuckerkonsum) und gib konstruktive Hinweise.
+- Lobe Fortschritte, wenn sich Werte verbessern.
+- Gib niemals medizinische Diagnosen, sondern verweise freundlich auf ärztliche Beratung.
+- Bei Smalltalk oder Beleidigungen: bleibe charmant und bringe das Gespräch zurück zum Thema Gesundheit.
+- Schlage auf Wunsch einfache, gesunde Rezepte vor, die zu den Zielen und Einschränkungen passen.
+- Stelle bei Bedarf Rückfragen, um gezielter helfen zu können.`
       } catch (error) {
-        console.error('Error fetching diary data:', error)
+        console.error('Error fetching diary entries:', error)
+        return NextResponse.json(
+          { error: 'Error fetching diary entries' },
+          { status: 500 }
+        )
       }
     }
 
+    // Generate response using Groq API
     const groqAPI = new GroqAPI()
-    
-    // Enhanced system prompt with diary context
+    // System-Prompt mit Kontext erzeugen
     const systemPrompt = groqAPI.createNutritionExpertPrompt(userProfile, diaryContext)
     const allMessages: ChatMessage[] = [systemPrompt, ...messages]
-
     const response = await groqAPI.chat(allMessages)
 
     return NextResponse.json({ message: response })
   } catch (error) {
-    console.error('Chat API error:', error)
+    console.error('Error in POST /api/chat:', error)
     return NextResponse.json(
-      { error: 'Failed to get AI response' },
+      { error: 'Error processing request' },
       { status: 500 }
     )
   }
