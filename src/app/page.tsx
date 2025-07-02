@@ -14,6 +14,7 @@ import {
   Salad,
   Dumbbell
 } from 'lucide-react'
+import DesktopNotice from '@/components/DesktopNotice'
 
 export default function LandingPage() {
   const router = useRouter()
@@ -35,6 +36,7 @@ export default function LandingPage() {
   }
   return (
     <>
+      <DesktopNotice />
       <style jsx global>{`
         html {
           scroll-behavior: smooth;
@@ -135,9 +137,9 @@ export default function LandingPage() {
         </section>
 
         {/* Features Section */}
-        <section className="py-20 bg-transparent relative z-10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
+        <section className="py-10 md:py-16 bg-transparent relative z-10">
+          <div className="max-w-5xl mx-auto px-2 sm:px-6 lg:px-8">
+            <div className="text-center mb-12 md:mb-16">
               <h2 className="text-4xl font-bold text-white mb-4">
                 Alles was du für eine gesunde Ernährung brauchst
               </h2>
@@ -146,9 +148,9 @@ export default function LandingPage() {
                 TrackFood macht gesunde Ernährung einfach und smart.
               </p>
             </div>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               {/* Feature 1: KI-Ernährungsberatung */}
-              <div className="relative p-8 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_4px_32px_0_rgba(16,185,129,0.15)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-200/20 before:to-emerald-400/10 before:rounded-2xl before:pointer-events-none">
+              <div className="relative p-6 md:p-5 lg:p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg transition-all duration-200 md:hover:scale-[1.03] lg:hover:scale-[1.03] min-h-0 h-auto flex flex-col">
                 <Brain className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">KI-Ernährungsberatung</h3>
                 <p className="text-emerald-50 leading-relaxed">
@@ -160,7 +162,7 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 2: Persönlicher KI-Fitness-Coach */}
-              <div className="relative p-8 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_4px_32px_0_rgba(16,185,129,0.15)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-200/20 before:to-emerald-400/10 before:rounded-2xl before:pointer-events-none">
+              <div className="relative p-6 md:p-5 lg:p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg transition-all duration-200 md:hover:scale-[1.03] lg:hover:scale-[1.03] min-h-0 h-auto flex flex-col">
                 <Dumbbell className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Persönlicher KI-Fitness-Coach</h3>
                 <p className="text-emerald-50 leading-relaxed">
@@ -172,7 +174,7 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 3: Kalorien- & Ziel-Tracking */}
-              <div className="relative p-8 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_4px_32px_0_rgba(16,185,129,0.15)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-200/20 before:to-emerald-400/10 before:rounded-2xl before:pointer-events-none">
+              <div className="relative p-6 md:p-5 lg:p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg transition-all duration-200 md:hover:scale-[1.03] lg:hover:scale-[1.03] min-h-0 h-auto flex flex-col">
                 <Target className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Kalorien- & Ziel-Tracking</h3>
                 <p className="text-emerald-50 leading-relaxed">
@@ -184,7 +186,7 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 4: Rezepte & Inspiration */}
-              <div className="relative p-8 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_4px_32px_0_rgba(16,185,129,0.15)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-200/20 before:to-emerald-400/10 before:rounded-2xl before:pointer-events-none">
+              <div className="relative p-6 md:p-5 lg:p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg transition-all duration-200 md:hover:scale-[1.03] lg:hover:scale-[1.03] min-h-0 h-auto flex flex-col">
                 <Salad className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Rezepte & Inspiration</h3>
                 <p className="text-emerald-50 leading-relaxed">
@@ -196,7 +198,7 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 5: Barcode-Scanner */}
-              <div className="relative p-8 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_4px_32px_0_rgba(16,185,129,0.15)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-200/20 before:to-emerald-400/10 before:rounded-2xl before:pointer-events-none">
+              <div className="relative p-6 md:p-5 lg:p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg transition-all duration-200 md:hover:scale-[1.03] lg:hover:scale-[1.03] min-h-0 h-auto flex flex-col">
                 <QrCode className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Barcode-Scanner</h3>
                 <p className="text-emerald-50 leading-relaxed">
@@ -209,7 +211,7 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 6: Deutsche Produktdatenbank */}
-              <div className="relative p-8 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_4px_32px_0_rgba(16,185,129,0.15)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-200/20 before:to-emerald-400/10 before:rounded-2xl before:pointer-events-none">
+              <div className="relative p-6 md:p-5 lg:p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg transition-all duration-200 md:hover:scale-[1.03] lg:hover:scale-[1.03] min-h-0 h-auto flex flex-col">
                 <Database className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Deutsche Produktdatenbank</h3>
                 <p className="text-emerald-50 leading-relaxed">
