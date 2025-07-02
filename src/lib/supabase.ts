@@ -31,6 +31,7 @@ export interface Profile {
   goal?: 'lose_weight' | 'maintain_weight' | 'gain_weight' | 'build_muscle'
   created_at?: string
   updated_at?: string
+  intolerances?: string[] // NEU: Unverträglichkeiten
 }
 
 export interface DiaryEntry {

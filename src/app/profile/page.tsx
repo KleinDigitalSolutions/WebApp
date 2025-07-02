@@ -22,6 +22,7 @@ export default function ProfilePage() {
     weight_kg: undefined,
     activity_level: undefined,
     goal: undefined,
+    intolerances: [], // NEU: Unverträglichkeiten
   })
 
   useEffect(() => {
@@ -112,6 +113,24 @@ export default function ProfilePage() {
   const macroTargets = estimatedCalories > 0 
     ? calculateMacroTargets(estimatedCalories, formData.goal)
     : { protein: 0, carbs: 0, fat: 0 }
+
+  const intoleranceOptions = [
+    'Laktose',
+    'Gluten',
+    'Nüsse',
+    'Soja',
+    'Ei',
+    'Fisch',
+    'Sellerie',
+    'Senf',
+    'Sesam',
+    'Erdnuss',
+    'Weichtiere',
+    'Sulfite',
+    'Lupine',
+    'Fruktose',
+    'Histamin',
+  ]
 
   if (loading) {
     return (
@@ -305,6 +324,29 @@ export default function ProfilePage() {
                 </div>
                 <span className="text-green-500">→</span>
               </div>
+            </div>
+          </div>
+
+          <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-4">Unverträglichkeiten</h2>
+            <div className="flex flex-wrap gap-3">
+              {intoleranceOptions.map((item) => (
+                <label key={item} className="flex items-center space-x-2 bg-green-50 px-3 py-2 rounded-xl cursor-pointer border border-green-100">
+                  <input
+                    type="checkbox"
+                    checked={formData.intolerances?.includes(item) || false}
+                    onChange={e => {
+                      setFormData(prev => ({
+                        ...prev,
+                        intolerances: e.target.checked
+                          ? [...(prev.intolerances || []), item]
+                          : (prev.intolerances || []).filter(i => i !== item)
+                      }))
+                    }}
+                  />
+                  <span className="text-sm text-green-800">{item}</span>
+                </label>
+              ))}
             </div>
           </div>
 
