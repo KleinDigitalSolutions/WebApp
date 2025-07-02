@@ -2,10 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/BottomNavBar";
-import CookieConsent, { useAnalyticsConsent } from '@/components/ui/CookieConsent';
-import dynamic from 'next/dynamic';
-
-const GoogleTagManager = dynamic(() => import('@/components/ui/GoogleTagManager'), { ssr: false });
+import CookieConsent from '@/components/ui/CookieConsent';
+import GoogleTagManagerClient from '@/components/ui/GoogleTagManagerClient';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -99,8 +97,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Analytics Consent auslesen
-  const analyticsConsent = typeof window !== 'undefined' ? useAnalyticsConsent() : false;
   return (
     <html lang="de" dir="ltr" className="h-full">
       <head>
@@ -161,8 +157,8 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} h-full bg-gradient-to-br from-emerald-50 via-white to-purple-50 antialiased`}>
-        {/* GTM nur nach Consent laden */}
-        {analyticsConsent && <GoogleTagManager gtmId="GTM-M3HLRQP8" enabled />}
+        {/* GTM nur nach Consent laden (Client-Komponente) */}
+        <GoogleTagManagerClient />
         {/* Main app container with proper mobile spacing */}
         <div className="min-h-full">
           {/* Content area with bottom navigation spacing on mobile */}
