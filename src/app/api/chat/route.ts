@@ -17,7 +17,17 @@ function getSupabaseAdmin() {
 export async function POST(request: NextRequest) {
   try {
     const supabaseAdmin = getSupabaseAdmin()
-    const { messages, userProfile, userId } = await request.json()
+    let { messages, userProfile, userId } = await request.json()
+
+    // Intolerances auslesen und als Text an health_conditions anhängen
+    if (userProfile && Array.isArray(userProfile.intolerances) && userProfile.intolerances.length > 0) {
+      const intolerancesText = userProfile.intolerances.join(', ')
+      if (userProfile.health_conditions) {
+        userProfile.health_conditions += `; Unverträglichkeiten: ${intolerancesText}`
+      } else {
+        userProfile.health_conditions = `Unverträglichkeiten: ${intolerancesText}`
+      }
+    }
 
     if (!process.env.GROQ_API_KEY) {
       return NextResponse.json(
