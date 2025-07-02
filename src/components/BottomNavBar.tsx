@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
-import { Button } from '@/components/ui'
 import { Home, BookOpen, ChefHat, User, PlusCircle } from 'lucide-react'
 
 export function Navigation() {
