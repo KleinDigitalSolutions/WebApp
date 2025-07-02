@@ -199,3 +199,29 @@ const majorGermanBrands = [
 - **Import-Logs** für nachvollziehbare Datenbank-Änderungen
 - **API-Performance-Monitoring** für OpenFoodFacts-Aufrufe
 - **User-Analytics** für Scanner-Nutzung und beliebte Produkte
+
+# Supabase Tabellenstruktur (automatisch generiert)
+
+```
+[
+  { "table_name": "diary_entries", "column_name": "id", "data_type": "uuid" },
+  { "table_name": "diary_entries", "column_name": "user_id", "data_type": "uuid" },
+  { "table_name": "diary_entries", "column_name": "food_name", "data_type": "text" },
+  { "table_name": "diary_entries", "column_name": "quantity", "data_type": "numeric" },
+  { "table_name": "diary_entries", "column_name": "unit", "data_type": "text" },
+  { "table_name": "diary_entries", "column_name": "meal_type", "data_type": "text" },
+  { "table_name": "diary_entries", "column_name": "calories", "data_type": "numeric" },
+  { "table_name": "diary_entries", "column_name": "protein_g", "data_type": "numeric" },
+  { "table_name": "diary_entries", "column_name": "carb_g", "data_type": "numeric" },
+  { "table_name": "diary_entries", "column_name": "fat_g", "data_type": "numeric" },
+  { "table_name": "diary_entries", "column_name": "fiber_g", "data_type": "numeric" },
+  { "table_name": "diary_entries", "column_name": "sugar_g", "data_type": "numeric" },
+  { "table_name": "diary_entries", "column_name": "sodium_mg", "data_type": "numeric" },
+  { "table_name": "diary_entries", "column_name": "entry_date", "data_type": "date" },
+  { "table_name": "diary_entries", "column_name": "created_at", "data_type": "timestamp with time zone" },
+  { "table_name": "diary_entries", "column_name": "product_code", "data_type": "text" },
+  ... (weitere Tabellen und Felder, siehe vollständige JSON oben) ...
+]
+```
+
+# Hinweis: Die vollständige Tabellenstruktur ist im JSON-Format dokumentiert. Für Queries, Migrationen und Copilot-Features kann direkt darauf Bezug genommen werden.
