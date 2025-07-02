@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store'
 import { Navigation } from '@/components/BottomNavBar'
 import { Input, LoadingSpinner } from '@/components/ui'
-import { Heart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@supabase/supabase-js'
 
@@ -27,8 +26,6 @@ export default function RecipesPage() {
   const [loading, setLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
-  const [favoriteIds, setFavoriteIds] = useState<string[]>([])
-  const [favLoading, setFavLoading] = useState<string | null>(null)
   const [categories, setCategories] = useState<string[]>([])
   const [categoryCounts, setCategoryCounts] = useState<{ [cat: string]: number }>({})
   const [filterKeyword, setFilterKeyword] = useState('')
@@ -40,21 +37,6 @@ export default function RecipesPage() {
     }
     loadRecipes()
   }, [user, router])
-
-  // Favoriten für User laden
-  const fetchFavorites = async () => {
-    if (!user) return
-    const { data, error } = await supabase
-      .from('recipe_favorites')
-      .select('recipe_id')
-      .eq('user_id', user.id)
-    if (!error && data) {
-      setFavoriteIds(data.map((f: { recipe_id: string }) => f.recipe_id))
-    }
-  }
-  useEffect(() => {
-    fetchFavorites()
-  }, [user])
 
   // Lade alle vorhandenen Kategorien aus Supabase
   useEffect(() => {
@@ -100,11 +82,14 @@ export default function RecipesPage() {
   // Hilfsfunktion: Sortiere Filter nach Trefferhäufigkeit (absteigend)
 
   // Rezepte aus Supabase laden (mit optionalem Suchbegriff/Keyword)
-  const loadRecipes = async (query?: string, _category?: string, keyword?: string) => {
+  const loadRecipes = async (query?: string, category?: string, keyword?: string) => {
     setLoading(true)
     let supa = supabase.from('recipes').select('*').order('created_at', { ascending: false })
     if (query && query.trim()) {
       supa = supa.ilike('title', `%${query.trim()}%`)
+    }
+    if (category && category.trim()) {
+      supa = supa.eq('category', category)
     }
     if (keyword && keyword.trim()) {
       supa = supa.ilike('title', `%${keyword.trim()}%`)
@@ -112,40 +97,6 @@ export default function RecipesPage() {
     const { data, error } = await supa
     if (!error && data) {
       setRecipes(data as Recipe[])
-    } else {
-      setRecipes([])
-    }
-    setLoading(false)
-  }
-
-  // Favoriten-Ansicht laden
-  const loadFavorites = async () => {
-    setLoading(true)
-    if (!user) return
-    // Hole alle Favoriten-IDs
-    const { data: favs, error: favError } = await supabase
-      .from('recipe_favorites')
-      .select('recipe_id')
-      .eq('user_id', user.id)
-    if (favError || !favs) {
-      setRecipes([])
-      setLoading(false)
-      return
-    }
-    const favIds = favs.map((f: { recipe_id: string }) => f.recipe_id)
-    if (favIds.length === 0) {
-      setRecipes([])
-      setLoading(false)
-      return
-    }
-    // Hole alle Rezepte mit diesen IDs
-    const { data: favRecipes, error: recError } = await supabase
-      .from('recipes')
-      .select('*')
-      .in('id', favIds)
-      .order('created_at', { ascending: false })
-    if (!recError && favRecipes) {
-      setRecipes(favRecipes as Recipe[])
     } else {
       setRecipes([])
     }
@@ -162,35 +113,6 @@ export default function RecipesPage() {
     }, 500)
     return () => clearTimeout(delayedSearch)
   }, [searchQuery, selectedCategory, filterKeyword])
-
-  // Favorit toggeln (optimistisches UI, Best Practice)
-  const toggleFavorite = async (recipeId: string) => {
-    if (!user) return
-    setFavLoading(recipeId)
-    // Optimistisch updaten
-    if (favoriteIds.includes(recipeId)) {
-      setFavoriteIds((prev) => prev.filter((id) => id !== recipeId))
-      const { error } = await supabase
-        .from('recipe_favorites')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('recipe_id', recipeId)
-      if (error) {
-        // Bei Fehler zurücksetzen
-        await fetchFavorites()
-      }
-    } else {
-      setFavoriteIds((prev) => [...prev, recipeId])
-      const { error } = await supabase
-        .from('recipe_favorites')
-        .insert({ user_id: user.id, recipe_id: recipeId })
-      if (error) {
-        // Bei Fehler zurücksetzen
-        await fetchFavorites()
-      }
-    }
-    setFavLoading(null)
-  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -217,11 +139,7 @@ export default function RecipesPage() {
                 if (selectedCategory !== cat) {
                   setSelectedCategory(cat)
                   setFilterKeyword('')
-                  if (cat === 'Favoriten') {
-                    loadFavorites()
-                  } else {
-                    loadRecipes(searchQuery, cat, filterKeyword)
-                  }
+                  loadRecipes(searchQuery, cat, filterKeyword)
                 } else {
                   setSelectedCategory('')
                   setFilterKeyword('')
@@ -234,29 +152,6 @@ export default function RecipesPage() {
             </button>
           ))}
         </div>
-      </div>
-      <div className="flex justify-end px-4 pt-2">
-        <button
-          className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-full border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 transition-colors text-sm font-medium shadow-sm",
-            selectedCategory === 'Favoriten' && "bg-green-600 text-white border-green-600"
-          )}
-          onClick={() => {
-            if (selectedCategory !== 'Favoriten') {
-              setSelectedCategory('Favoriten')
-              setFilterKeyword('')
-              loadFavorites()
-            } else {
-              setSelectedCategory('')
-              setFilterKeyword('')
-              loadRecipes(searchQuery, '', filterKeyword)
-            }
-          }}
-          type="button"
-        >
-          <Heart size={18} className={selectedCategory === 'Favoriten' ? 'fill-white' : 'fill-green-500'} />
-          Favoriten
-        </button>
       </div>
       <div className="px-4 pt-4 pb-20">
         {/* Rezepte Grid */}
@@ -312,23 +207,6 @@ export default function RecipesPage() {
                   </a>
                   <div className="text-xs text-gray-500 mt-1 truncate">{recipe.ingredients && recipe.ingredients.join(', ')}</div>
                 </div>
-                <button
-                  className={cn(
-                    "absolute top-2 right-2 rounded-full p-1 shadow-sm transition",
-                    favoriteIds.includes(recipe.id) ? "bg-green-500/90" : "bg-white/80"
-                  )}
-                  onClick={() => toggleFavorite(recipe.id)}
-                  disabled={favLoading === recipe.id}
-                  aria-label={favoriteIds.includes(recipe.id) ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
-                >
-                  <Heart
-                    size={20}
-                    className={cn(
-                      favoriteIds.includes(recipe.id) ? "text-white fill-white" : "text-green-500",
-                      favLoading === recipe.id && "animate-pulse"
-                    )}
-                  />
-                </button>
               </div>
             ))}
           </div>
