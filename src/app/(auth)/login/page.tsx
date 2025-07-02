@@ -50,8 +50,8 @@ export default function LoginPage() {
         options: {
           redirectTo:
             process.env.NODE_ENV === 'production'
-              ? 'https://trackfood.app/auth/callback'
-              : 'http://localhost:3000/auth/callback',
+              ? 'https://trackfood.app/dashboard' // <--- HIER ÄNDERN
+              : 'http://localhost:3000/dashboard', // <--- UND HIER ÄNDERN
         },
       })
 
