@@ -98,7 +98,6 @@ export default function RecipesPage() {
 
   // Die Filter-Buttons werden jetzt direkt aus categories generiert (siehe oben)
   // Hilfsfunktion: Sortiere Filter nach Trefferhäufigkeit (absteigend)
-  const sortedFilterKeywords = []
 
   // Rezepte aus Supabase laden (mit optionalem Suchbegriff/Keyword)
   const loadRecipes = async (query?: string, _category?: string, keyword?: string) => {
@@ -208,8 +207,19 @@ export default function RecipesPage() {
                   : "bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
               )}
               onClick={() => {
-                setSelectedCategory(selectedCategory === cat ? '' : cat)
-                setFilterKeyword('')
+                if (selectedCategory !== cat) {
+                  setSelectedCategory(cat)
+                  setFilterKeyword('')
+                  if (cat === 'Favoriten') {
+                    loadFavorites()
+                  } else {
+                    loadRecipes(searchQuery, cat, filterKeyword)
+                  }
+                } else {
+                  setSelectedCategory('')
+                  setFilterKeyword('')
+                  loadRecipes(searchQuery, '', filterKeyword)
+                }
               }}
               type="button"
             >
@@ -225,8 +235,15 @@ export default function RecipesPage() {
             selectedCategory === 'Favoriten' && "bg-green-600 text-white border-green-600"
           )}
           onClick={() => {
-            setSelectedCategory('Favoriten')
-            loadFavorites()
+            if (selectedCategory !== 'Favoriten') {
+              setSelectedCategory('Favoriten')
+              setFilterKeyword('')
+              loadFavorites()
+            } else {
+              setSelectedCategory('')
+              setFilterKeyword('')
+              loadRecipes(searchQuery, '', filterKeyword)
+            }
           }}
           type="button"
         >
