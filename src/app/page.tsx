@@ -149,7 +149,7 @@ export default function LandingPage() {
             </div>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
               {/* Feature 1: KI-Ernährungsberatung */}
-              <div className="p-8 bg-emerald-600 rounded-2xl shadow-lg border border-emerald-700">
+              <div className="p-8 bg-emerald-600/80 backdrop-blur-md rounded-2xl shadow-lg shadow-inner border border-emerald-400/60">
                 <Brain className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">KI-Ernährungsberatung</h3>
                 <p className="text-emerald-50 leading-relaxed">
@@ -161,7 +161,7 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 2: Persönlicher KI-Fitness-Coach */}
-              <div className="p-8 bg-emerald-600 rounded-2xl shadow-lg border border-emerald-700">
+              <div className="p-8 bg-emerald-600/80 backdrop-blur-md rounded-2xl shadow-lg shadow-inner border border-emerald-400/60">
                 <Dumbbell className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Persönlicher KI-Fitness-Coach</h3>
                 <p className="text-emerald-50 leading-relaxed">
@@ -173,7 +173,7 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 3: Kalorien- & Ziel-Tracking */}
-              <div className="p-8 bg-emerald-600 rounded-2xl shadow-lg border border-emerald-700">
+              <div className="p-8 bg-emerald-600/80 backdrop-blur-md rounded-2xl shadow-lg shadow-inner border border-emerald-400/60">
                 <Target className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Kalorien- & Ziel-Tracking</h3>
                 <p className="text-emerald-50 leading-relaxed">
@@ -185,7 +185,7 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 4: Rezepte & Inspiration */}
-              <div className="p-8 bg-emerald-600 rounded-2xl shadow-lg border border-emerald-700">
+              <div className="p-8 bg-emerald-600/80 backdrop-blur-md rounded-2xl shadow-lg shadow-inner border border-emerald-400/60">
                 <Salad className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Rezepte & Inspiration</h3>
                 <p className="text-emerald-50 leading-relaxed">
@@ -197,7 +197,7 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 5: Barcode-Scanner */}
-              <div className="p-8 bg-emerald-600 rounded-2xl shadow-lg border border-emerald-700">
+              <div className="p-8 bg-emerald-600/80 backdrop-blur-md rounded-2xl shadow-lg shadow-inner border border-emerald-400/60">
                 <QrCode className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Barcode-Scanner</h3>
                 <p className="text-emerald-50 leading-relaxed">
@@ -210,7 +210,7 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 6: Deutsche Produktdatenbank */}
-              <div className="p-8 bg-emerald-600 rounded-2xl shadow-lg border border-emerald-700">
+              <div className="p-8 bg-emerald-600/80 backdrop-blur-md rounded-2xl shadow-lg shadow-inner border border-emerald-400/60">
                 <Database className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Deutsche Produktdatenbank</h3>
                 <p className="text-emerald-50 leading-relaxed">
