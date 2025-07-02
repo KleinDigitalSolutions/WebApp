@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/BottomNavBar";
+import CookieConsent from '@/components/ui/CookieConsent';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -164,6 +165,7 @@ export default function RootLayout({
         </div>
         {/* Globale Bottom Navigation Bar für eingeloggte Nutzer */}
         <Navigation />
+        <CookieConsent />
       </body>
     </html>
   );

@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { Cookie, Shield, X } from 'lucide-react';
 import Link from 'next/link';
