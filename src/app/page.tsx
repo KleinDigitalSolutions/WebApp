@@ -285,10 +285,14 @@ export default function LandingPage() {
                   Powered by Groq AI, OpenFoodFacts & Supabase
                 </p>
               </div>
-              
+              {/* Rechtliche Links */}
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 mb-2 text-xs text-gray-400">
+                <a href="/impressum" className="hover:text-emerald-400 underline transition-colors">Impressum</a>
+                <a href="/datenschutz" className="hover:text-emerald-400 underline transition-colors">Datenschutz</a>
+                <a href="/agb" className="hover:text-emerald-400 underline transition-colors">AGB</a>
+              </div>
               {/* Trenner-Balken */}
               <div className="w-full h-px bg-gray-800 my-6"></div>
-              
               {/* Klein Digital Solutions Sektion */}
               <div className="text-center pb-0">
                 <p className="text-sm text-gray-500 mb-3">
