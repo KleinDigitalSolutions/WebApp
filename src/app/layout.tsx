@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   authors: [{ name: "TrackFood Team" }],
   creator: "TrackFood",
   publisher: "TrackFood",
-  metadataBase: new URL("https://trackfood-app.vercel.app"),
+  metadataBase: new URL("https://trackfood.app"),
   alternates: {
     canonical: "/",
     languages: {
