@@ -135,7 +135,7 @@ async function main() {
     const fullImportCount = await testFullImport(1000)
     
     if (fullImportCount > 0) {
-      console.log(`\n🎉 SUCCESS! Your NutriWise database now has ${fullImportCount} German products!`)
+      console.log(`\n🎉 SUCCESS! Your TrackFood database now has ${fullImportCount} German products!`)
       console.log('💡 Users can now scan barcodes and find thousands of products!')
     }
   }

@@ -1,4 +1,4 @@
--- NutriWise Database Schema
+-- TrackFood Database Schema
 -- Execute these SQL statements in your Supabase SQL Editor
 
 -- Enable Row Level Security

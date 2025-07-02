@@ -1,9 +1,9 @@
-# NutriWise - Copilot Instructions
+# TrackFood - Copilot Instructions
 
 <!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
 
 ## Project Overview
-NutriWise ist eine intelligente Ernährungs-Tracking-Web-App mit **personalisierten KI-Empfehlungen** und **vollständigem Barcode-Scanner**, gebaut mit Next.js App Router, TypeScript, Tailwind CSS, Zustand for State Management, und Supabase als Backend-as-a-Service.
+TrackFood ist eine intelligente Ernährungs-Tracking-Web-App mit **personalisierten KI-Empfehlungen** und **vollständigem Barcode-Scanner**, gebaut mit Next.js App Router, TypeScript, Tailwind CSS, Zustand for State Management, und Supabase als Backend-as-a-Service.
 
 ## 🔥 **NEUE FEATURES (implementiert)**
 - **📊 7-Tage Ernährungsanalyse:** Automatische Auswertung der Tagebuchdaten

@@ -129,7 +129,7 @@ async function analyzeBrands() {
 }
 
 async function main() {
-  console.log('🇩🇪 Deutsche Marken-Analyse für NutriWise\n')
+  console.log('🇩🇪 Deutsche Marken-Analyse für TrackFood\n')
   
   try {
     const results = await analyzeBrands()

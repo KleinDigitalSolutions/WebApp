@@ -1,5 +1,5 @@
 -- =====================================================
--- NutriWise Barcode Scanner Migration
+-- TrackFood Barcode Scanner Migration
 -- Execute these SQL statements in your Supabase SQL Editor
 -- =====================================================
 

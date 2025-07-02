@@ -25,12 +25,12 @@ import Head from 'next/head'
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "NutriWise",
+  "name": "TrackFood",
   "applicationCategory": "HealthApplication",
   "operatingSystem": "Web Browser, iOS, Android",
-  "description": "Barcode scannen, KI fragen, gesund leben! NutriWise kombiniert intelligenten Barcode-Scanner mit personalisierter KI-Ernährungsberatung. 2500+ deutsche Produkte.",
-  "url": "https://nutriwise-app.vercel.app",
-  "downloadUrl": "https://nutriwise-app.vercel.app",
+  "description": "Barcode scannen, KI fragen, gesund leben! TrackFood kombiniert intelligenten Barcode-Scanner mit personalisierter KI-Ernährungsberatung. 2500+ deutsche Produkte.",
+  "url": "https://trackfood-app.vercel.app",
+  "downloadUrl": "https://trackfood-app.vercel.app",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -51,7 +51,7 @@ const structuredData = {
   ],
   "author": {
     "@type": "Organization",
-    "name": "NutriWise Team"
+    "name": "TrackFood Team"
   }
 }
 
@@ -90,11 +90,11 @@ export default function LandingPage() {
         <link rel="dns-prefetch" href="//world.openfoodfacts.org" />
         
         {/* Canonical URL */}
-        <link rel="canonical" href="https://nutriwise-app.vercel.app" />
+        <link rel="canonical" href="https://trackfood-app.vercel.app" />
         
         {/* Hreflang for internationalization */}
-        <link rel="alternate" hrefLang="de" href="https://nutriwise-app.vercel.app" />
-        <link rel="alternate" hrefLang="x-default" href="https://nutriwise-app.vercel.app" />
+        <link rel="alternate" hrefLang="de" href="https://trackfood-app.vercel.app" />
+        <link rel="alternate" hrefLang="x-default" href="https://trackfood-app.vercel.app" />
       </Head>
 
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50">
@@ -108,7 +108,7 @@ export default function LandingPage() {
             
             <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
               <span className="bg-gradient-to-r from-emerald-600 to-purple-600 bg-clip-text text-transparent">
-                NutriWise
+                TrackFood
               </span>
               <br />
               <span className="text-4xl md:text-5xl text-gray-700">
@@ -117,7 +117,7 @@ export default function LandingPage() {
             </h1>
             
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-              <strong>Barcode scannen, KI fragen, gesund leben.</strong> NutriWise kombiniert einen intelligenten 
+              <strong>Barcode scannen, KI fragen, gesund leben.</strong> TrackFood kombiniert einen intelligenten 
               Barcode-Scanner mit personalisierten KI-Empfehlungen für eine revolutionäre Ernährungs-Experience.
             </p>
 
@@ -177,7 +177,7 @@ export default function LandingPage() {
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 Von intelligentem Barcode-Scanning bis hin zu personalisierten KI-Empfehlungen – 
-                NutriWise macht gesunde Ernährung einfach und smart.
+                TrackFood macht gesunde Ernährung einfach und smart.
               </p>
             </div>
 
@@ -326,7 +326,7 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Warum NutriWise?
+                Warum TrackFood?
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 Erlebe den Unterschied einer KI-gestützten Ernährungsbegleitung
@@ -455,7 +455,7 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 gap-8">
               <div className="col-span-1">
                 <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">
-                  NutriWise
+                  TrackFood
                 </h3>
                 <p className="text-gray-400 mb-4">
                   Die intelligente Progressive Web App für gesunde Ernährung. 
@@ -496,7 +496,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-              <p>&copy; 2024 NutriWise. Alle Rechte vorbehalten.</p>
+              <p>&copy; 2024 TrackFood. Alle Rechte vorbehalten.</p>
               <p className="text-sm mt-2">
                 Powered by Groq AI, OpenFoodFacts & Supabase
               </p>

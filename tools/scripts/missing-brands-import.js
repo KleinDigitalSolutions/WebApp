@@ -180,7 +180,7 @@ async function insertProduct(product) {
 }
 
 async function importMissingBrands() {
-  console.log('🚀 Starting Missing Brands Import for NutriWise');
+  console.log('🚀 Starting Missing Brands Import for TrackFood');
   console.log('================================================\n');
 
   const existingBarcodes = await getExistingBarcodes();
@@ -228,34 +228,18 @@ async function importMissingBrands() {
         if (insertedProduct) {
           totalNewProducts++;
           brandStats[brand]++;
-          existingBarcodes.add(product.code);
-          
-          if (brandStats[brand] % 5 === 0) {
-            console.log(`   ✅ ${brandStats[brand]} products imported for ${brand}`);
-          }
+          console.log(`✅ Imported: ${insertedProduct.name} (Barcode: ${insertedProduct.barcode})`);
         }
       }
     }
 
-    console.log(`   🏁 ${brandStats[brand]} total products imported for ${brand}\n`);
-    
-    // Add delay to be respectful to API
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log(`\n📈 Brand Import Stats for ${brand}: ${brandStats[brand]} new products\n`);
   }
 
-  // Summary
-  console.log('\n📈 IMPORT SUMMARY');
-  console.log('================');
-  console.log(`🆕 Total new products imported: ${totalNewProducts}`);
-  console.log('\n📊 Products per brand:');
-  
-  Object.entries(brandStats)
-    .sort(([,a], [,b]) => b - a)
-    .forEach(([brand, count]) => {
-      console.log(`   ${brand}: ${count} products`);
-    });
-
-  console.log('\n✅ Missing brands import completed!');
+  console.log('✅ Import abgeschlossen!');
+  console.log(`📊 Insgesamt importierte neue Produkte: ${totalNewProducts}`);
+  console.log('================================================\n');
 }
 
-importMissingBrands().catch(console.error);
+// Starte den Import-Prozess
+importMissingBrands();

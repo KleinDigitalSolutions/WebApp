@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     title: "TrackFood - Barcode-Scanner & KI-Ernährungsberatung",
     description: "Barcode scannen, KI fragen, gesund leben! 2500+ deutsche Produkte mit Groq AI-Beratung. PWA für mobile Geräte optimiert.",
     images: ["/og-image.jpg"],
-    creator: "@nutriwise_app",
+    creator: "@trackfood_app",
   },
   robots: {
     index: true,
@@ -107,11 +107,14 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="NutriWise" />
-        <meta name="application-name" content="NutriWise" />
+        <meta name="apple-mobile-web-app-title" content="TrackFood" />
+        <meta name="application-name" content="TrackFood" />
         <meta name="msapplication-TileColor" content="#10b981" />
         <meta name="msapplication-tap-highlight" content="no" />
-        
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -119,12 +122,12 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
-              "name": "NutriWise",
+              "name": "TrackFood",
               "applicationCategory": "HealthApplication",
               "operatingSystem": "Web Browser, iOS, Android",
-              "description": "Barcode scannen, KI fragen, gesund leben! NutriWise kombiniert intelligenten Barcode-Scanner mit personalisierter KI-Ernährungsberatung. 2500+ deutsche Produkte.",
-              "url": "https://nutriwise-app.vercel.app",
-              "downloadUrl": "https://nutriwise-app.vercel.app",
+              "description": "Barcode scannen, KI fragen, gesund leben! TrackFood kombiniert intelligenten Barcode-Scanner mit personalisierter KI-Ernährungsberatung. 2500+ deutsche Produkte.",
+              "url": "https://trackfood-app.vercel.app",
+              "downloadUrl": "https://trackfood-app.vercel.app",
               "offers": {
                 "@type": "Offer",
                 "price": "0",
@@ -145,7 +148,7 @@ export default function RootLayout({
               ],
               "author": {
                 "@type": "Organization",
-                "name": "NutriWise Team"
+                "name": "TrackFood Team"
               }
             })
           }}

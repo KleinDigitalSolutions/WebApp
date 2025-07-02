@@ -1,4 +1,4 @@
-# NutriWise - Intelligent Nutrition Tracking
+# TrackFood - Intelligent Nutrition Tracking
 
 Eine umfassende, KI-gestützte Ernährungs-Tracking-Web-App mit personalisierten Empfehlungen, gebaut mit Next.js, TypeScript, Tailwind CSS, Zustand und Supabase.
 
@@ -317,8 +317,8 @@ MIT License - see LICENSE file for details.
 
 ## 📞 Support
 
-For support, please open an issue on GitHub or contact [support@nutriwise.app](mailto:support@nutriwise.app)
+For support, please open an issue on GitHub or contact [support@trackfood.app](mailto:support@trackfood.app)
 
 ---
 
-**NutriWise** - Your intelligent nutrition companion 🥗✨
+**TrackFood** - Your intelligent nutrition companion 🥗✨

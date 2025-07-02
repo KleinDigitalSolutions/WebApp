@@ -1,4 +1,4 @@
--- NutriWise Database Schema Update
+-- TrackFood Database Schema Update
 -- Nur die neuen Tabellen für User-Generated Products
 -- Execute these SQL statements in your Supabase SQL Editor
 

@@ -46,7 +46,7 @@ CREATE TRIGGER update_admin_users_updated_at
 INSERT INTO public.admin_users (user_id, email, role, permissions) 
 VALUES (
     '00000000-0000-0000-0000-000000000000', -- Placeholder UUID
-    'admin@nutriwise.app',
+    'admin@trackfood.app',
     'super_admin',
     '{"products": true, "users": true, "analytics": true, "moderation": true}'
 ) ON CONFLICT (email) DO NOTHING;

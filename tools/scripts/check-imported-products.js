@@ -81,7 +81,7 @@ async function showDatabaseStats() {
 }
 
 async function main() {
-  console.log('🗄️ NutriWise Product Database Check\n')
+  console.log('🗄️ TrackFood Product Database Check\n')
   
   console.log('=' .repeat(50))
   console.log('IMPORTIERTE PRODUKTE ÜBERPRÜFEN')

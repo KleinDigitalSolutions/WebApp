@@ -1,4 +1,4 @@
-# NutriWise - Intelligent Nutrition Tracking
+# TrackFood - Intelligent Nutrition Tracking
 
 A comprehensive, AI-powered nutrition tracking web application built with Next.js, TypeScript, Tailwind CSS, Zustand, and Supabase.
 
@@ -240,8 +240,8 @@ MIT License - see LICENSE file for details.
 
 ## 📞 Support
 
-For support, please open an issue on GitHub or contact [support@nutriwise.app](mailto:support@nutriwise.app)
+For support, please open an issue on GitHub or contact [support@trackfood.app](mailto:support@trackfood.app)
 
 ---
 
-**NutriWise** - Your intelligent nutrition companion 🥗✨
+**TrackFood** - Your intelligent nutrition companion 🥗✨

@@ -1,5 +1,5 @@
 -- =====================================================
--- NutriWise Complete Database Migration
+-- TrackFood Complete Database Migration
 -- Execute these SQL statements in your Supabase SQL Editor
 -- =====================================================
 
