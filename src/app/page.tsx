@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store'
 import { Button } from '@/components/ui'
@@ -21,6 +21,8 @@ export default function LandingPage() {
   const router = useRouter()
   const { user } = useAuthStore()
   const targetName = "TrackFood"
+  const [showScrollHint, setShowScrollHint] = useState(false)
+  const [showDesktopNotice, setShowDesktopNotice] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -32,12 +34,22 @@ export default function LandingPage() {
       router.push('/dashboard')
     }
   }, [user, router])
+
+  // Scroll-Hinweis und DesktopNotice erst nach Animation-Ende + Verzögerung anzeigen
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowScrollHint(true)
+      setShowDesktopNotice(true)
+    }, 1700) // 1.2s Animation + 0.5s extra
+    return () => clearTimeout(timeout)
+  }, [])
+
   if (user) {
     return null
   }
   return (
     <>
-      <DesktopNotice />
+      {showDesktopNotice && <DesktopNotice />}
       <style jsx global>{`
         html {
           scroll-behavior: smooth;
@@ -92,8 +104,8 @@ export default function LandingPage() {
           <div className="text-center z-10">
             <div className="mb-8">
               <div className="relative flex justify-center items-center">
-                <h1 
-                  className="text-6xl md:text-8xl font-bold text-white mb-4 hero-title-glow trackfood-animate flex items-center" 
+                <h1
+                  className="text-6xl md:text-8xl font-bold text-white mb-4 hero-title-glow trackfood-animate flex items-center"
                   data-text={targetName}
                   style={{ perspective: '1000px' }}
                 >
@@ -129,12 +141,14 @@ export default function LandingPage() {
           </div>
 
           {/* Scroll Indicator */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-            <div className="scroll-bounce text-white/80">
-              <span className="text-sm mb-2 font-light scroll-bounce-text">Scroll für mehr</span>
-              <ChevronDown className="w-6 h-6 scroll-bounce-chevron" />
+          {showScrollHint && (
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+              <div className="scroll-bounce text-white/80">
+                <span className="text-sm mb-2 font-light scroll-bounce-text">Scroll für mehr</span>
+                <ChevronDown className="w-6 h-6 scroll-bounce-chevron" />
+              </div>
             </div>
-          </div>
+          )}
         </section>
 
         {/* Features Section */}
