@@ -48,7 +48,10 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo:
+            process.env.NODE_ENV === 'production'
+              ? 'https://trackfood.app/auth/callback'
+              : 'http://localhost:3000/auth/callback',
         },
       })
 
