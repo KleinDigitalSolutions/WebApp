@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store'
 import { Navigation } from '@/components/BottomNavBar'
 import { Button, LoadingSpinner } from '@/components/ui'
 import { ChatMessage } from '@/lib/groq-api'
+import ReactMarkdown from 'react-markdown'
 
 interface ChatMessageWithId extends ChatMessage {
   id: string
@@ -180,7 +181,22 @@ Wie kann ich dir heute helfen? 🌱`,
                         : 'bg-gray-50 text-gray-900 border border-green-50'
                     }`}
                   >
-                    <div className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</div>
+                    <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                      {message.role === 'assistant' ? (
+                        <ReactMarkdown
+                          components={{
+                            strong: ({node, ...props}) => <strong className="text-green-700 font-semibold" {...props} />,
+                            li: ({node, ...props}) => <li className="ml-4 list-disc" {...props} />,
+                            ul: ({node, ...props}) => <ul className="mb-2 ml-2" {...props} />,
+                            p: ({node, ...props}) => <p className="mb-2" {...props} />,
+                          }}
+                        >
+                          {message.content}
+                        </ReactMarkdown>
+                      ) : (
+                        message.content
+                      )}
+                    </div>
                     <div
                       className={`text-xs mt-2 ${
                         message.role === 'user' ? 'text-green-100' : 'text-gray-500'
