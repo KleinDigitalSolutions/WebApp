@@ -24,20 +24,9 @@ export const metadata: Metadata = {
     default: "TrackFood - Barcode-Scanner & KI-Ernährungsberatung | 2500+ Deutsche Produkte",
     template: "%s | TrackFood"
   },
-  description: "Barcode scannen, KI fragen, gesund leben! TrackFood kombiniert intelligenten Barcode-Scanner mit personalisierter KI-Ernährungsberatung. 2500+ deutsche Produkte (EDEKA, REWE, ALDI). PWA-App mit Groq AI.",
+  description: "TrackFood ist die smarte Ernährungs-Tracking-App mit KI-Empfehlungen, Barcode-Scanner, 7-Tage-Analyse, Fitness-Coach, Rezeptdatenbank und 2500+ deutschen Produkten. Scanne Barcodes, analysiere deine Ernährung, erhalte individuelle Tipps und Rezepte. PWA, mobile-optimiert, Groq AI, OpenFoodFacts, Supabase. Für Abnehmen, Muskelaufbau, gesunde Ernährung und mehr.",
   keywords: [
-    "Barcode Scanner Ernährung",
-    "KI Ernährungsberatung",
-    "Deutsche Produkte Nährwerte",
-    "Groq AI Ernährung",
-    "OpenFoodFacts Deutschland",
-    "PWA Ernährungs-App",
-    "Kalorienzähler Barcode",
-    "EDEKA REWE ALDI Scanner",
-    "LLaMA 3.1 Ernährung",
-    "Mobile Barcode Scanner",
-    "Nährstoff-Tracking KI",
-    "Personalisierte Ernährung"
+    "Ernährungstagebuch", "Barcode Scanner Ernährung", "KI Ernährungsberatung", "Deutsche Produkte Nährwerte", "Groq AI Ernährung", "OpenFoodFacts Deutschland", "PWA Ernährungs-App", "Kalorienzähler Barcode", "EDEKA REWE ALDI Scanner", "LLaMA 3.1 Ernährung", "Mobile Barcode Scanner", "Nährstoff-Tracking KI", "Personalisierte Ernährung", "Fitness-Coach App", "Rezepte App", "Gesunde Ernährung App", "Abnehmen App", "Muskelaufbau Ernährung", "Smarte Ernährung App", "Lebensmittel Datenbank", "Zucker Tracking", "Ballaststoffe", "Natrium", "Deutsche Marken Lebensmittel", "Schnell & einfach Rezepte", "Vegane Rezepte", "PWA Deutschland", "Supabase App", "Groq AI Chatbot", "Ernährungsanalyse App", "Ernährungstracker" 
   ],
   authors: [{ name: "TrackFood Team" }],
   creator: "TrackFood",
@@ -55,7 +44,7 @@ export const metadata: Metadata = {
     locale: "de_DE",
     url: "https://trackfood-app.vercel.app",
     title: "TrackFood - Barcode-Scanner & KI-Ernährungsberatung | 2500+ Deutsche Produkte",
-    description: "Barcode scannen, KI fragen, gesund leben! Intelligenter Barcode-Scanner mit personalisierter KI-Ernährungsberatung (Groq AI). 2500+ deutsche Produkte. PWA für iOS & Android.",
+    description: "TrackFood: KI-Ernährungsberatung, Barcode-Scanner, 7-Tage-Analyse, Fitness-Coach, Rezepte & 2500+ deutsche Produkte. Scanne Barcodes, analysiere deine Ernährung, erhalte individuelle Tipps. PWA, mobile-optimiert, Groq AI, OpenFoodFacts, Supabase.",
     siteName: "TrackFood",
     images: [
       {
@@ -69,7 +58,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "TrackFood - Barcode-Scanner & KI-Ernährungsberatung",
-    description: "Barcode scannen, KI fragen, gesund leben! 2500+ deutsche Produkte mit Groq AI-Beratung. PWA für mobile Geräte optimiert.",
+    description: "TrackFood: KI-Ernährungsberatung, Barcode-Scanner, 7-Tage-Analyse, Fitness-Coach, Rezepte & 2500+ deutsche Produkte. Scanne Barcodes, analysiere deine Ernährung, erhalte individuelle Tipps. PWA, mobile-optimiert, Groq AI, OpenFoodFacts, Supabase.",
     images: ["/og-image.jpg"],
     creator: "@trackfood_app",
   },
@@ -141,12 +130,15 @@ export default function RootLayout({
                 "ratingCount": "1247"
               },
               "features": [
-                "Barcode-Scanner für deutsche Produkte",
-                "KI-gestützte Ernährungsberatung mit Groq AI",
-                "2500+ Produkte von EDEKA, REWE, ALDI",
-                "Progressive Web App (PWA)",
-                "7-Tage Ernährungsanalyse",
-                "Personalisierte Empfehlungen"
+                "Barcode-Scanner für deutsche Produkte (EAN-13, EAN-8, Code-128, Code-39)",
+                "KI-gestützte Ernährungsberatung (Groq AI, LLaMA 3.1)",
+                "7-Tage Ernährungsanalyse & automatische Problemerkennung",
+                "Personalisierte Empfehlungen für Abnehmen, Muskelaufbau, Gesundheit",
+                "Kalorien-, Makro- und Mikronährstoff-Tracking (Zucker, Ballaststoffe, Natrium)",
+                "Deutsche Produktdatenbank (2500+ Produkte, EDEKA, REWE, ALDI, Lidl, Ferrero, Milka, Haribo, Coca-Cola, Dr. Oetker, uvm.)",
+                "Rezepte & Inspiration, direkt ins Tagebuch übernehmen",
+                "Mobile- und Safari-optimiert, PWA-fähig, offline nutzbar",
+                "Supabase-Backend, sichere Authentifizierung, RLS, DSGVO-konform"
               ],
               "author": {
                 "@type": "Organization",
