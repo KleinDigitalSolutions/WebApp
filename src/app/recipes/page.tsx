@@ -4,17 +4,26 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store'
 import { Navigation } from '@/components/BottomNavBar'
-import { Button, Input, Select, LoadingSpinner } from '@/components/ui'
+import { Input, LoadingSpinner } from '@/components/ui'
 import { Heart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@supabase/supabase-js'
+
+interface Recipe {
+  id: string
+  title: string
+  image_url?: string
+  link: string
+  ingredients?: string[]
+  category?: string
+}
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
 export default function RecipesPage() {
   const router = useRouter()
   const { user } = useAuthStore()
-  const [recipes, setRecipes] = useState<any[]>([])
+  const [recipes, setRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
@@ -39,7 +48,7 @@ export default function RecipesPage() {
         .select('recipe_id')
         .eq('user_id', user.id)
       if (!error && data) {
-        setFavoriteIds(data.map((f: any) => f.recipe_id))
+        setFavoriteIds(data.map((f: { recipe_id: string }) => f.recipe_id))
       }
     }
     fetchFavorites()
@@ -54,7 +63,7 @@ export default function RecipesPage() {
         .neq('category', null)
       if (!error && data) {
         // Nur eindeutige Kategorien, sortiert
-        const unique = Array.from(new Set(data.map((r: any) => r.category))).sort()
+        const unique = Array.from(new Set(data.map((r: { category: string }) => r.category))).sort()
         setCategories(unique)
       }
     }
@@ -82,7 +91,7 @@ export default function RecipesPage() {
     }
     const { data, error } = await supa
     if (!error && data) {
-      setRecipes(data)
+      setRecipes(data as Recipe[])
     } else {
       setRecipes([])
     }
@@ -103,7 +112,7 @@ export default function RecipesPage() {
       setLoading(false)
       return
     }
-    const favIds = favs.map((f: any) => f.recipe_id)
+    const favIds = favs.map((f: { recipe_id: string }) => f.recipe_id)
     if (favIds.length === 0) {
       setRecipes([])
       setLoading(false)
@@ -116,16 +125,11 @@ export default function RecipesPage() {
       .in('id', favIds)
       .order('created_at', { ascending: false })
     if (!recError && favRecipes) {
-      setRecipes(favRecipes)
+      setRecipes(favRecipes as Recipe[])
     } else {
       setRecipes([])
     }
     setLoading(false)
-  }
-
-  // Suche und Filter
-  const handleSearch = () => {
-    loadRecipes(searchQuery, selectedCategory)
   }
 
   useEffect(() => {
