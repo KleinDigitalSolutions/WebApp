@@ -30,6 +30,7 @@ export default function RecipesPage() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([])
   const [favLoading, setFavLoading] = useState<string | null>(null)
   const [categories, setCategories] = useState<string[]>([])
+  const [filterKeyword, setFilterKeyword] = useState('')
 
   useEffect(() => {
     if (!user) {
@@ -57,15 +58,23 @@ export default function RecipesPage() {
   // Lade alle vorhandenen Kategorien aus Supabase
   useEffect(() => {
     const fetchCategories = async () => {
-      const { data, error } = await supabase
-        .from('recipes')
-        .select('category')
-        .neq('category', null)
-      if (!error && data) {
-        // Nur eindeutige Kategorien, sortiert
-        const unique = Array.from(new Set(data.map((r: { category: string }) => r.category))).sort()
-        setCategories(unique)
+      let all: string[] = []
+      let from = 0
+      const batch = 1000
+      while (true) {
+        const { data, error } = await supabase
+          .from('recipes')
+          .select('category')
+          .neq('category', null)
+          .range(from, from + batch - 1)
+        if (error) throw error
+        if (!data || data.length === 0) break
+        all = all.concat(data.map((r: { category: string }) => r.category?.trim()).filter(Boolean))
+        if (data.length < batch) break
+        from += batch
       }
+      const unique = Array.from(new Set(all)).filter(Boolean)
+      setCategories(unique.sort())
     }
     fetchCategories()
   }, [])
@@ -79,15 +88,19 @@ export default function RecipesPage() {
     })
   }, [categories.length])
 
-  // Rezepte aus Supabase laden (mit optionalem Suchbegriff/Kategorie)
-  const loadRecipes = async (query?: string, category?: string) => {
+  // Die Filter-Buttons werden jetzt direkt aus categories generiert (siehe oben)
+  // Hilfsfunktion: Sortiere Filter nach Trefferhäufigkeit (absteigend)
+  const sortedFilterKeywords = []
+
+  // Rezepte aus Supabase laden (mit optionalem Suchbegriff/Keyword)
+  const loadRecipes = async (query?: string, _category?: string, keyword?: string) => {
     setLoading(true)
     let supa = supabase.from('recipes').select('*').order('created_at', { ascending: false })
     if (query && query.trim()) {
       supa = supa.ilike('title', `%${query.trim()}%`)
     }
-    if (category && category.trim()) {
-      supa = supa.eq('category', category)
+    if (keyword && keyword.trim()) {
+      supa = supa.ilike('title', `%${keyword.trim()}%`)
     }
     const { data, error } = await supa
     if (!error && data) {
@@ -134,10 +147,14 @@ export default function RecipesPage() {
 
   useEffect(() => {
     const delayedSearch = setTimeout(() => {
-      loadRecipes(searchQuery, selectedCategory)
+      if (filterKeyword) {
+        loadRecipes(searchQuery, '', filterKeyword)
+      } else {
+        loadRecipes(searchQuery, selectedCategory)
+      }
     }, 500)
     return () => clearTimeout(delayedSearch)
-  }, [searchQuery, selectedCategory])
+  }, [searchQuery, selectedCategory, filterKeyword])
 
   // Favorit toggeln
   const toggleFavorite = async (recipeId: string) => {
@@ -171,6 +188,7 @@ export default function RecipesPage() {
           placeholder="Rezepte, Zutaten oder Kategorie suchen..."
           className="rounded-xl border-green-100 focus:border-green-500 focus:ring-green-500"
         />
+        {/* Filter-Buttons für Kategorien */}
         <div className="mt-3 flex overflow-x-auto gap-2 pb-2 hide-scrollbar">
           {categories.map((cat) => (
             <button
@@ -181,7 +199,10 @@ export default function RecipesPage() {
                   ? "bg-green-600 text-white border-green-600 shadow"
                   : "bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
               )}
-              onClick={() => setSelectedCategory(selectedCategory === cat ? '' : cat)}
+              onClick={() => {
+                setSelectedCategory(selectedCategory === cat ? '' : cat)
+                setFilterKeyword('')
+              }}
               type="button"
             >
               {cat}
