@@ -9,7 +9,10 @@ import {
   Brain,
   Database,
   ArrowRight,
-  ChevronDown
+  ChevronDown,
+  Target,
+  Salad,
+  Dumbbell
 } from 'lucide-react'
 
 export default function LandingPage() {
@@ -85,18 +88,36 @@ export default function LandingPage() {
         <section className="min-h-screen bg-gradient-to-br from-emerald-500 to-emerald-600 flex flex-col items-center justify-center relative overflow-hidden">
           <div className="text-center z-10">
             <div className="mb-8">
-              <h1 
-                className="text-6xl md:text-8xl font-bold text-white mb-4 hero-title-glow trackfood-animate" 
-                data-text={targetName}
-                style={{ 
-                  display: 'flex', 
-                  flexDirection: 'row', 
-                  justifyContent: 'center',
-                  perspective: '1000px'
-                }}
-              >
-                {targetName}
-              </h1>
+              <div className="relative flex justify-center items-center">
+                <h1 
+                  className="text-6xl md:text-8xl font-bold text-white mb-4 hero-title-glow trackfood-animate flex items-center" 
+                  data-text={targetName}
+                  style={{ perspective: '1000px' }}
+                >
+                  <span className="relative inline-block">
+                    TrackF
+                    <span className="inline-block relative">
+                      o
+                      <span className="inline-block relative">
+                        o
+                        <span className="absolute -top-4 left-1/2 -translate-x-1/2 animate-hat-drop-simple" style={{ zIndex: 2 }}>
+                          {/* SVG Kochmütze (ursprünglich, minimalistisch) */}
+                          <svg width="38" height="28" viewBox="0 0 38 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <ellipse cx="19" cy="20" rx="13" ry="7" fill="#fff"/>
+                            <ellipse cx="19" cy="10" rx="16" ry="10" fill="#fff"/>
+                            <ellipse cx="8" cy="13" rx="4" ry="3" fill="#fff"/>
+                            <ellipse cx="30" cy="13" rx="4" ry="3" fill="#fff"/>
+                            <rect x="11" y="20" width="16" height="5" rx="2.5" fill="#e5e7eb"/>
+                            <ellipse cx="19" cy="25" rx="8" ry="2" fill="#e5e7eb"/>
+                            <ellipse cx="19" cy="7" rx="7" ry="4" fill="#f3f4f6"/>
+                          </svg>
+                        </span>
+                      </span>
+                    </span>
+                    d
+                  </span>
+                </h1>
+              </div>
               <div className="w-24 h-1 bg-white mx-auto rounded-full" />
             </div>
             <p className="text-xl text-emerald-100 mb-12 max-w-md mx-auto font-light">
@@ -114,59 +135,89 @@ export default function LandingPage() {
         </section>
 
         {/* Features Section */}
-        <section className="py-20 bg-white/50 relative z-10">
+        <section className="py-20 bg-white relative z-10">
+
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-4xl font-bold text-black mb-4">
                 Alles was du für eine gesunde Ernährung brauchst
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl text-black max-w-3xl mx-auto">
                 Von intelligentem Barcode-Scanning bis hin zu personalisierten KI-Empfehlungen – 
                 TrackFood macht gesunde Ernährung einfach und smart.
               </p>
             </div>
-            <div className="grid grid-cols-1 gap-8">
-              {/* Feature 1: Barcode Scanner */}
-              <div className="p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
-                <div className="w-14 h-14 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mb-6">
-                  <QrCode className="w-7 h-7 text-white" />
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+              {/* Feature 1: KI-Ernährungsberatung */}
+              <div className="p-8 bg-emerald-600 rounded-2xl shadow-lg border border-emerald-700">
+                <Brain className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
+                <h3 className="text-xl font-semibold text-white mb-3">KI-Ernährungsberatung</h3>
+                <p className="text-emerald-50 leading-relaxed">
+                  Chatte mit deinem persönlichen KI-Experten! Die KI analysiert automatisch deine letzten 7 Tage, erkennt Muster und kritische Ernährungsgewohnheiten und gibt dir sofort umsetzbare, individuelle Tipps – perfekt abgestimmt auf deine Ziele.
+                </p>
+                <div className="mt-4 text-sm text-emerald-100 font-medium">
+                  Automatische Wochenanalyse • Kritische Hinweise & Empfehlungen
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Barcode-Scanner</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Scanne jeden Barcode und erhalte sofort Nährwerte! Mit 2500+ deutschen Produkten 
+              </div>
+
+              {/* Feature 2: Persönlicher KI-Fitness-Coach */}
+              <div className="p-8 bg-emerald-600 rounded-2xl shadow-lg border border-emerald-700">
+                <Dumbbell className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
+                <h3 className="text-xl font-semibold text-white mb-3">Persönlicher KI-Fitness-Coach</h3>
+                <p className="text-emerald-50 leading-relaxed">
+                  Deine KI erstellt individuelle Trainingspläne, gibt Tipps für mehr Bewegung und motiviert dich zu einem aktiven Lebensstil. Kombiniere Ernährung & Fitness für maximale Erfolge – egal ob Abnehmen, Muskelaufbau oder einfach gesünder leben.
+                </p>
+                <div className="mt-4 text-sm text-emerald-100 font-medium">
+                  Trainingspläne • Motivation • Fortschritts-Feedback
+                </div>
+              </div>
+
+              {/* Feature 3: Kalorien- & Ziel-Tracking */}
+              <div className="p-8 bg-emerald-600 rounded-2xl shadow-lg border border-emerald-700">
+                <Target className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
+                <h3 className="text-xl font-semibold text-white mb-3">Kalorien- & Ziel-Tracking</h3>
+                <p className="text-emerald-50 leading-relaxed">
+                  Verfolge deine Kalorien, Makronährstoffe und Fortschritte – perfekt zum Abnehmen, Muskelaufbau oder Gewicht halten. Setze individuelle Ziele und erhalte smarte Auswertungen.
+                </p>
+                <div className="mt-4 text-sm text-emerald-100 font-medium">
+                  Automatische Analyse • Zielorientierte Empfehlungen
+                </div>
+              </div>
+
+              {/* Feature 4: Rezepte & Inspiration */}
+              <div className="p-8 bg-emerald-600 rounded-2xl shadow-lg border border-emerald-700">
+                <Salad className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
+                <h3 className="text-xl font-semibold text-white mb-3">Rezepte & Inspiration</h3>
+                <p className="text-emerald-50 leading-relaxed">
+                  Entdecke gesunde Rezepte mit Nährwertangaben. Lass dich inspirieren und übernimm Rezepte direkt in dein Tagebuch – für mehr Abwechslung und Genuss beim Abnehmen oder Muskelaufbau.
+                </p>
+                <div className="mt-4 text-sm text-emerald-100 font-medium">
+                  Gesunde Rezepte • Direkt ins Tagebuch übernehmen
+                </div>
+              </div>
+
+              {/* Feature 5: Barcode-Scanner */}
+              <div className="p-8 bg-emerald-600 rounded-2xl shadow-lg border border-emerald-700">
+                <QrCode className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
+                <h3 className="text-xl font-semibold text-white mb-3">Barcode-Scanner</h3>
+                <p className="text-emerald-50 leading-relaxed">
+                  Scanne jeden Barcode und erhalte sofort Nährwerte! Mit 2500+ deutschen Produkten
                   (Ferrero, Milka, EDEKA, REWE, ALDI) in unserer Datenbank.
                 </p>
-                <div className="mt-4 text-sm text-emerald-600 font-medium">
+                <div className="mt-4 text-sm text-emerald-100 font-medium">
                   Mobile & Safari optimiert • PWA-kompatibel
                 </div>
               </div>
 
-              {/* Feature 2: KI-Ernährungsberatung */}
-              <div className="p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
-                <div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6">
-                  <Brain className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">KI-Ernährungsberatung</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Chatte mit unserem KI-Experten! Erhalte personalisierte Empfehlungen basierend auf 
-                  deiner 7-Tage Ernährungsanalyse und individuellen Zielen.
-                </p>
-                <div className="mt-4 text-sm text-purple-600 font-medium">
-                  Groq AI (LLaMA 3.1) • Deutsche Prompts
-                </div>
-              </div>
-
-              {/* Feature 3: Deutsche Produktdatenbank */}
-              <div className="p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
-                <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6">
-                  <Database className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Deutsche Produktdatenbank</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Über 2500 Produkte aus OpenFoodFacts. Alle großen Marken: Haribo, Kinder, ja!, 
+              {/* Feature 6: Deutsche Produktdatenbank */}
+              <div className="p-8 bg-emerald-600 rounded-2xl shadow-lg border border-emerald-700">
+                <Database className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
+                <h3 className="text-xl font-semibold text-white mb-3">Deutsche Produktdatenbank</h3>
+                <p className="text-emerald-50 leading-relaxed">
+                  Über 2500 Produkte aus OpenFoodFacts. Alle großen Marken: Haribo, Kinder, ja!,
                   K-Classic, Coca-Cola, Dr. Oetker und viele mehr.
                 </p>
-                <div className="mt-4 text-sm text-blue-600 font-medium">
+                <div className="mt-4 text-sm text-emerald-100 font-medium">
                   Kontinuierlich erweitert • Automatischer Import
                 </div>
               </div>
@@ -175,7 +226,7 @@ export default function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-r from-emerald-600 to-purple-600">
+        <section className="py-20 bg-gradient-to-r from-emerald-600 to-emerald-700 relative z-10">
           <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Bereit für eine gesündere Zukunft?
@@ -251,6 +302,16 @@ export default function LandingPage() {
           </div>
         </footer>
       </div>
+      <style jsx>{`
+        @keyframes hat-drop-simple {
+          0% { opacity: 0; transform: translateY(-40px) scale(0.7); }
+          80% { opacity: 1; transform: translateY(4px) scale(1.1); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-hat-drop-simple {
+          animation: hat-drop-simple 1.1s cubic-bezier(.33,1.02,.47,.98) 0.3s both;
+        }
+      `}</style>
     </>
   )
 }

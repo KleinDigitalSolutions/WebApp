@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
 import { Button } from '@/components/ui'
+import { Home, BookOpen, ChefHat, User, PlusCircle } from 'lucide-react'
 
 export function Navigation() {
   const pathname = usePathname()
@@ -44,12 +45,38 @@ export function Navigation() {
     router.push('/login')
   }
 
+  // Neue NavItems mit Lucide-Icons und Hinzufügen-Button in der Mitte
   const navItems = [
-    { href: '/', label: 'Dashboard', icon: '📊' },
-    { href: '/diary', label: 'Tagebuch', icon: '📝' },
-    { href: '/recipes', label: 'Rezepte', icon: '🍳' },
-    { href: '/chat', label: 'KI-Coach', icon: '🤖' },
-    { href: '/profile', label: 'Profil', icon: '👤' },
+    {
+      href: '/dashboard',
+      icon: <Home size={24} />, // Startseite
+      label: 'Start',
+      isActive: pathname === '/dashboard',
+    },
+    {
+      href: '/diary',
+      icon: <BookOpen size={24} />, // Tagebuch
+      label: 'Tagebuch',
+      isActive: pathname === '/diary',
+    },
+    {
+      href: '/diary/add',
+      icon: <PlusCircle size={28} />, // Hinzufügen (zentral)
+      label: 'Hinzufügen',
+      isActive: pathname === '/diary/add',
+    },
+    {
+      href: '/recipes',
+      icon: <ChefHat size={24} />, // Rezepte
+      label: 'Rezepte',
+      isActive: pathname === '/recipes',
+    },
+    {
+      href: '/profile',
+      icon: <User size={24} />, // Profil
+      label: 'Profil',
+      isActive: pathname === '/profile',
+    },
   ]
 
   if (!user) {
@@ -58,58 +85,54 @@ export function Navigation() {
 
   return (
     <>
-      {/* Bottom Navigation - Always visible */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
-        <div className="max-w-screen-2xl mx-auto">
-          {/* Mobile Layout */}
-          <div className="flex justify-around items-center py-2 px-2 lg:hidden">
+      {/* Spacer, damit Content nicht hinter der Navigation verschwindet */}
+      <div className="h-20" />
+      {/* Bottom Navigation - modern, mit prominentem Hinzufügen-Button */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50">
+        <div className="bg-white/95 backdrop-blur-xl border-t border-gray-200/50 shadow-lg">
+          <div className="grid grid-cols-5 h-20 max-w-screen-2xl mx-auto">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 ${
-                  pathname === item.href
-                    ? 'bg-green-50 text-green-600'
-                    : 'text-gray-500 hover:text-green-600 hover:bg-green-50'
-                }`}
+                className={`
+                  flex flex-col items-center justify-center space-y-1 relative
+                  transition-all duration-200 active:scale-95
+                  ${item.isActive ? 'text-emerald-600' : 'text-gray-500'}
+                  ${item.label === 'Hinzufügen' ? 'transform -translate-y-2' : ''}
+                `}
               >
-                <span className="text-lg mb-1">{item.icon}</span>
-                <span className="text-xs font-medium leading-none truncate">{item.label}</span>
+                {/* Spezielles Styling für Hinzufügen-Button */}
+                {item.label === 'Hinzufügen' ? (
+                  <div className={`
+                    p-3 rounded-full shadow-lg
+                    bg-gradient-to-r from-emerald-500 to-purple-600
+                    text-white
+                    ${item.isActive ? 'scale-110' : ''}
+                    transition-transform duration-200
+                  `}>
+                    {item.icon}
+                  </div>
+                ) : (
+                  <div className={`
+                    p-2 rounded-xl transition-all duration-200
+                    ${item.isActive ? 'bg-emerald-50 text-emerald-600' : ''}
+                  `}>
+                    {item.icon}
+                  </div>
+                )}
+                <span className={`
+                  text-xs font-medium
+                  ${item.label === 'Hinzufügen' ? 'mt-1' : ''}
+                `}>
+                  {item.label}
+                </span>
+                {/* Aktiver Indikator */}
+                {item.isActive && (
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-emerald-600 rounded-full" />
+                )}
               </Link>
             ))}
-          </div>
-
-          {/* Desktop Layout - Large screens and up */}
-          <div className="hidden lg:flex justify-center items-center py-4 px-8">
-            <div className="flex space-x-12 items-center">
-              {/* Navigation Items */}
-              <div className="flex space-x-8">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center space-x-3 px-6 py-3 rounded-xl transition-all duration-200 ${
-                      pathname === item.href
-                        ? 'bg-green-100 text-green-700 font-semibold shadow-sm'
-                        : 'text-gray-600 hover:text-green-600 hover:bg-green-50 hover:shadow-sm'
-                    }`}
-                  >
-                    <span className="text-xl">{item.icon}</span>
-                    <span className="font-medium text-base">{item.label}</span>
-                  </Link>
-                ))}
-              </div>
-
-              {/* User Info & Logout - Desktop only */}
-              <div className="flex items-center space-x-6 ml-12 pl-12 border-l border-gray-200">
-                <div className="text-sm text-gray-600 max-w-48 truncate">
-                  {user.email}
-                </div>
-                <Button variant="outline" size="sm" onClick={handleLogout} className="px-4 py-2">
-                  Abmelden
-                </Button>
-              </div>
-            </div>
           </div>
         </div>
       </nav>

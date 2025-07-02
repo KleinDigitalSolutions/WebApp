@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { Navigation } from "@/components/BottomNavBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -158,10 +158,9 @@ export default function RootLayout({
           <main className="pb-20 md:pb-0">
             {children}
           </main>
-          
-          {/* Mobile Bottom Navigation */}
-          <MobileBottomNav />
         </div>
+        {/* Globale Bottom Navigation Bar für eingeloggte Nutzer */}
+        <Navigation />
       </body>
     </html>
   );
