@@ -1,211 +1,228 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import { useAuthStore } from '@/store'
 import { Navigation } from '@/components/BottomNavBar'
 import { Button, Input, Select, LoadingSpinner } from '@/components/ui'
-import { Recipe } from '@/lib/themealdb-api'
+import { Heart } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { createClient } from '@supabase/supabase-js'
 
-const SPOONACULAR_CACHE_KEY = 'spoonacular_recipes_cache_v1'
-const SPOONACULAR_CACHE_DATE_KEY = 'spoonacular_recipes_cache_date_v1'
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
 export default function RecipesPage() {
   const router = useRouter()
   const { user } = useAuthStore()
-  const [recipes, setRecipes] = useState<Recipe[]>([])
+  const [recipes, setRecipes] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
-  const [selectedArea, setSelectedArea] = useState('')
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([])
+  const [favLoading, setFavLoading] = useState<string | null>(null)
+  const [categories, setCategories] = useState<string[]>([])
 
   useEffect(() => {
     if (!user) {
       router.push('/login')
       return
     }
-    // Rezepte aus Cache laden, sonst von Spoonacular holen
-    const today = new Date().toISOString().split('T')[0]
-    const cached = localStorage.getItem(SPOONACULAR_CACHE_KEY)
-    const cachedDate = localStorage.getItem(SPOONACULAR_CACHE_DATE_KEY)
-    if (cached && cachedDate === today) {
-      setRecipes(JSON.parse(cached))
-    } else {
-      loadRandomRecipes()
-    }
+    loadRecipes()
   }, [user, router])
 
-  const loadRandomRecipes = async () => {
-    setLoading(true)
-    try {
-      // Erst Spoonacular versuchen
-      let response = await fetch('/api/recipes/spoonacular?number=12')
-      let data = await response.json()
-      if (!data.recipes || data.recipes.length === 0) {
-        // Fallback: TheMealDB
-        response = await fetch('/api/recipes/random?number=12')
-        data = await response.json()
+  // Favoriten für User laden
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!user) return
+      const { data, error } = await supabase
+        .from('recipe_favorites')
+        .select('recipe_id')
+        .eq('user_id', user.id)
+      if (!error && data) {
+        setFavoriteIds(data.map((f: any) => f.recipe_id))
       }
-      setRecipes(data.recipes || [])
-      // Cache für heute speichern
-      localStorage.setItem(SPOONACULAR_CACHE_KEY, JSON.stringify(data.recipes || []))
-      localStorage.setItem(SPOONACULAR_CACHE_DATE_KEY, new Date().toISOString().split('T')[0])
-    } catch (error) {
-      console.error('Error loading recipes:', error)
-      setRecipes([])
-    } finally {
-      setLoading(false)
     }
-  }
+    fetchFavorites()
+  }, [user])
 
-  const searchRecipes = useCallback(async (query: string, category?: string, area?: string) => {
-    setLoading(true)
-    try {
-      const params = new URLSearchParams()
-      if (query && query.trim()) params.append('q', query)
-      if (category && category.trim()) params.append('category', category)
-      if (area && area.trim()) params.append('area', area)
-
-      const response = await fetch(`/api/recipes/search?${params}`)
-      if (response.ok) {
-        const data = await response.json()
-        setRecipes(data.recipes || [])
-      } else {
-        console.error('Failed to search recipes:', response.status)
-        setRecipes([])
+  // Lade alle vorhandenen Kategorien aus Supabase
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const { data, error } = await supabase
+        .from('recipes')
+        .select('category')
+        .neq('category', null)
+      if (!error && data) {
+        // Nur eindeutige Kategorien, sortiert
+        const unique = Array.from(new Set(data.map((r: any) => r.category))).sort()
+        setCategories(unique)
       }
-    } catch (error) {
-      console.error('Error searching recipes:', error)
-      setRecipes([])
-    } finally {
-      setLoading(false)
     }
+    fetchCategories()
   }, [])
 
+  // Hinweis: Kategorie "Schnell & einfach" nach oben sortieren, falls vorhanden
+  useEffect(() => {
+    setCategories((prev) => {
+      if (!prev.includes('Schnell & einfach')) return prev
+      const filtered = prev.filter((c) => c !== 'Schnell & einfach')
+      return ['Schnell & einfach', ...filtered]
+    })
+  }, [categories.length])
+
+  // Rezepte aus Supabase laden (mit optionalem Suchbegriff/Kategorie)
+  const loadRecipes = async (query?: string, category?: string) => {
+    setLoading(true)
+    let supa = supabase.from('recipes').select('*').order('created_at', { ascending: false })
+    if (query && query.trim()) {
+      supa = supa.ilike('title', `%${query.trim()}%`)
+    }
+    if (category && category.trim()) {
+      supa = supa.eq('category', category)
+    }
+    const { data, error } = await supa
+    if (!error && data) {
+      setRecipes(data)
+    } else {
+      setRecipes([])
+    }
+    setLoading(false)
+  }
+
+  // Favoriten-Ansicht laden
+  const loadFavorites = async () => {
+    setLoading(true)
+    if (!user) return
+    // Hole alle Favoriten-IDs
+    const { data: favs, error: favError } = await supabase
+      .from('recipe_favorites')
+      .select('recipe_id')
+      .eq('user_id', user.id)
+    if (favError || !favs) {
+      setRecipes([])
+      setLoading(false)
+      return
+    }
+    const favIds = favs.map((f: any) => f.recipe_id)
+    if (favIds.length === 0) {
+      setRecipes([])
+      setLoading(false)
+      return
+    }
+    // Hole alle Rezepte mit diesen IDs
+    const { data: favRecipes, error: recError } = await supabase
+      .from('recipes')
+      .select('*')
+      .in('id', favIds)
+      .order('created_at', { ascending: false })
+    if (!recError && favRecipes) {
+      setRecipes(favRecipes)
+    } else {
+      setRecipes([])
+    }
+    setLoading(false)
+  }
+
+  // Suche und Filter
   const handleSearch = () => {
-    searchRecipes(searchQuery, selectedCategory, selectedArea)
+    loadRecipes(searchQuery, selectedCategory)
   }
 
   useEffect(() => {
     const delayedSearch = setTimeout(() => {
-      if (searchQuery.trim() || selectedCategory || selectedArea) {
-        searchRecipes(searchQuery, selectedCategory, selectedArea)
-      }
+      loadRecipes(searchQuery, selectedCategory)
     }, 500)
-
     return () => clearTimeout(delayedSearch)
-  }, [searchQuery, selectedCategory, selectedArea, searchRecipes])
+  }, [searchQuery, selectedCategory])
 
-  const viewRecipe = (recipe: Recipe) => {
-    // For now, open the source URL in a new tab
-    // In a full implementation, we'd create a detailed recipe page
-    if (recipe.sourceUrl) {
-      window.open(recipe.sourceUrl, '_blank')
-    } else if (recipe.youtubeUrl) {
-      window.open(recipe.youtubeUrl, '_blank')
+  // Favorit toggeln
+  const toggleFavorite = async (recipeId: string) => {
+    if (!user) return
+    setFavLoading(recipeId)
+    if (favoriteIds.includes(recipeId)) {
+      // Entfernen
+      await supabase
+        .from('recipe_favorites')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('recipe_id', recipeId)
+      setFavoriteIds(favoriteIds.filter((id) => id !== recipeId))
+    } else {
+      // Hinzufügen
+      await supabase
+        .from('recipe_favorites')
+        .insert({ user_id: user.id, recipe_id: recipeId })
+      setFavoriteIds([...favoriteIds, recipeId])
     }
+    setFavLoading(null)
   }
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="w-full px-4 pt-4 pb-20">
-        {/* Search and Filters */}
-        <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg p-6 mb-6">
-          <div className="space-y-4">
-            <Input
-              label="Rezepte suchen"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Zutaten, Gericht oder Küche eingeben..."
-              className="rounded-xl border-green-100 focus:border-green-500 focus:ring-green-500"
-            />
-
-            <Select
-              label="Kategorie"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              options={[
-                { value: '', label: 'Alle Kategorien' },
-                { value: 'Beef', label: 'Rindfleisch' },
-                { value: 'Chicken', label: 'Hähnchen' },
-                { value: 'Dessert', label: 'Dessert' },
-                { value: 'Lamb', label: 'Lamm' },
-                { value: 'Pasta', label: 'Pasta' },
-                { value: 'Pork', label: 'Schweinefleisch' },
-                { value: 'Seafood', label: 'Meeresfrüchte' },
-                { value: 'Side', label: 'Beilage' },
-                { value: 'Starter', label: 'Vorspeise' },
-                { value: 'Vegan', label: 'Vegan' },
-                { value: 'Vegetarian', label: 'Vegetarisch' },
-              ]}
-            />
-
-            <Select
-              label="Küche"
-              value={selectedArea}
-              onChange={(e) => setSelectedArea(e.target.value)}
-              options={[
-                { value: '', label: 'Alle Küchen' },
-                { value: 'American', label: 'Amerikanisch' },
-                { value: 'British', label: 'Britisch' },
-                { value: 'Canadian', label: 'Kanadisch' },
-                { value: 'Chinese', label: 'Chinesisch' },
-                { value: 'Croatian', label: 'Kroatisch' },
-                { value: 'Dutch', label: 'Niederländisch' },
-                { value: 'Egyptian', label: 'Ägyptisch' },
-                { value: 'French', label: 'Französisch' },
-                { value: 'Greek', label: 'Griechisch' },
-                { value: 'Indian', label: 'Indisch' },
-                { value: 'Irish', label: 'Irisch' },
-                { value: 'Italian', label: 'Italienisch' },
-                { value: 'Jamaican', label: 'Jamaikanisch' },
-                { value: 'Japanese', label: 'Japanisch' },
-                { value: 'Kenyan', label: 'Kenianisch' },
-                { value: 'Malaysian', label: 'Malaysisch' },
-                { value: 'Mexican', label: 'Mexikanisch' },
-                { value: 'Moroccan', label: 'Marokkanisch' },
-                { value: 'Polish', label: 'Polnisch' },
-                { value: 'Portuguese', label: 'Portugiesisch' },
-                { value: 'Russian', label: 'Russisch' },
-                { value: 'Spanish', label: 'Spanisch' },
-                { value: 'Thai', label: 'Thailändisch' },
-                { value: 'Tunisian', label: 'Tunesisch' },
-                { value: 'Turkish', label: 'Türkisch' },
-                { value: 'Vietnamese', label: 'Vietnamesisch' },
-              ]}
-            />
-          </div>
-
-          <div className="mt-6 flex space-x-3">
-            <Button onClick={handleSearch} disabled={loading} className="flex-1">
-              Rezepte suchen
-            </Button>
-            <Button variant="outline" onClick={loadRandomRecipes} disabled={loading} className="flex-1">
-              Zufällige Rezepte
-            </Button>
-          </div>
+      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur px-4 pt-4 pb-2 border-b border-green-100">
+        <Input
+          label={undefined}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Rezepte, Zutaten oder Kategorie suchen..."
+          className="rounded-xl border-green-100 focus:border-green-500 focus:ring-green-500"
+        />
+        <div className="mt-3 flex overflow-x-auto gap-2 pb-2 hide-scrollbar">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              className={cn(
+                "px-4 py-2 rounded-full border text-sm whitespace-nowrap transition-colors",
+                selectedCategory === cat
+                  ? "bg-green-600 text-white border-green-600 shadow"
+                  : "bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
+              )}
+              onClick={() => setSelectedCategory(selectedCategory === cat ? '' : cat)}
+              type="button"
+            >
+              {cat}
+            </button>
+          ))}
         </div>
-
-        {/* Results */}
+      </div>
+      <div className="flex justify-end px-4 pt-2">
+        <button
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-full border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 transition-colors text-sm font-medium shadow-sm",
+            selectedCategory === 'Favoriten' && "bg-green-600 text-white border-green-600"
+          )}
+          onClick={() => {
+            setSelectedCategory('Favoriten')
+            loadFavorites()
+          }}
+          type="button"
+        >
+          <Heart size={18} className={selectedCategory === 'Favoriten' ? 'fill-white' : 'fill-green-500'} />
+          Favoriten
+        </button>
+      </div>
+      <div className="px-4 pt-4 pb-20">
+        {/* Rezepte Grid */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <LoadingSpinner size="lg" />
           </div>
         ) : recipes.length === 0 ? (
-          <div className="text-center py-12">
-            <span className="text-4xl mb-4 block">🍳</span>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Rezepte gefunden</h3>
-            <p className="text-gray-600">Versuche deine Suchbegriffe oder Filter anzupassen</p>
-          </div>
+          <div className="text-center py-12 text-gray-500 text-base">Keine Rezepte gefunden</div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
             {recipes.map((recipe, index) => (
-              <div key={`${recipe.id}-${index}`} className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg overflow-hidden">
-                <div className="w-full bg-gray-100 flex items-center justify-center" style={{ aspectRatio: '4/3' }}>
-                  {recipe.image ? (
-                    <Image
-                      src={recipe.image}
+              <div key={`${recipe.id}-${index}`} className="relative bg-white rounded-2xl border border-green-100 shadow-sm overflow-hidden group">
+                <a
+                  href={recipe.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block relative w-full aspect-[4/3] bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  tabIndex={0}
+                >
+                  {recipe.image_url ? (
+                    <img
+                      src={recipe.image_url}
                       alt={recipe.title}
                       width={320}
                       height={240}
@@ -215,60 +232,51 @@ export default function RecipesPage() {
                         const target = e.target as HTMLImageElement
                         target.src = '/placeholder-recipe.jpg'
                       }}
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <div className="w-full h-full bg-green-50 flex items-center justify-center">
-                      <span className="text-4xl">🍽️</span>
+                      {/* Dezentes Icon statt Emoji */}
                     </div>
                   )}
-                  <div className="absolute top-3 right-3">
-                    <span className="bg-green-600 text-white text-xs px-3 py-1 rounded-full">
-                      {recipe.category}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-4">
-                  <h3 className="font-medium text-gray-900 mb-3 text-lg leading-tight">
-                    {recipe.title}
-                  </h3>
-                  
-                  <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
-                    <span>{recipe.area}</span>
-                  </div>
-
-                  <Button
-                    className="w-full py-2 text-xs"
-                    onClick={() => viewRecipe(recipe)}
+                  <span className="absolute bottom-2 left-2 bg-green-600/80 text-white text-xs px-3 py-1 rounded-full">
+                    {recipe.category}
+                  </span>
+                </a>
+                <div className="p-2">
+                  <a
+                    href={recipe.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-gray-900 text-base leading-tight truncate hover:underline focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
-                    Rezept ansehen
-                  </Button>
+                    {recipe.title}
+                  </a>
+                  <div className="text-xs text-gray-500 mt-1 truncate">{recipe.ingredients && recipe.ingredients.join(', ')}</div>
                 </div>
+                <button
+                  className={cn(
+                    "absolute top-2 right-2 rounded-full p-1 shadow-sm transition",
+                    favoriteIds.includes(recipe.id) ? "bg-green-500/90" : "bg-white/80"
+                  )}
+                  onClick={() => toggleFavorite(recipe.id)}
+                  disabled={favLoading === recipe.id}
+                  aria-label={favoriteIds.includes(recipe.id) ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
+                >
+                  <Heart
+                    size={20}
+                    className={cn(
+                      favoriteIds.includes(recipe.id) ? "text-white fill-white" : "text-green-500",
+                      favLoading === recipe.id && "animate-pulse"
+                    )}
+                  />
+                </button>
               </div>
             ))}
           </div>
         )}
-
-        {/* Info Box */}
-        <div className="mt-8 bg-white border border-green-200 rounded-2xl p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">Rezept-Integration</h3>
-          <p className="text-gray-700 mb-4 text-sm leading-relaxed">
-            Bald kannst du Rezept-Zutaten mit einem Klick direkt in dein Ernährungstagebuch übertragen! 
-            Wir arbeiten an detaillierten Nährwertanalysen und Portionskontrollen.
-          </p>
-          <div className="text-sm text-gray-600">
-            <p className="font-medium text-gray-800 mb-2">Demnächst:</p>
-            <ul className="list-disc list-inside space-y-1">
-              <li>Ein-Klick Rezept-Logging ins Tagebuch</li>
-              <li>Detaillierte Nährwerte pro Portion</li>
-              <li>Portionsgrößen anpassen</li>
-              <li>Lieblingsrezepte speichern</li>
-              <li>KI-basierte Rezeptempfehlungen für deine Ziele</li>
-            </ul>
-          </div>
-        </div>
       </div>
-      
       <Navigation />
     </div>
   )
