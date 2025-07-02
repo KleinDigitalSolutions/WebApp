@@ -40,7 +40,7 @@ export default function LoginPage() {
 
       if (data.user) {
         setUser(data.user)
-        router.push('/')
+        router.push('/dashboard')
       }
     } catch {
       setError('Ein unerwarteter Fehler ist aufgetreten')
