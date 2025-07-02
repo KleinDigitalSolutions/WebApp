@@ -185,10 +185,10 @@ Wie kann ich dir heute helfen? 🌱`,
                       {message.role === 'assistant' ? (
                         <ReactMarkdown
                           components={{
-                            strong: ({node, ...props}) => <strong className="text-green-700 font-semibold" {...props} />,
-                            li: ({node, ...props}) => <li className="ml-4 list-disc" {...props} />,
-                            ul: ({node, ...props}) => <ul className="mb-2 ml-2" {...props} />,
-                            p: ({node, ...props}) => <p className="mb-2" {...props} />,
+                            strong: (props) => <strong className="text-green-700 font-semibold" {...props} />,
+                            li: (props) => <li className="ml-4 list-disc" {...props} />,
+                            ul: (props) => <ul className="mb-2 ml-2" {...props} />,
+                            p: (props) => <p className="mb-2" {...props} />,
                           }}
                         >
                           {message.content}
