@@ -83,9 +83,9 @@ export default function LandingPage() {
           60% { transform: translateY(0); }
         }
       `}</style>
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50" style={{ scrollBehavior: 'smooth' }}>
+      <div className="min-h-screen bg-gradient-to-br from-emerald-500 to-emerald-600" style={{ scrollBehavior: 'smooth' }}>
         {/* Hero Section */}
-        <section className="min-h-screen bg-gradient-to-br from-emerald-500 to-emerald-600 flex flex-col items-center justify-center relative overflow-hidden">
+        <section className="min-h-screen bg-transparent flex flex-col items-center justify-center relative overflow-hidden">
           <div className="text-center z-10">
             <div className="mb-8">
               <div className="relative flex justify-center items-center">
@@ -135,22 +135,21 @@ export default function LandingPage() {
         </section>
 
         {/* Features Section */}
-        <section className="py-20 bg-white relative z-10">
-
+        <section className="py-20 bg-transparent relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-black mb-4">
+              <h2 className="text-4xl font-bold text-white mb-4">
                 Alles was du für eine gesunde Ernährung brauchst
               </h2>
-              <p className="text-xl text-black max-w-3xl mx-auto">
+              <p className="text-xl text-white max-w-3xl mx-auto">
                 Von intelligentem Barcode-Scanning bis hin zu personalisierten KI-Empfehlungen – 
                 TrackFood macht gesunde Ernährung einfach und smart.
               </p>
             </div>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
               {/* Feature 1: KI-Ernährungsberatung */}
-              <div className="p-8 bg-emerald-600/80 backdrop-blur-md rounded-2xl shadow-lg shadow-inner border border-emerald-400/60">
-                <Brain className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
+              <div className="relative p-8 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_4px_32px_0_rgba(16,185,129,0.15)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-200/20 before:to-emerald-400/10 before:rounded-2xl before:pointer-events-none">
+                <Brain className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">KI-Ernährungsberatung</h3>
                 <p className="text-emerald-50 leading-relaxed">
                   Chatte mit deinem persönlichen KI-Experten! Die KI analysiert automatisch deine letzten 7 Tage, erkennt Muster und kritische Ernährungsgewohnheiten und gibt dir sofort umsetzbare, individuelle Tipps – perfekt abgestimmt auf deine Ziele.
@@ -161,8 +160,8 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 2: Persönlicher KI-Fitness-Coach */}
-              <div className="p-8 bg-emerald-600/80 backdrop-blur-md rounded-2xl shadow-lg shadow-inner border border-emerald-400/60">
-                <Dumbbell className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
+              <div className="relative p-8 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_4px_32px_0_rgba(16,185,129,0.15)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-200/20 before:to-emerald-400/10 before:rounded-2xl before:pointer-events-none">
+                <Dumbbell className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Persönlicher KI-Fitness-Coach</h3>
                 <p className="text-emerald-50 leading-relaxed">
                   Deine KI erstellt individuelle Trainingspläne, gibt Tipps für mehr Bewegung und motiviert dich zu einem aktiven Lebensstil. Kombiniere Ernährung & Fitness für maximale Erfolge – egal ob Abnehmen, Muskelaufbau oder einfach gesünder leben.
@@ -173,8 +172,8 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 3: Kalorien- & Ziel-Tracking */}
-              <div className="p-8 bg-emerald-600/80 backdrop-blur-md rounded-2xl shadow-lg shadow-inner border border-emerald-400/60">
-                <Target className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
+              <div className="relative p-8 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_4px_32px_0_rgba(16,185,129,0.15)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-200/20 before:to-emerald-400/10 before:rounded-2xl before:pointer-events-none">
+                <Target className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Kalorien- & Ziel-Tracking</h3>
                 <p className="text-emerald-50 leading-relaxed">
                   Verfolge deine Kalorien, Makronährstoffe und Fortschritte – perfekt zum Abnehmen, Muskelaufbau oder Gewicht halten. Setze individuelle Ziele und erhalte smarte Auswertungen.
@@ -185,8 +184,8 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 4: Rezepte & Inspiration */}
-              <div className="p-8 bg-emerald-600/80 backdrop-blur-md rounded-2xl shadow-lg shadow-inner border border-emerald-400/60">
-                <Salad className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
+              <div className="relative p-8 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_4px_32px_0_rgba(16,185,129,0.15)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-200/20 before:to-emerald-400/10 before:rounded-2xl before:pointer-events-none">
+                <Salad className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Rezepte & Inspiration</h3>
                 <p className="text-emerald-50 leading-relaxed">
                   Entdecke gesunde Rezepte mit Nährwertangaben. Lass dich inspirieren und übernimm Rezepte direkt in dein Tagebuch – für mehr Abwechslung und Genuss beim Abnehmen oder Muskelaufbau.
@@ -197,8 +196,8 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 5: Barcode-Scanner */}
-              <div className="p-8 bg-emerald-600/80 backdrop-blur-md rounded-2xl shadow-lg shadow-inner border border-emerald-400/60">
-                <QrCode className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
+              <div className="relative p-8 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_4px_32px_0_rgba(16,185,129,0.15)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-200/20 before:to-emerald-400/10 before:rounded-2xl before:pointer-events-none">
+                <QrCode className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Barcode-Scanner</h3>
                 <p className="text-emerald-50 leading-relaxed">
                   Scanne jeden Barcode und erhalte sofort Nährwerte! Mit 2500+ deutschen Produkten
@@ -210,8 +209,8 @@ export default function LandingPage() {
               </div>
 
               {/* Feature 6: Deutsche Produktdatenbank */}
-              <div className="p-8 bg-emerald-600/80 backdrop-blur-md rounded-2xl shadow-lg shadow-inner border border-emerald-400/60">
-                <Database className="w-14 h-14 text-white mb-6" /> {/* Icon direkt, mb-6 auf Icon */}
+              <div className="relative p-8 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_4px_32px_0_rgba(16,185,129,0.15)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-200/20 before:to-emerald-400/10 before:rounded-2xl before:pointer-events-none">
+                <Database className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
                 <h3 className="text-xl font-semibold text-white mb-3">Deutsche Produktdatenbank</h3>
                 <p className="text-emerald-50 leading-relaxed">
                   Über 2500 Produkte aus OpenFoodFacts. Alle großen Marken: Haribo, Kinder, ja!,
@@ -226,12 +225,12 @@ export default function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-r from-emerald-600 to-emerald-700 relative z-10">
+        <section className="py-20 bg-transparent relative z-10">
           <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Bereit für eine gesündere Zukunft?
             </h2>
-            <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-white mb-8 max-w-2xl mx-auto">
               Starte heute deine Reise zu einer besseren Ernährung. 
               Kostenlos, ohne Verpflichtungen und mit sofortigen Ergebnissen.
             </p>
