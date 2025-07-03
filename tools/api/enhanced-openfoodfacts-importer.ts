@@ -83,6 +83,33 @@ class EnhancedOpenFoodFactsImporter {
     { brand: 'mestemacher', priority: 3, categories: ['bread'], expectedProducts: 8 },
     { brand: 'harry-anno', priority: 3, categories: ['bread'], expectedProducts: 5 },
     { brand: 'goldentoast', priority: 3, categories: ['bread', 'toast'], expectedProducts: 8 },
+    // Zusätzliche Marken (User-Wunsch, Stand Juli 2025)
+    { brand: 'barilla', priority: 4, categories: ['pasta'], expectedProducts: 20 },
+    { brand: 'genuss pur', priority: 3, categories: ['pantry'], expectedProducts: 10 },
+    { brand: 'lien ying', priority: 3, categories: ['asian', 'sauces'], expectedProducts: 10 },
+    { brand: 'de cecco', priority: 4, categories: ['pasta'], expectedProducts: 10 },
+    { brand: 'reis fit', priority: 3, categories: ['rice'], expectedProducts: 10 },
+    { brand: "ben's original", priority: 3, categories: ['rice'], expectedProducts: 10 },
+    { brand: 'oryza', priority: 3, categories: ['rice'], expectedProducts: 10 },
+    { brand: 'pfanni', priority: 3, categories: ['potato', 'pantry'], expectedProducts: 10 },
+    { brand: 'nippon', priority: 3, categories: ['snacks', 'chocolate'], expectedProducts: 10 },
+    { brand: 'lindt', priority: 4, categories: ['chocolate'], expectedProducts: 20 },
+    { brand: 'schogetten', priority: 3, categories: ['chocolate'], expectedProducts: 10 },
+    { brand: 'merci', priority: 3, categories: ['chocolate'], expectedProducts: 10 },
+    { brand: 'riesen', priority: 3, categories: ['chocolate', 'candy'], expectedProducts: 10 },
+    { brand: 'knoppers', priority: 3, categories: ['snacks', 'chocolate'], expectedProducts: 10 },
+    { brand: 'doritos', priority: 3, categories: ['snacks'], expectedProducts: 10 },
+    { brand: 'lätta', priority: 3, categories: ['dairy', 'spreads'], expectedProducts: 10 },
+    { brand: 'andechser', priority: 3, categories: ['dairy'], expectedProducts: 10 },
+    { brand: 'kerrygold', priority: 3, categories: ['dairy'], expectedProducts: 10 },
+    { brand: 'butaris', priority: 3, categories: ['dairy', 'fat'], expectedProducts: 10 },
+    { brand: 'becel', priority: 3, categories: ['dairy', 'spreads'], expectedProducts: 10 },
+    { brand: 'ehrmann', priority: 3, categories: ['dairy', 'yogurt'], expectedProducts: 10 },
+    { brand: 'alpro', priority: 4, categories: ['dairy', 'vegan'], expectedProducts: 15 },
+    { brand: 'esn', priority: 3, categories: ['supplements', 'protein'], expectedProducts: 10 },
+    { brand: 'nimm2', priority: 3, categories: ['candy'], expectedProducts: 10 },
+    { brand: 'alnatura', priority: 4, categories: ['bio', 'pantry'], expectedProducts: 20 },
+    { brand: 'demeter', priority: 4, categories: ['bio', 'pantry'], expectedProducts: 15 },
   ]
 
   private async sleep(ms: number): Promise<void> {
@@ -158,7 +185,7 @@ class EnhancedOpenFoodFactsImporter {
     }
   }
 
-  async importTopGermanBrands(maxProducts = 2000): Promise<any[]> {
+  async importTopGermanBrands(maxProducts = 10000): Promise<any[]> {
     console.log(`🇩🇪 Starting TOP GERMAN BRANDS import (max ${maxProducts} products)...`)
     
     const allProducts: any[] = []
@@ -174,7 +201,7 @@ class EnhancedOpenFoodFactsImporter {
       try {
         let page = 1
         let brandProducts: any[] = []
-        const maxPagesPerBrand = 3 // Begrenze Seiten pro Marke
+        const maxPagesPerBrand = 10 // Begrenze Seiten pro Marke (erhöht für mehr Produkte)
         
         while (brandProducts.length < brandConfig.expectedProducts && page <= maxPagesPerBrand) {
           const response = await this.fetchProductsByBrand(brandConfig.brand, page, 50)
