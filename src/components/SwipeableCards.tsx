@@ -305,15 +305,13 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
   }
 
   return (
-    <div className="bg-emerald-100/80 rounded-3xl p-6 shadow-lg border border-emerald-200/60">
+    <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">Verzicht-Challenge</h3>
-        <div className="text-sm text-gray-600">
+        <h3 className="text-lg font-semibold text-white">Verzicht-Challenge</h3>
+        <div className="text-sm text-white/80">
           {cards.length} von {swipeCards.length} übrig
         </div>
       </div>
-
-      {/* Swipe-Container: touch-action pan-x für besseres Swipe-Feeling auf Mobile */}
       <div
         className="relative h-64 flex items-center justify-center"
         style={{ touchAction: 'pan-x' }}
@@ -322,7 +320,7 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
           <div
             key={`${card.id}-${index}`}
             ref={el => { cardRefs.current[index] = el }}
-            className={`absolute w-48 h-56 ${card.bgColor} rounded-2xl shadow-lg cursor-grab active:cursor-grabbing transition-all duration-300 ease-out`}
+            className={`absolute w-48 h-56 bg-white/30 rounded-2xl shadow-lg border border-white/20 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out backdrop-blur-xl`}
             style={getCardStyle(index)}
             onTouchStart={(e) => handleTouchStart(e, index)}
             onTouchMove={(e) => handleTouchMove(e, index)}
@@ -346,17 +344,10 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
             }}
           >
             <div className="h-full flex flex-col items-center justify-center p-6 text-center">
-              <div className={`${card.color} mb-4`}>
-                {card.icon}
-              </div>
-              <h4 className="text-lg font-bold text-gray-900 mb-2">
-                {card.title}
-              </h4>
-              <p className="text-sm text-gray-600">
-                {card.description}
-              </p>
+              <div className={`${card.color} mb-4`}>{card.icon}</div>
+              <h4 className="text-lg font-bold text-white mb-2">{card.title}</h4>
+              <p className="text-sm text-white/80">{card.description}</p>
             </div>
-
             {/* Swipe indicators */}
             {index === currentIndex && (
               <>
@@ -377,12 +368,10 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
           </div>
         ))}
       </div>
-
       <div className="mt-6 text-center">
-        <p className="text-xs text-gray-600 mb-3">
+        <p className="text-xs text-white/70 mb-3">
           Swipe nach rechts = Ja, ich verzichte | Swipe nach links = Nein, nicht heute
         </p>
-        
         <div className="flex justify-center space-x-4">
           <button
             onClick={() => animateCardOut('left')}

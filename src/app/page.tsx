@@ -133,7 +133,8 @@ export default function LandingPage() {
 
         {/* Features Section */}
         <section className="py-10 md:py-16 bg-transparent relative z-10">
-          <div className="max-w-5xl mx-auto px-2 sm:px-6 lg:px-8">
+          {/* Test-Muster-Hintergrund für gesamten Features-Bereich entfernt */}
+          <div className="max-w-5xl mx-auto px-2 sm:px-6 lg:px-8 relative" style={{zIndex:1}}>
             <div className="text-center mb-12 md:mb-16">
               <h2 className="text-4xl font-bold text-white mb-4">
                 Alles was du für eine gesunde Ernährung brauchst
@@ -143,64 +144,74 @@ export default function LandingPage() {
                 TrackFood macht gesunde Ernährung einfach und smart.
               </p>
             </div>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 relative" style={{zIndex:1}}>
               {/* Feature 1: KI-Ernährungsberatung */}
-              <div className="relative p-6 md:p-5 lg:p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg transition-all duration-200 md:hover:scale-[1.03] lg:hover:scale-[1.03] min-h-0 h-auto flex flex-col">
-                <Brain className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
-                <h3 className="text-xl font-semibold text-white mb-3">KI-Ernährungsberatung</h3>
-                <p className="text-emerald-50 leading-relaxed">
-                  Chatte mit deinem persönlichen KI-Experten! Die KI analysiert automatisch deine letzten 7 Tage, erkennt Muster und kritische Ernährungsgewohnheiten und gibt dir sofort umsetzbare, individuelle Tipps – perfekt abgestimmt auf deine Ziele.
-                </p>
-                <div className="mt-4 text-sm text-emerald-100 font-medium">
-                  Automatische Wochenanalyse • Kritische Hinweise & Empfehlungen
+              <div className="relative p-6 md:p-5 lg:p-6 rounded-3xl border border-white/30 shadow-2xl transition-all duration-200 flex flex-col overflow-hidden bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+                <div className="relative z-10">
+                  <Brain className="w-14 h-14 text-white mb-6 relative z-10" />
+                  <h3 className="text-xl font-semibold text-white mb-3">KI-Ernährungsberatung</h3>
+                  <p className="text-emerald-50 leading-relaxed">
+                    Chatte mit deinem persönlichen KI-Experten! Die KI analysiert automatisch deine letzten 7 Tage, erkennt Muster und kritische Ernährungsgewohnheiten und gibt dir sofort umsetzbare, individuelle Tipps – perfekt abgestimmt auf deine Ziele.
+                  </p>
+                  <div className="mt-4 text-sm text-emerald-100 font-medium">
+                    Automatische Wochenanalyse • Kritische Hinweise & Empfehlungen
+                  </div>
                 </div>
               </div>
 
               {/* Feature 2: Persönlicher KI-Fitness-Coach */}
-              <div className="relative p-6 md:p-5 lg:p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg transition-all duration-200 md:hover:scale-[1.03] lg:hover:scale-[1.03] min-h-0 h-auto flex flex-col">
-                <Dumbbell className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
-                <h3 className="text-xl font-semibold text-white mb-3">Persönlicher KI-Fitness-Coach</h3>
-                <p className="text-emerald-50 leading-relaxed">
-                  Deine KI erstellt individuelle Trainingspläne, gibt Tipps für mehr Bewegung und motiviert dich zu einem aktiven Lebensstil. Kombiniere Ernährung & Fitness für maximale Erfolge – egal ob Abnehmen, Muskelaufbau oder einfach gesünder leben.
-                </p>
-                <div className="mt-4 text-sm text-emerald-100 font-medium">
-                  Trainingspläne • Motivation • Fortschritts-Feedback
+              <div className="relative p-6 md:p-5 lg:p-6 rounded-3xl border border-white/30 shadow-2xl transition-all duration-200 flex flex-col overflow-hidden bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+                <div className="relative z-10">
+                  <Dumbbell className="w-14 h-14 text-white mb-6 relative z-10" />
+                  <h3 className="text-xl font-semibold text-white mb-3">Persönlicher KI-Fitness-Coach</h3>
+                  <p className="text-emerald-50 leading-relaxed">
+                    Deine KI erstellt individuelle Trainingspläne, gibt Tipps für mehr Bewegung und motiviert dich zu einem aktiven Lebensstil. Kombiniere Ernährung & Fitness für maximale Erfolge – egal ob Abnehmen, Muskelaufbau oder einfach gesünder leben.
+                  </p>
+                  <div className="mt-4 text-sm text-emerald-100 font-medium">
+                    Trainingspläne • Motivation • Fortschritts-Feedback
+                  </div>
                 </div>
               </div>
 
               {/* Feature 3: Kalorien- & Ziel-Tracking */}
-              <div className="relative p-6 md:p-5 lg:p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg transition-all duration-200 md:hover:scale-[1.03] lg:hover:scale-[1.03] min-h-0 h-auto flex flex-col">
-                <Target className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
-                <h3 className="text-xl font-semibold text-white mb-3">Kalorien- & Ziel-Tracking</h3>
-                <p className="text-emerald-50 leading-relaxed">
-                  Verfolge deine Kalorien, Makronährstoffe und Fortschritte – perfekt zum Abnehmen, Muskelaufbau oder Gewicht halten. Setze individuelle Ziele und erhalte smarte Auswertungen.
-                </p>
-                <div className="mt-4 text-sm text-emerald-100 font-medium">
-                  Automatische Analyse • Zielorientierte Empfehlungen
+              <div className="relative p-6 md:p-5 lg:p-6 rounded-3xl border border-white/30 shadow-2xl transition-all duration-200 flex flex-col overflow-hidden bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+                <div className="relative z-10">
+                  <Target className="w-14 h-14 text-white mb-6 relative z-10" />
+                  <h3 className="text-xl font-semibold text-white mb-3">Kalorien- & Ziel-Tracking</h3>
+                  <p className="text-emerald-50 leading-relaxed">
+                    Verfolge deine Kalorien, Makronährstoffe und Fortschritte – perfekt zum Abnehmen, Muskelaufbau oder Gewicht halten. Setze individuelle Ziele und erhalte smarte Auswertungen.
+                  </p>
+                  <div className="mt-4 text-sm text-emerald-100 font-medium">
+                    Automatische Analyse • Zielorientierte Empfehlungen
+                  </div>
                 </div>
               </div>
 
               {/* Feature 4: Rezepte & Inspiration */}
-              <div className="relative p-6 md:p-5 lg:p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg transition-all duration-200 md:hover:scale-[1.03] lg:hover:scale-[1.03] min-h-0 h-auto flex flex-col">
-                <Salad className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
-                <h3 className="text-xl font-semibold text-white mb-3">Rezepte & Inspiration</h3>
-                <p className="text-emerald-50 leading-relaxed">
-                  Entdecke gesunde Rezepte mit Nährwertangaben. Lass dich inspirieren und übernimm Rezepte direkt in dein Tagebuch – für mehr Abwechslung und Genuss beim Abnehmen oder Muskelaufbau.
-                </p>
-                <div className="mt-4 text-sm text-emerald-100 font-medium">
-                  Gesunde Rezepte • Direkt ins Tagebuch übernehmen
+              <div className="relative p-6 md:p-5 lg:p-6 rounded-3xl border border-white/30 shadow-2xl transition-all duration-200 flex flex-col overflow-hidden bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+                <div className="relative z-10">
+                  <Salad className="w-14 h-14 text-white mb-6 relative z-10" />
+                  <h3 className="text-xl font-semibold text-white mb-3">Rezepte & Inspiration</h3>
+                  <p className="text-emerald-50 leading-relaxed">
+                    Entdecke gesunde Rezepte mit Nährwertangaben. Lass dich inspirieren und übernimm Rezepte direkt in dein Tagebuch – für mehr Abwechslung und Genuss beim Abnehmen oder Muskelaufbau.
+                  </p>
+                  <div className="mt-4 text-sm text-emerald-100 font-medium">
+                    Gesunde Rezepte • Direkt ins Tagebuch übernehmen
+                  </div>
                 </div>
               </div>
 
               {/* Feature 5: Barcode-Scanner */}
-              <div className="relative p-6 md:p-5 lg:p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg transition-all duration-200 md:hover:scale-[1.03] lg:hover:scale-[1.03] min-h-0 h-auto flex flex-col">
-                <QrCode className="w-14 h-14 text-white mb-6 relative z-10" /> {/* Icon direkt, mb-6 auf Icon */}
-                <h3 className="text-xl font-semibold text-white mb-3">Barcode-Scanner</h3>
-                <p className="text-emerald-50 leading-relaxed">
-                  Scanne jeden Barcode und erhalte sofort Nährwerte! Mit deutschen Produkten in unserer Datenbank.
-                </p>
-                <div className="mt-4 text-sm text-emerald-100 font-medium">
-                  Mobile & Safari optimiert • PWA-kompatibel
+              <div className="relative p-6 md:p-5 lg:p-6 rounded-3xl border border-white/30 shadow-2xl transition-all duration-200 flex flex-col overflow-hidden bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+                <div className="relative z-10">
+                  <QrCode className="w-14 h-14 text-white mb-6 relative z-10" />
+                  <h3 className="text-xl font-semibold text-white mb-3">Barcode-Scanner</h3>
+                  <p className="text-emerald-50 leading-relaxed">
+                    Scanne jeden Barcode und erhalte sofort Nährwerte! Mit deutschen Produkten in unserer Datenbank.
+                  </p>
+                  <div className="mt-4 text-sm text-emerald-100 font-medium">
+                    Mobile & Safari optimiert • PWA-kompatibel
+                  </div>
                 </div>
               </div>
             </div>

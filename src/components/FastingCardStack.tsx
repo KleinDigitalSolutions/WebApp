@@ -189,10 +189,10 @@ export default function FastingCardStack() {
   const isActiveSession = currentSession && currentSession.target_duration_hours === currentType.duration
 
   return (
-    <div className="bg-emerald-100/80 rounded-3xl p-6 shadow-lg border border-emerald-200/60">
+    <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-          <Timer className="h-5 w-5 mr-2 text-purple-600" />
+        <h3 className="text-lg font-semibold text-white flex items-center">
+          <Timer className="h-5 w-5 mr-2 text-purple-300" />
           Fasten
         </h3>
         
@@ -225,7 +225,7 @@ export default function FastingCardStack() {
       </div>
 
       {/* Karten Container */}
-      <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 min-h-[300px]">
+      <div className="bg-white/30 rounded-3xl p-8 shadow-lg border border-white/20 min-h-[300px] backdrop-blur-xl">
         
         {/* Progress Circle */}
         <div className="flex flex-col items-center mb-8">
@@ -272,8 +272,8 @@ export default function FastingCardStack() {
         {/* Card Info */}
         <div className="text-center space-y-6">
           <div>
-            <h4 className="text-2xl font-bold text-gray-900 mb-2">{currentType.name}</h4>
-            <p className="text-gray-600">{currentType.description}</p>
+            <h4 className="text-2xl font-bold text-white mb-2">{currentType.name}</h4>
+            <p className="text-white/80">{currentType.description}</p>
           </div>
 
           {/* Buttons */}
@@ -304,7 +304,7 @@ export default function FastingCardStack() {
       </div>
 
       <div className="mt-4 text-center">
-        <p className="text-xs text-gray-600">
+        <p className="text-xs text-white/70">
           Nutze die Pfeile um zwischen den Fasten-Arten zu wechseln
         </p>
       </div>

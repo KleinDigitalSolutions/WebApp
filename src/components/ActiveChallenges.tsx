@@ -133,61 +133,55 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
 
   if (challenges.length === 0) {
     return (
-      <div className="bg-emerald-100/80 rounded-3xl p-6 shadow-lg border border-emerald-200/60">
+      <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
         <div className="text-center py-8">
-          <Target className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Keine aktiven Challenges</h3>
-          <p className="text-gray-600 text-sm">Starte eine Challenge indem du eine Karte nach rechts swipst!</p>
+          <Target className="h-12 w-12 text-white/60 mx-auto mb-3" />
+          <h3 className="text-lg font-semibold text-white mb-2">Keine aktiven Challenges</h3>
+          <p className="text-white/80 text-sm">Starte eine Challenge indem du eine Karte nach rechts swipst!</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-emerald-100/80 rounded-3xl p-6 shadow-lg border border-emerald-200/60">
+    <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-          <Trophy className="h-5 w-5 mr-2 text-yellow-600" />
+        <h3 className="text-lg font-semibold text-white flex items-center">
+          <Trophy className="h-5 w-5 mr-2 text-yellow-300" />
           Aktive Challenges
         </h3>
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-white/80">
           {challenges.length} aktiv
         </div>
       </div>
-
       <div className="space-y-4">
         {challenges.map((challenge) => {
           const colors = challengeColors[challenge.challenge_type]
           const icon = challengeIcons[challenge.challenge_type]
           const progressPercentage = getProgressPercentage(challenge)
           const timeSince = calculateTimeSince(challenge.start_date)
-          
           return (
-            <div key={challenge.id} className={`${colors.bg} rounded-2xl p-4 border border-gray-100`}>
+            <div key={challenge.id} className="bg-white/30 rounded-2xl p-4 border border-white/20 shadow-sm backdrop-blur-xl">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
-                  <div className={`${colors.text}`}>
-                    {icon}
-                  </div>
+                  <div className={`${colors.text}`}>{icon}</div>
                   <div>
-                    <h4 className="font-semibold text-gray-900">{challenge.challenge_name}</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-semibold text-white">{challenge.challenge_name}</h4>
+                    <p className="text-sm text-white/80">
                       Abstinent seit {timeSince.value} {timeSince.unit}
                     </p>
                   </div>
                 </div>
-                
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">
+                  <div className="text-2xl font-bold text-white">
                     {timeSince.value}
                   </div>
-                  <div className="text-xs text-gray-500">{timeSince.unit}</div>
+                  <div className="text-xs text-white/60">{timeSince.unit}</div>
                 </div>
               </div>
-
               {/* Progress Bar */}
               <div className="mb-4">
-                <div className="flex justify-between text-xs text-gray-600 mb-1">
+                <div className="flex justify-between text-xs text-white/80 mb-1">
                   <span>Fortschritt zum {challenge.target_days}-Tage-Ziel</span>
                   <span>{Math.round(progressPercentage)}%</span>
                 </div>
@@ -197,11 +191,10 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
                     style={{ width: `${progressPercentage}%` }}
                   />
                 </div>
-                <div className="text-xs text-gray-600 mt-1">
+                <div className="text-xs text-white/60 mt-1">
                   Gestartet am {new Date(challenge.start_date).toLocaleDateString('de-DE')}
                 </div>
               </div>
-
               {/* Action Button */}
               <div className="flex justify-center">
                 <button
@@ -211,11 +204,10 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
                   Challenge abbrechen
                 </button>
               </div>
-
               {/* Stats */}
               {challenge.longest_streak_days > 0 && (
                 <div className="mt-3 pt-3 border-t border-white/30">
-                  <div className="flex justify-between text-xs text-gray-600">
+                  <div className="flex justify-between text-xs text-white/80">
                     <span>Längste Serie: {challenge.longest_streak_days} Tage</span>
                     <span>Versuche: {challenge.total_attempts}</span>
                   </div>

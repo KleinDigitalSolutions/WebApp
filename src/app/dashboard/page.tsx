@@ -239,7 +239,7 @@ export default function Dashboard() {
 
   return (
     <PullToRefresh onRefresh={loadData}>
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-500 to-emerald-600" style={{scrollBehavior:'smooth'}}>
         {/* Mobile Header */}
         <div className="sticky top-0 z-40 bg-emerald-100/80 backdrop-blur-xl border-b border-emerald-200/60">
           <div className="px-4 py-4">
@@ -272,7 +272,7 @@ export default function Dashboard() {
 
       <div className="px-4 space-y-6 pb-6 pt-4">
         {/* Quick Stats Card */}
-        <div className="bg-emerald-100/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-emerald-200/60">
+        <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Tagesübersicht</h2>
             <div className="flex items-center text-sm text-emerald-600 font-medium">
@@ -370,7 +370,7 @@ export default function Dashboard() {
 
           {/* Macro Distribution */}
           <div className="grid grid-cols-3 gap-3">
-            <div className="text-center p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div className="text-center p-3 bg-white/30 rounded-2xl border border-white/20 shadow-sm backdrop-blur-xl">
               <div className="flex items-center justify-center mb-2">
                 <Beef className="h-5 w-5 text-emerald-600" />
               </div>
@@ -384,7 +384,7 @@ export default function Dashboard() {
               </div>
             </div>
             
-            <div className="text-center p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div className="text-center p-3 bg-white/30 rounded-2xl border border-white/20 shadow-sm backdrop-blur-xl">
               <div className="flex items-center justify-center mb-2">
                 <Wheat className="h-5 w-5 text-emerald-600" />
               </div>
@@ -398,7 +398,7 @@ export default function Dashboard() {
               </div>
             </div>
             
-            <div className="text-center p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div className="text-center p-3 bg-white/30 rounded-2xl border border-white/20 shadow-sm backdrop-blur-xl">
               <div className="flex items-center justify-center mb-2">
                 <Droplet className="h-5 w-5 text-emerald-600" />
               </div>
@@ -415,36 +415,33 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-emerald-100/80 rounded-3xl p-6 shadow-lg border border-emerald-200/60">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Schnellaktionen</h3>
+        <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+          <h3 className="text-lg font-semibold text-white mb-4">Schnellaktionen</h3>
           <div className="grid grid-cols-2 gap-3">
             <button 
               onClick={() => router.push('/diary/add')}
-              className="flex items-center justify-center p-4 bg-emerald-500 rounded-2xl text-white shadow-lg"
+              className="flex items-center justify-center p-4 bg-emerald-500/90 rounded-2xl text-white shadow-lg"
             >
               <PlusCircle className="h-6 w-6 mr-2" />
               <span className="font-medium">Hinzufügen</span>
             </button>
-            
             <button 
               onClick={() => router.push('/scanner')}
-              className="flex items-center justify-center p-4 bg-white border border-gray-200 rounded-2xl text-gray-700 shadow-sm"
+              className="flex items-center justify-center p-4 bg-white/30 border border-white/20 rounded-2xl text-white shadow-sm backdrop-blur-xl"
             >
               <Camera className="h-6 w-6 mr-2" />
               <span className="font-medium">Scannen</span>
             </button>
-            
             <button 
               onClick={() => router.push('/recipes')}
-              className="flex items-center justify-center p-4 bg-white border border-gray-200 rounded-2xl text-gray-700 shadow-sm"
+              className="flex items-center justify-center p-4 bg-white/30 border border-white/20 rounded-2xl text-white shadow-sm backdrop-blur-xl"
             >
               <Search className="h-6 w-6 mr-2" />
               <span className="font-medium">Rezepte</span>
             </button>
-            
             <button 
               onClick={() => router.push('/chat')}
-              className="flex items-center justify-center p-4 bg-white border border-gray-200 rounded-2xl text-gray-700 shadow-sm"
+              className="flex items-center justify-center p-4 bg-white/30 border border-white/20 rounded-2xl text-white shadow-sm backdrop-blur-xl"
             >
               <Sparkles className="h-6 w-6 mr-2" />
               <span className="font-medium">KI-Berater</span>
@@ -453,12 +450,12 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Meals */}
-        <div className="bg-emerald-100/80 rounded-3xl p-6 shadow-lg border border-emerald-200/60">
+        <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Heutige Mahlzeiten</h3>
+            <h3 className="text-lg font-semibold text-white">Heutige Mahlzeiten</h3>
             <button 
               onClick={() => router.push('/diary')}
-              className="flex items-center text-emerald-600 font-medium text-sm"
+              className="flex items-center text-emerald-200 font-medium text-sm"
             >
               Alle anzeigen
               <ChevronRight className="h-4 w-4 ml-1" />
@@ -467,13 +464,13 @@ export default function Dashboard() {
           
           {todayEntries.length === 0 ? (
             <div className="text-center py-8">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <PlusCircle className="h-8 w-8 text-gray-400" />
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <PlusCircle className="h-8 w-8 text-white/60" />
               </div>
-              <p className="text-gray-500 text-sm">Noch keine Mahlzeiten eingetragen</p>
+              <p className="text-white/80 text-sm">Noch keine Mahlzeiten eingetragen</p>
               <button 
                 onClick={() => router.push('/diary/add')}
-                className="mt-3 text-emerald-600 font-medium text-sm"
+                className="mt-3 text-emerald-200 font-medium text-sm"
               >
                 Erste Mahlzeit hinzufügen
               </button>
@@ -481,13 +478,13 @@ export default function Dashboard() {
           ) : (
             <div className="space-y-3">
               {todayEntries.slice(0, 3).map((entry) => (
-                <div key={entry.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl">
+                <div key={entry.id} className="flex items-center justify-between p-4 bg-white/20 rounded-2xl">
                   <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{entry.food_name}</h4>
-                    <p className="text-sm text-gray-600">{entry.calories} kcal</p>
+                    <h4 className="font-medium text-white">{entry.food_name}</h4>
+                    <p className="text-sm text-white/80">{entry.calories} kcal</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-white/60">
                       {new Date(entry.created_at).toLocaleTimeString('de-DE', { 
                         hour: '2-digit', 
                         minute: '2-digit' 
@@ -507,7 +504,7 @@ export default function Dashboard() {
         <ChallengeSection />
 
         {/* Insights Card */}
-        <div className="bg-emerald-500 rounded-3xl p-6 text-white shadow-lg">
+        <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent text-white" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
           <div className="flex items-center mb-3">
             <TrendingUp className="h-6 w-6 mr-2" />
             <h3 className="text-lg font-semibold">Deine Fortschritte</h3>
