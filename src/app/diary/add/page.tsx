@@ -6,6 +6,7 @@ import { ArrowLeft, Search, Camera, Barcode, Plus, Minus } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
 import BarcodeScanner from '@/components/BarcodeScanner'
+import InfiniteScrollFoodList from '@/components/InfiniteScrollFoodList'
 
 interface FoodItem {
   code: string
@@ -46,6 +47,9 @@ function AddFoodContent() {
   const [adding, setAdding] = useState(false)
   const [mealType, setMealType] = useState<string>('breakfast')
   const [showScanner, setShowScanner] = useState(false)
+  const [offset, setOffset] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
+  const PAGE_SIZE = 20
 
   useEffect(() => {
     const meal = searchParams.get('meal')
@@ -54,24 +58,27 @@ function AddFoodContent() {
     }
   }, [searchParams])
 
-  const handleSearch = async () => {
+  const handleSearch = async (reset = true) => {
     if (!searchQuery.trim()) return
-    
     setLoading(true)
     try {
-      const response = await fetch(`/api/food/search?q=${encodeURIComponent(searchQuery)}`)
+      const response = await fetch(`/api/food/search?q=${encodeURIComponent(searchQuery)}&limit=${PAGE_SIZE}&offset=${reset ? 0 : offset}`)
       const data = await response.json()
-      
       if (response.ok) {
-        setSearchResults(data.products || [])
-        console.log('Search results:', data.products?.length || 0, 'products found')
+        if (reset) {
+          setSearchResults(data.products || [])
+        } else {
+          setSearchResults(prev => [...prev, ...(data.products || [])])
+        }
+        setHasMore((data.products?.length || 0) === PAGE_SIZE)
+        setOffset(reset ? PAGE_SIZE : offset + PAGE_SIZE)
       } else {
-        console.error('Search error:', data.error)
         setSearchResults([])
+        setHasMore(false)
       }
-    } catch (error) {
-      console.error('Search error:', error)
+    } catch {
       setSearchResults([])
+      setHasMore(false)
     } finally {
       setLoading(false)
     }
@@ -80,9 +87,12 @@ function AddFoodContent() {
   // Sofort-Suche: Bei jeder Eingabe ab 2 Zeichen automatisch suchen
   useEffect(() => {
     if (searchQuery.trim().length >= 2) {
-      handleSearch()
+      setOffset(0)
+      setHasMore(true)
+      handleSearch(true)
     } else {
       setSearchResults([])
+      setHasMore(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery])
@@ -155,7 +165,7 @@ function AddFoodContent() {
       const salt = ((selectedFood.nutriments['salt_100g'] || 0) * quantity) / 100
 
       // Füge Eintrag zur Datenbank hinzu
-      const { error } = await supabase
+      const insertResult = await supabase
         .from('diary_entries')
         .insert([
           {
@@ -174,8 +184,8 @@ function AddFoodContent() {
           }
         ])
 
-      if (error) {
-        console.error('Error adding food:', error)
+      if (insertResult.error) {
+        console.error('Error adding food:', insertResult.error)
         alert('Fehler beim Hinzufügen des Lebensmittels')
         return
       }
@@ -216,7 +226,7 @@ function AddFoodContent() {
         {/* Quick Actions */}
         <div className="grid grid-cols-3 gap-3">
           <button 
-            onClick={handleSearch}
+            onClick={() => handleSearch(true)}
             className="flex flex-col items-center p-4 bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform"
           >
             <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-2">
@@ -255,7 +265,7 @@ function AddFoodContent() {
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
             <button 
-              onClick={handleSearch}
+              onClick={() => handleSearch(true)}
               className="absolute right-2 top-2 p-2 bg-emerald-500 text-white rounded-xl transition-colors active:scale-95"
             >
               <Search className="h-5 w-5" />
@@ -264,35 +274,14 @@ function AddFoodContent() {
         </div>
 
         {/* Search Results */}
-        {loading && (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
-          </div>
-        )}
-
-        {searchResults.length > 0 && (
-          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Suchergebnisse</h3>
-            <div className="space-y-3">
-              {searchResults.slice(0, 5).map((food: FoodItem, index) => (
-                <button
-                  key={food.code || index}
-                  onClick={() => handleFoodSelect(food)}
-                  className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-2xl transition-colors text-left active:scale-95"
-                >
-                  <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{food.product_name || 'Unbekanntes Produkt'}</h4>
-                    <p className="text-sm text-gray-600">
-                      {food.nutriments['energy-kcal_100g'] || 0} kcal pro 100g
-                    </p>
-                  </div>
-                  <div className="text-emerald-600">
-                    <Plus className="h-5 w-5" />
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+        {searchQuery.trim().length >= 2 && (
+          <InfiniteScrollFoodList
+            items={searchResults}
+            loading={loading}
+            hasMore={hasMore}
+            onLoadMore={() => handleSearch(false)}
+            onSelect={handleFoodSelect}
+          />
         )}
 
         {/* No Results - Show Add Product Option */}
