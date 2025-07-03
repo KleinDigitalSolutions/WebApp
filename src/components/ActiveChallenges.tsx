@@ -33,16 +33,6 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
   const { user } = useAuthStore()
   const [challenges, setChallenges] = useState<AbstinenceChallenge[]>([])
   const [loading, setLoading] = useState(true)
-  const [currentTime, setCurrentTime] = useState(new Date())
-
-  // Update time every minute for live progress
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date())
-    }, 60000) // Update every minute
-
-    return () => clearInterval(interval)
-  }, [])
 
   useEffect(() => {
     if (!user?.id) {

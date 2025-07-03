@@ -87,13 +87,11 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
-  const [loading, setLoading] = useState(true)
   const cardRefs = useRef<(HTMLDivElement | null)[]>([])
 
   // Load user's challenges
   useEffect(() => {
     if (!user?.id) {
-      setLoading(false)
       return
     }
 
@@ -129,7 +127,6 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
         console.error('Error loading challenges:', error)
         setCards(swipeCards)
       }
-      setLoading(false)
     }
 
     loadChallenges()
@@ -320,7 +317,7 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
         {cards.map((card, index) => (
           <div
             key={`${card.id}-${index}`}
-            ref={el => cardRefs.current[index] = el}
+            ref={el => { cardRefs.current[index] = el }}
             className={`absolute w-48 h-56 ${card.bgColor} rounded-2xl shadow-lg cursor-grab active:cursor-grabbing transition-all duration-300 ease-out`}
             style={getCardStyle(index)}
             onTouchStart={(e) => handleTouchStart(e, index)}
