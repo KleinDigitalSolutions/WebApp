@@ -143,7 +143,7 @@ function AddFoodContent() {
     setSelectedFood(food)
   }
 
-  const handleAddFood = async () => {
+  const handleAddFood = async (type: string) => {
     if (!selectedFood || !user) {
       if (!user) {
         alert('❌ Bitte melden Sie sich an, um Lebensmittel hinzuzufügen.')
@@ -173,7 +173,7 @@ function AddFoodContent() {
             food_name: selectedFood.product_name,
             quantity: quantity,
             unit: 'g',
-            meal_type: mealType, // Aus URL-Parameter oder Standard
+            meal_type: type, // Aus URL-Parameter oder Standard
             calories: calories,
             protein_g: Math.round(protein * 10) / 10,
             carb_g: Math.round(carbs * 10) / 10,
@@ -362,14 +362,37 @@ function AddFoodContent() {
               </div>
             </div>
 
-            {/* Add Button */}
-            <button 
-              onClick={handleAddFood}
-              disabled={adding}
-              className="w-full p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {adding ? 'Wird hinzugefügt...' : 'Zum Tagebuch hinzufügen'}
-            </button>
+            {/* Add Buttons for Meals */}
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => handleAddFood('breakfast')}
+                disabled={adding}
+                className="w-full p-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {adding ? 'Wird hinzugefügt...' : 'Zu Frühstück hinzufügen'}
+              </button>
+              <button
+                onClick={() => handleAddFood('lunch')}
+                disabled={adding}
+                className="w-full p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {adding ? 'Wird hinzugefügt...' : 'Zu Mittagessen hinzufügen'}
+              </button>
+              <button
+                onClick={() => handleAddFood('dinner')}
+                disabled={adding}
+                className="w-full p-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {adding ? 'Wird hinzugefügt...' : 'Zu Abendessen hinzufügen'}
+              </button>
+              <button
+                onClick={() => handleAddFood('snacks')}
+                disabled={adding}
+                className="w-full p-4 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {adding ? 'Wird hinzugefügt...' : 'Zu Snack hinzufügen'}
+              </button>
+            </div>
           </div>
         )}
       </div>
