@@ -227,7 +227,7 @@ function AddFoodContent() {
         <div className="grid grid-cols-3 gap-3">
           <button 
             onClick={() => handleSearch(true)}
-            className="flex flex-col items-center p-4 bg-white backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform"
+            className="flex flex-col items-center p-4 bg-white/60 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform"
           >
             <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-2">
               <Search className="h-6 w-6 text-white" />
@@ -235,7 +235,7 @@ function AddFoodContent() {
             <span className="text-sm font-medium text-gray-700">Suchen</span>
           </button>
           
-          <button className="flex flex-col items-center p-4 bg-white backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform">
+          <button className="flex flex-col items-center p-4 bg-white/60 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform">
             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-2">
               <Camera className="h-6 w-6 text-white" />
             </div>
@@ -244,7 +244,7 @@ function AddFoodContent() {
           
           <button 
             onClick={() => setShowScanner(true)}
-            className="flex flex-col items-center p-4 bg-white backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform"
+            className="flex flex-col items-center p-4 bg-white/60 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform"
           >
             <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-2">
               <Barcode className="h-6 w-6 text-white" />
@@ -254,7 +254,7 @@ function AddFoodContent() {
         </div>
 
         {/* Search Input */}
-        <div className="bg-white backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
+        <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
           <div className="relative">
             <input
               type="text"
@@ -287,7 +287,7 @@ function AddFoodContent() {
 
         {/* No Results - Show Add Product Option */}
         {!loading && searchQuery && searchResults.length === 0 && (
-          <div className="bg-white backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 text-center">
+          <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 text-center">
             <div className="text-gray-400 text-4xl mb-4">🔍</div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Keine Ergebnisse für &quot;{searchQuery}&quot;
@@ -306,7 +306,7 @@ function AddFoodContent() {
 
         {/* Selected Food */}
         {selectedFood && (
-          <div className="bg-white backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
+          <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Ausgewähltes Lebensmittel</h3>
             
             <div className="mb-4">
@@ -324,7 +324,7 @@ function AddFoodContent() {
                   onClick={() => setQuantity(Math.max(10, quantity - 10))}
                   className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center transition-colors active:scale-95"
                 >
-                  <Minus className="h-4 w-4" />
+                  <Minus className="h-4 w-4 text-gray-700" />
                 </button>
                 
                 <input
@@ -339,7 +339,7 @@ function AddFoodContent() {
                   onClick={() => setQuantity(quantity + 10)}
                   className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center transition-colors active:scale-95"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-4 w-4 text-gray-700" />
                 </button>
               </div>
             </div>
