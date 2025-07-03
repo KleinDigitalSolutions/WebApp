@@ -16,13 +16,6 @@ class EnhancedOpenFoodFactsImporter {
   // Deutsche Top-Marken mit Priorität
   private topGermanBrands: BrandImportConfig[] = [
     // Tier 1: Absolute Top-Marken
-    { brand: 'ferrero', priority: 5, categories: ['chocolate', 'spreads'], expectedProducts: 50 },
-    { brand: 'nutella', priority: 5, categories: ['spreads'], expectedProducts: 20 },
-    { brand: 'milka', priority: 5, categories: ['chocolate'], expectedProducts: 30 },
-    { brand: 'haribo', priority: 5, categories: ['snacks', 'candy'], expectedProducts: 40 },
-    { brand: 'coca-cola', priority: 5, categories: ['beverages', 'soft-drinks'], expectedProducts: 25 },
-    { brand: 'snickers', priority: 5, categories: ['chocolate', 'snacks'], expectedProducts: 20 },
-    // Tier 2: Sehr bekannte Marken
     { brand: 'nestle', priority: 4, categories: ['chocolate', 'coffee', 'cereals'], expectedProducts: 60 },
     { brand: 'kelloggs', priority: 4, categories: ['cereals', 'breakfast'], expectedProducts: 30 },
     { brand: 'bahlsen', priority: 4, categories: ['cookies', 'snacks'], expectedProducts: 35 },
@@ -37,18 +30,11 @@ class EnhancedOpenFoodFactsImporter {
     { brand: 'coppenrath-und-wiese', priority: 4, categories: ['bakery', 'frozen'], expectedProducts: 15 },
     { brand: 'zentis', priority: 3, categories: ['spreads'], expectedProducts: 10 },
     // Tier 3: Deutsche Klassiker
-    { brand: 'dr-oetker', priority: 4, categories: ['baking', 'frozen'], expectedProducts: 45 },
     { brand: 'maggi', priority: 4, categories: ['sauces', 'soups'], expectedProducts: 35 },
     { brand: 'lorenz', priority: 4, categories: ['snacks'], expectedProducts: 30 },
     { brand: 'leibniz', priority: 4, categories: ['cookies'], expectedProducts: 20 },
     { brand: 'funny-frisch', priority: 4, categories: ['snacks'], expectedProducts: 25 },
     { brand: 'nivea', priority: 3, categories: ['cosmetics'], expectedProducts: 15 },
-    // Tier 4: Supermarkt-Eigenmarken
-    { brand: 'ja', priority: 3, categories: ['dairy', 'bread', 'pantry'], expectedProducts: 80 },
-    { brand: 'gut-gunstig', priority: 3, categories: ['pantry', 'frozen'], expectedProducts: 60 },
-    { brand: 'edeka', priority: 3, categories: ['dairy', 'meat', 'pantry'], expectedProducts: 70 },
-    { brand: 'rewe', priority: 3, categories: ['dairy', 'pantry'], expectedProducts: 50 },
-    { brand: 'aldi', priority: 3, categories: ['pantry', 'dairy'], expectedProducts: 60 },
     // Tier 5: Getränke & Milchprodukte
     { brand: 'beck', priority: 3, categories: ['beer'], expectedProducts: 15 },
     { brand: 'warsteiner', priority: 3, categories: ['beer'], expectedProducts: 12 },
@@ -110,6 +96,50 @@ class EnhancedOpenFoodFactsImporter {
     { brand: 'nimm2', priority: 3, categories: ['candy'], expectedProducts: 10 },
     { brand: 'alnatura', priority: 4, categories: ['bio', 'pantry'], expectedProducts: 20 },
     { brand: 'demeter', priority: 4, categories: ['bio', 'pantry'], expectedProducts: 15 },
+    // Tier 2: Absolute Top-Marken
+    { brand: 'debeukelaer', priority: 4, categories: ['cookies', 'snacks'], expectedProducts: 15 },
+    { brand: 'philadelphia', priority: 4, categories: ['dairy', 'cheese'], expectedProducts: 15 },
+    { brand: 'mondelez', priority: 4, categories: ['snacks', 'chocolate'], expectedProducts: 20 },
+    { brand: 'kraft-heinz', priority: 4, categories: ['sauces', 'ketchup'], expectedProducts: 15 },
+    { brand: 'bärenmarke', priority: 4, categories: ['dairy', 'milk'], expectedProducts: 15 },
+    { brand: 'zott', priority: 4, categories: ['dairy', 'yogurt'], expectedProducts: 15 },
+    { brand: 'schwartau', priority: 4, categories: ['spreads', 'jam'], expectedProducts: 15 },
+    { brand: 'brandt', priority: 4, categories: ['bread', 'snacks'], expectedProducts: 10 },
+    { brand: 'golden-toast', priority: 3, categories: ['bread', 'toast'], expectedProducts: 10 },
+    { brand: 'hengstenberg', priority: 3, categories: ['pickles', 'sauerkraut'], expectedProducts: 10 },
+    { brand: 'spreewaldhof', priority: 3, categories: ['pickles', 'fruit'], expectedProducts: 10 },
+    { brand: 'bonduelle', priority: 4, categories: ['vegetables', 'canned'], expectedProducts: 15 },
+    { brand: 'meica', priority: 3, categories: ['meat', 'sausages'], expectedProducts: 10 },
+    { brand: 'rügenwalder-mühle', priority: 4, categories: ['meat', 'vegan'], expectedProducts: 15 },
+    { brand: 'tönnies', priority: 3, categories: ['meat'], expectedProducts: 10 },
+    { brand: 'miree', priority: 3, categories: ['dairy', 'spreads'], expectedProducts: 10 },
+    { brand: 'melitta', priority: 4, categories: ['coffee'], expectedProducts: 15 },
+    { brand: 'tchibo', priority: 4, categories: ['coffee'], expectedProducts: 15 },
+    { brand: 'lavazza', priority: 4, categories: ['coffee'], expectedProducts: 10 },
+    { brand: 'teekanne', priority: 4, categories: ['tea'], expectedProducts: 15 },
+    { brand: 'meßmer', priority: 4, categories: ['tea'], expectedProducts: 15 },
+    { brand: 'volvic', priority: 3, categories: ['water'], expectedProducts: 10 },
+    { brand: 'gerolsteiner', priority: 3, categories: ['water'], expectedProducts: 10 },
+    { brand: 'vio', priority: 3, categories: ['water'], expectedProducts: 10 },
+    { brand: 'apollinaris', priority: 3, categories: ['water'], expectedProducts: 10 },
+    { brand: 'fritz-kola', priority: 3, categories: ['beverages', 'soft-drinks'], expectedProducts: 10 },
+    { brand: 'club-mate', priority: 3, categories: ['beverages', 'soft-drinks'], expectedProducts: 10 },
+    { brand: 'hohes-c', priority: 3, categories: ['beverages', 'juice'], expectedProducts: 10 },
+    { brand: 'dennree', priority: 4, categories: ['bio', 'pantry'], expectedProducts: 15 },
+    { brand: 'bioland', priority: 4, categories: ['bio', 'pantry'], expectedProducts: 10 },
+    { brand: 'rapunzel', priority: 4, categories: ['bio', 'pantry'], expectedProducts: 10 },
+    { brand: 'seitenbacher', priority: 4, categories: ['bio', 'muesli'], expectedProducts: 10 },
+    { brand: 'exquisa', priority: 3, categories: ['dairy', 'cheese'], expectedProducts: 10 },
+    { brand: 'buitoni', priority: 3, categories: ['pasta'], expectedProducts: 10 },
+    { brand: 'saskia', priority: 3, categories: ['water'], expectedProducts: 10 },
+    { brand: 'goldähren', priority: 3, categories: ['bread'], expectedProducts: 10 },
+    { brand: 'hofburger', priority: 3, categories: ['dairy', 'cheese'], expectedProducts: 10 },
+    { brand: 'milsani', priority: 3, categories: ['dairy'], expectedProducts: 10 },
+    { brand: 'myvay', priority: 3, categories: ['vegan', 'dairy'], expectedProducts: 10 },
+    { brand: 'westminster', priority: 3, categories: ['tea'], expectedProducts: 10 },
+    { brand: 'gabower', priority: 3, categories: ['dairy'], expectedProducts: 10 },
+    { brand: 'hochland', priority: 3, categories: ['dairy', 'cheese'], expectedProducts: 10 },
+    { brand: 'président', priority: 3, categories: ['dairy', 'cheese'], expectedProducts: 10 },
   ]
 
   private async sleep(ms: number): Promise<void> {
@@ -185,56 +215,60 @@ class EnhancedOpenFoodFactsImporter {
     }
   }
 
+  // Helper: Erzeugt für Marken mit Umlauten beide Varianten (Umlaut und Umschreibung)
+  private expandBrandVariants(brand: string): string[] {
+    const umlautMap: Record<string, string> = {
+      'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss',
+      'Ä': 'Ae', 'Ö': 'Oe', 'Ü': 'Ue'
+    }
+    let variants = [brand]
+    let replaced = brand
+    Object.entries(umlautMap).forEach(([umlaut, ascii]) => {
+      if (brand.includes(umlaut)) {
+        replaced = replaced.replaceAll(umlaut, ascii)
+      }
+    })
+    if (replaced !== brand) variants.push(replaced)
+    // Auch Bindestrich-Varianten (z.B. rügenwalder-mühle vs ruegenwaldermuehle)
+    if (replaced.includes('-')) {
+      variants.push(replaced.replaceAll('-', ''))
+    }
+    return Array.from(new Set(variants))
+  }
+
   async importTopGermanBrands(maxProducts = 10000): Promise<any[]> {
     console.log(`🇩🇪 Starting TOP GERMAN BRANDS import (max ${maxProducts} products)...`)
-    
     const allProducts: any[] = []
-    
     // Sortiere Marken nach Priorität (höchste zuerst)
     const sortedBrands = this.topGermanBrands.sort((a, b) => b.priority - a.priority)
-    
     for (const brandConfig of sortedBrands) {
       if (allProducts.length >= maxProducts) break
-      
-      console.log(`🏷️ Processing brand: ${brandConfig.brand} (Priority: ${brandConfig.priority})`)
-      
-      try {
-        let page = 1
-        let brandProducts: any[] = []
-        const maxPagesPerBrand = 10 // Begrenze Seiten pro Marke (erhöht für mehr Produkte)
-        
-        while (brandProducts.length < brandConfig.expectedProducts && page <= maxPagesPerBrand) {
-          const response = await this.fetchProductsByBrand(brandConfig.brand, page, 50)
-          
-          if (!response.products || response.products.length === 0) {
-            break // Keine weiteren Produkte
+      const brandVariants = this.expandBrandVariants(brandConfig.brand)
+      for (const brandVariant of brandVariants) {
+        console.log(`🏷️ Processing brand: ${brandVariant} (Priority: ${brandConfig.priority})`)
+        try {
+          let page = 1
+          let brandProducts: any[] = []
+          const maxPagesPerBrand = 10
+          while (brandProducts.length < brandConfig.expectedProducts && page <= maxPagesPerBrand) {
+            const response = await this.fetchProductsByBrand(brandVariant, page, 50)
+            if (!response.products || response.products.length === 0) break
+            const validProducts = response.products
+              .filter((p: any) => this.isValidProduct(p))
+              .map((p: any) => this.normalizeProduct(p, brandVariant))
+              .slice(0, brandConfig.expectedProducts - brandProducts.length)
+            brandProducts.push(...validProducts)
+            if (validProducts.length === 0) break
+            page++
           }
-          
-          const validProducts = response.products
-            .filter((p: any) => this.isValidProduct(p))
-            .map((p: any) => this.normalizeProduct(p, brandConfig.brand))
-            .slice(0, brandConfig.expectedProducts - brandProducts.length)
-          
-          brandProducts.push(...validProducts)
-          
-          if (validProducts.length === 0) {
-            break // Keine validen Produkte mehr
+          allProducts.push(...brandProducts)
+          console.log(`✅ ${brandVariant}: ${brandProducts.length} products collected (${allProducts.length} total)`)
+          if (sortedBrands.indexOf(brandConfig) % 5 === 0) {
+            console.log(`📊 Progress: ${allProducts.length}/${maxProducts} products (${this.importedBarcodes.size} unique barcodes)`)
           }
-          
-          page++
+        } catch (error) {
+          console.error(`❌ Error processing brand ${brandVariant}:`, error)
         }
-        
-        allProducts.push(...brandProducts)
-        
-        console.log(`✅ ${brandConfig.brand}: ${brandProducts.length} products collected (${allProducts.length} total)`)
-        
-        // Progress-Update alle 5 Marken
-        if (sortedBrands.indexOf(brandConfig) % 5 === 0) {
-          console.log(`📊 Progress: ${allProducts.length}/${maxProducts} products (${this.importedBarcodes.size} unique barcodes)`)
-        }
-        
-      } catch (error) {
-        console.error(`❌ Error processing brand ${brandConfig.brand}:`, error)
       }
     }
     

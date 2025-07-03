@@ -18,29 +18,29 @@ export async function GET(request: NextRequest) {
     const supabase = getSupabaseClient()
     const { searchParams } = new URL(request.url)
     const query = searchParams.get('q')
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 50)
+    const offset = parseInt(searchParams.get('offset') || '0', 10)
 
     if (!query || query.trim().length < 2) {
-      return NextResponse.json([])
+      return NextResponse.json({ products: [], total: 0 })
     }
 
-    console.log(`Food search request for: "${query}"`)
-
-    // 1. Suche in unserer lokalen deutschen Produktdatenbank
+    // 1. Suche in lokaler Produktdatenbank
     const localResults = GermanProductDatabase.searchProducts(query)
-
-    // 2. Suche in Supabase für community-hinzugefügte Produkte
-    const { data: supabaseProducts, error } = await supabase
+    // 2. Suche in Supabase
+    const { data: supabaseProducts, error, count } = await supabase
       .from('products')
-      .select('*')
+      .select('*', { count: 'exact' })
       .or(`name.ilike.%${query}%,brand.ilike.%${query}%,keywords.cs.{${query}}`)
       .eq('verification_status', 'approved')
-      .limit(10)
+      .range(offset, offset + limit - 1)
 
     if (error) {
       console.error('Supabase search error:', error)
+      return NextResponse.json({ error: 'Fehler bei der Produktsuche' }, { status: 500 })
     }
 
-    // Konvertiere lokale Ergebnisse zu einheitlichem Format
+    // Formatierung wie gehabt
     const formattedLocalResults = localResults.map((product) => ({
       code: product.code,
       product_name: product.name,
@@ -56,13 +56,12 @@ export async function GET(request: NextRequest) {
         'salt_100g': product.nutrition.salt_per_100g || 0
       },
       supermarkets: product.supermarkets,
-      price_range: product.price_range,
+      price_range: typeof product.price_range === 'string' ? product.price_range : (product.price_range && product.price_range.min && product.price_range.max ? `${product.price_range.min}-${product.price_range.max}€` : undefined),
       category: product.category,
       allergens: product.allergens || [],
       source: 'local'
     }))
 
-    // Konvertiere Supabase-Ergebnisse zu einheitlichem Format
     const formattedSupabaseResults = (supabaseProducts || []).map((product) => ({
       code: product.code,
       product_name: product.name,
@@ -88,21 +87,22 @@ export async function GET(request: NextRequest) {
       created_by: product.created_by
     }))
 
-    // Kombiniere beide Ergebnissets (lokale zuerst, dann community)
-    const allResults = [...formattedLocalResults, ...formattedSupabaseResults]
-
-    // Begrenze Ergebnisse auf maximal 20
-    const limitedResults = allResults.slice(0, 20)
+    // Infinite Scroll: lokale Ergebnisse nur beim ersten Offset (offset === 0) anzeigen
+    let allResults: ProductResult[] = []
+    if (offset === 0) {
+      allResults = [...formattedLocalResults, ...formattedSupabaseResults]
+    } else {
+      allResults = formattedSupabaseResults
+    }
 
     return NextResponse.json({ 
-      products: limitedResults,
-      total: limitedResults.length,
+      products: allResults,
+      total: (count || 0) + (offset === 0 ? formattedLocalResults.length : 0),
       sources: {
-        local: formattedLocalResults.length,
-        community: formattedSupabaseResults.length
+        local: offset === 0 ? formattedLocalResults.length : 0,
+        community: count || 0
       }
     })
-
   } catch (error) {
     console.error('Fehler bei Produktsuche:', error)
     return NextResponse.json(
@@ -111,3 +111,19 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
+// Typdefinition ergänzen (am Anfang der Datei oder nach Imports):
+type ProductResult = {
+  code: string;
+  product_name: string;
+  brands: string;
+  image_url: string;
+  nutriments: Record<string, number>;
+  supermarkets?: string[];
+  price_range?: string;
+  category?: string;
+  allergens?: string[];
+  source: string;
+  is_verified?: boolean;
+  created_by?: string;
+};

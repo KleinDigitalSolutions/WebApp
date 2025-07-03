@@ -11,7 +11,7 @@ const supabase = createClient(
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const maxProducts = parseInt(searchParams.get('max') || '2000')
+    const maxProducts = parseInt(searchParams.get('max') || '10000')
     const dryRun = searchParams.get('dry_run') === 'true'
     const mode = searchParams.get('mode') || 'brands' // 'brands' | 'duplicates_check'
     
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
         brand: product.brand,
         code: product.barcode,
         category: 'pantry',
-        image_url: product.imageUrl,
+        // image_url entfernt
         calories_per_100g: product.nutritionPer100g.calories,
         protein_per_100g: product.nutritionPer100g.protein,
         carbs_per_100g: product.nutritionPer100g.carbs,
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
       }))
       
       try {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('products')
           .upsert(supabaseProducts, { 
             onConflict: 'code',
@@ -114,9 +114,9 @@ export async function GET(request: NextRequest) {
       stats: {
         topBrands: getTopBrands(products),
         nutritionQuality: {
-          highProtein: products.filter(p => p.nutritionPer100g.protein > 15).length,
-          lowSugar: products.filter(p => p.nutritionPer100g.sugar < 5).length,
-          highFiber: products.filter(p => p.nutritionPer100g.fiber > 5).length,
+          highProtein: products.filter(p => p.protein_per_100g > 15).length,
+          lowSugar: products.filter(p => p.sugar_per_100g < 5).length,
+          highFiber: products.filter(p => p.fiber_per_100g > 5).length,
         },
         brandCoverage: {
           tier1Brands: products.filter(p => ['ferrero', 'nutella', 'milka', 'haribo', 'coca-cola'].includes(p.brand)).length,
@@ -137,7 +137,25 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function getTopBrands(products: any[]): Record<string, number> {
+type ProductImport = {
+  name: string;
+  brand: string;
+  code: string;
+  category: string;
+  calories_per_100g: number;
+  protein_per_100g: number;
+  carbs_per_100g: number;
+  fat_per_100g: number;
+  sugar_per_100g: number;
+  fiber_per_100g: number;
+  salt_per_100g: number;
+  is_community_product: boolean;
+  is_verified: boolean;
+  verification_status: string;
+  created_at: string;
+};
+
+function getTopBrands(products: ProductImport[]): Record<string, number> {
   const brandCount = products.reduce((acc, product) => {
     acc[product.brand] = (acc[product.brand] || 0) + 1
     return acc
@@ -155,16 +173,23 @@ function getTopBrands(products: any[]): Record<string, number> {
   return result
 }
 
-function calculateAvgNutrition(products: any[]): any {
-  if (products.length === 0) return {}
-  
+type NutritionStats = {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+};
+
+function calculateAvgNutrition(products: ProductImport[]): NutritionStats {
+  if (products.length === 0) return { calories: 0, protein: 0, carbs: 0, fat: 0 }
+
   const sum = products.reduce((acc, p) => ({
-    calories: acc.calories + p.nutritionPer100g.calories,
-    protein: acc.protein + p.nutritionPer100g.protein,
-    carbs: acc.carbs + p.nutritionPer100g.carbs,
-    fat: acc.fat + p.nutritionPer100g.fat
+    calories: acc.calories + p.calories_per_100g,
+    protein: acc.protein + p.protein_per_100g,
+    carbs: acc.carbs + p.carbs_per_100g,
+    fat: acc.fat + p.fat_per_100g
   }), { calories: 0, protein: 0, carbs: 0, fat: 0 })
-  
+
   return {
     calories: Math.round(sum.calories / products.length),
     protein: Math.round(sum.protein / products.length * 10) / 10,

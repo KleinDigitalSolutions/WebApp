@@ -11,7 +11,7 @@ const supabase = createClient(
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const maxProducts = parseInt(searchParams.get('max') || '2000')
+    const maxProducts = parseInt(searchParams.get('max') || '10000')
     const dryRun = searchParams.get('dry_run') === 'true'
     const mode = searchParams.get('mode') || 'brands' // 'brands' | 'duplicates_check'
     
