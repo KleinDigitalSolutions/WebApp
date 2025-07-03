@@ -252,50 +252,47 @@ Wie kann ich dir heute helfen? 🌱`,
         </div>
 
         {/* Suggested Questions */}
-        {messages.length <= 1 && (
-          <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-3">🍎 Ernährungsanalyse starten:</h3>
-            <div className="space-y-2">
+        <div>
+          <h3 className="text-sm font-medium text-gray-700 mb-3">🍎 Ernährungsanalyse starten:</h3>
+          <div className="space-y-2">
+            {[
+              "📊 Analysiere meine Ernährung der letzten 7 Tage detailliert",
+              "⚠️ Was esse ich zu viel und was sollte ich reduzieren?",
+              "💪 Bekomme ich genug Protein und alle wichtigen Nährstoffe?",
+              "🍬 Wie viel Zucker und verarbeitete Lebensmittel esse ich?",
+              "🥗 Welche gesunden Alternativen passten zu meinen Gewohnheiten?",
+              "📋 Erstelle mir einen Wochenplan basierend auf meiner Analyse",
+              "🎯 Wie kann ich mein Ernährungsziel optimal erreichen?",
+              "⚖️ Ist meine Kalorienzufuhr für mein Ziel angemessen?",
+            ].map((question, index) => (
+              <button
+                key={index}
+                onClick={() => setInputMessage(question)}
+                className="w-full text-left p-4 backdrop-blur-sm bg-green-50/80 rounded-xl text-sm text-green-800 border border-green-100 shadow-sm active:bg-green-100/80 hover:bg-green-100/60 transition-colors"
+              >
+                {question}
+              </button>
+            ))}
+          </div>
+          <div className="mt-4">
+            <h3 className="text-sm font-medium text-gray-700 mb-3">💬 Oder frage mich direkt:</h3>
+            <div className="grid grid-cols-1 gap-2">
               {[
-                "📊 Analysiere meine Ernährung der letzten 7 Tage detailliert",
-                "⚠️ Was esse ich zu viel und was sollte ich reduzieren?",
-                "💪 Bekomme ich genug Protein und alle wichtigen Nährstoffe?",
-                "🍬 Wie viel Zucker und verarbeitete Lebensmittel esse ich?",
-                "🥗 Welche gesunden Alternativen passten zu meinen Gewohnheiten?",
-                "📋 Erstelle mir einen Wochenplan basierend auf meiner Analyse",
-                "🎯 Wie kann ich mein Ernährungsziel optimal erreichen?",
-                "⚖️ Ist meine Kalorienzufuhr für mein Ziel angemessen?",
+                "Was sind gesunde Snacks zum Abnehmen?",
+                "Wie kann ich mehr Gemüse in meine Ernährung einbauen?",
+                "Welche Proteinquellen sind am besten?",
               ].map((question, index) => (
                 <button
                   key={index}
                   onClick={() => setInputMessage(question)}
-                  className="w-full text-left p-4 backdrop-blur-sm bg-green-50/80 rounded-xl text-sm text-green-800 border border-green-100 shadow-sm active:bg-green-100/80 hover:bg-green-100/60 transition-colors"
+                  className="text-left p-3 bg-blue-50/80 rounded-lg text-sm text-blue-800 border border-blue-100 hover:bg-blue-100/60 transition-colors"
                 >
                   {question}
                 </button>
               ))}
             </div>
-            
-            <div className="mt-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">💬 Oder frage mich direkt:</h3>
-              <div className="grid grid-cols-1 gap-2">
-                {[
-                  "Was sind gesunde Snacks zum Abnehmen?",
-                  "Wie kann ich mehr Gemüse in meine Ernährung einbauen?",
-                  "Welche Proteinquellen sind am besten?",
-                ].map((question, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setInputMessage(question)}
-                    className="text-left p-3 bg-blue-50/80 rounded-lg text-sm text-blue-800 border border-blue-100 hover:bg-blue-100/60 transition-colors"
-                  >
-                    {question}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
-        )}
+        </div>
       </div>
       
       <Navigation />
