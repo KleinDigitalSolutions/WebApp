@@ -77,6 +77,16 @@ function AddFoodContent() {
     }
   }
 
+  // Sofort-Suche: Bei jeder Eingabe ab 2 Zeichen automatisch suchen
+  useEffect(() => {
+    if (searchQuery.trim().length >= 2) {
+      handleSearch()
+    } else {
+      setSearchResults([])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery])
+
   const handleBarcodeScanned = async (barcode: string) => {
     console.log('🔍 Barcode gescannt:', barcode)
     setShowScanner(false)

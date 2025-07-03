@@ -2352,37 +2352,31 @@ export class GermanProductDatabase {
 
   static searchProducts(query: string): GermanProductDB[] {
     const queryLower = query.toLowerCase().trim()
-    
     if (!queryLower) return []
 
-    // Suche in Namen, Marken und Keywords
+    // Suche in Name, Brand und Keywords (Teilwort-Suche, nicht nur includes)
     const matches = this.products.filter(product => {
-      const searchFields = [
-        product.name.toLowerCase(),
-        product.brand.toLowerCase(),
-        ...product.keywords
-      ].join(' ')
-      
-      return searchFields.includes(queryLower)
+      return (
+        product.name.toLowerCase().includes(queryLower) ||
+        product.brand.toLowerCase().includes(queryLower) ||
+        product.keywords.some(kw => kw.toLowerCase().includes(queryLower))
+      )
     })
 
-    // Sortiere nach Relevanz
+    // Sortiere nach Relevanz (exakte Matches im Namen zuerst, dann Teilwort, dann Rest)
     return matches.sort((a, b) => {
       const aName = a.name.toLowerCase()
       const bName = b.name.toLowerCase()
-      
-      // Exakte Matches in Namen zuerst
-      if (aName.includes(queryLower) && !bName.includes(queryLower)) return -1
-      if (!aName.includes(queryLower) && bName.includes(queryLower)) return 1
-      
-      // Dann nach Position des Matches
+      const aExact = aName === queryLower
+      const bExact = bName === queryLower
+      if (aExact && !bExact) return -1
+      if (!aExact && bExact) return 1
+      // Dann nach Position des Teilworts im Namen
       const aIndex = aName.indexOf(queryLower)
       const bIndex = bName.indexOf(queryLower)
-      
-      if (aIndex !== -1 && bIndex !== -1) {
-        return aIndex - bIndex
-      }
-      
+      if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex
+      if (aIndex !== -1) return -1
+      if (bIndex !== -1) return 1
       return 0
     })
   }
