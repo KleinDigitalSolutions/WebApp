@@ -313,7 +313,11 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
         </div>
       </div>
 
-      <div className="relative h-64 flex items-center justify-center">
+      {/* Swipe-Container: touch-action pan-x für besseres Swipe-Feeling auf Mobile */}
+      <div
+        className="relative h-64 flex items-center justify-center"
+        style={{ touchAction: 'pan-x' }}
+      >
         {cards.map((card, index) => (
           <div
             key={`${card.id}-${index}`}
