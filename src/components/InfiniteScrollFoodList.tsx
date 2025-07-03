@@ -27,7 +27,7 @@ const InfiniteScrollFoodList: React.FC<Props> = ({ items, loading, hasMore, onLo
 
   return (
     <div className="space-y-3 max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-200 scrollbar-track-gray-100 rounded-2xl">
-      {items.slice(0, 3).map((food, idx) => (
+      {items.map((food, idx) => (
         <button
           key={(food.code ? food.code : 'idx-') + idx}
           onClick={() => onSelect(food)}
