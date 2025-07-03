@@ -19,6 +19,8 @@ import {
   Search,
   RefreshCw
 } from 'lucide-react'
+import FastingCardStack from '@/components/FastingCardStack'
+import ChallengeSection from '@/components/ChallengeSection'
 
 interface PullToRefreshProps {
   children: React.ReactNode
@@ -239,7 +241,7 @@ export default function Dashboard() {
     <PullToRefresh onRefresh={loadData}>
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-gray-50">
         {/* Mobile Header */}
-        <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-gray-100">
+        <div className="sticky top-0 z-40 bg-emerald-100/80 backdrop-blur-xl border-b border-emerald-200/60">
           <div className="px-4 py-4">
             <div className="flex items-center justify-between">
               <div>
@@ -268,9 +270,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-      <div className="px-4 space-y-6 pb-6">
+      <div className="px-4 space-y-6 pb-6 pt-4">
         {/* Quick Stats Card */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
+        <div className="bg-emerald-100/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-emerald-200/60">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Tagesübersicht</h2>
             <div className="flex items-center text-sm text-emerald-600 font-medium">
@@ -413,7 +415,7 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+        <div className="bg-emerald-100/80 rounded-3xl p-6 shadow-lg border border-emerald-200/60">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Schnellaktionen</h3>
           <div className="grid grid-cols-2 gap-3">
             <button 
@@ -451,7 +453,7 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Meals */}
-        <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+        <div className="bg-emerald-100/80 rounded-3xl p-6 shadow-lg border border-emerald-200/60">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">Heutige Mahlzeiten</h3>
             <button 
@@ -497,6 +499,12 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+
+        {/* Fasting Card Stack */}
+        <FastingCardStack />
+
+        {/* Challenge Section */}
+        <ChallengeSection />
 
         {/* Insights Card */}
         <div className="bg-emerald-500 rounded-3xl p-6 text-white shadow-lg">

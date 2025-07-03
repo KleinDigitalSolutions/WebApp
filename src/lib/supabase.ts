@@ -124,3 +124,47 @@ export interface ProductReport {
   resolved_at?: string
   created_at: string
 }
+
+export interface FastingSession {
+  id: string
+  user_id: string
+  plan: string
+  start_time: string
+  end_time: string | null
+  is_active: boolean
+  target_duration_hours: number
+  status: 'active' | 'completed' | 'cancelled'
+  fasting_type: 'intermittent_16_8' | 'intermittent_18_6' | 'intermittent_20_4' | 'custom'
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface AbstinenceChallenge {
+  id: string
+  user_id: string
+  challenge_type: 'no_cigarettes' | 'no_chips' | 'no_chocolate' | 'no_sugar' | 'no_fastfood' | 'no_coffee' | 'no_alcohol'
+  challenge_name: string
+  start_date: string
+  last_reset_date: string | null
+  current_streak_days: number
+  longest_streak_days: number
+  total_attempts: number
+  is_active: boolean
+  status: 'active' | 'paused' | 'completed' | 'failed'
+  target_days: number
+  reward_message: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface AbstinenceLog {
+  id: string
+  challenge_id: string
+  user_id: string
+  log_date: string
+  success: boolean
+  notes: string | null
+  mood_rating: number | null
+  created_at: string
+}
