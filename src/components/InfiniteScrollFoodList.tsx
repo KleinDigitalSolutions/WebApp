@@ -1,5 +1,6 @@
 import React from 'react';
 import { useInView } from 'react-intersection-observer';
+import { Plus } from 'lucide-react';
 
 export interface FoodItem {
   code: string;
@@ -28,18 +29,24 @@ const InfiniteScrollFoodList: React.FC<Props> = ({ items, loading, hasMore, onLo
   return (
     <div className="space-y-3 max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-200 scrollbar-track-gray-100 rounded-2xl">
       {items.map((food, idx) => (
-        <button
+        <div
           key={(food.code ? food.code : 'idx-') + idx}
-          onClick={() => onSelect(food)}
-          className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-2xl transition-colors text-left active:scale-95"
+          className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-2xl transition-colors text-left"
         >
-          <div className="flex-1">
+          <div className="flex-1" onClick={() => onSelect(food)}>
             <h4 className="font-medium text-gray-900">{food.product_name || 'Unbekanntes Produkt'}</h4>
             <p className="text-sm text-gray-600">
               {food.nutriments['energy-kcal_100g'] || 0} kcal pro 100g
             </p>
           </div>
-        </button>
+          <button
+            onClick={() => onSelect(food)}
+            className="ml-4 flex-shrink-0 w-9 h-9 rounded-full bg-emerald-500 hover:bg-emerald-600 flex items-center justify-center text-white shadow active:scale-95 transition-transform"
+            aria-label="Lebensmittel hinzufügen"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
       ))}
       <div ref={ref} />
       {loading && (
