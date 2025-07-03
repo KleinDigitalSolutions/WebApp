@@ -205,7 +205,7 @@ function AddFoodContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-500 to-emerald-600 flex flex-col">
       {/* Mobile Header */}
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-gray-100">
         <div className="flex items-center justify-between px-4 py-4">
@@ -227,7 +227,7 @@ function AddFoodContent() {
         <div className="grid grid-cols-3 gap-3">
           <button 
             onClick={() => handleSearch(true)}
-            className="flex flex-col items-center p-4 bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform"
+            className="flex flex-col items-center p-4 bg-white backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform"
           >
             <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-2">
               <Search className="h-6 w-6 text-white" />
@@ -235,7 +235,7 @@ function AddFoodContent() {
             <span className="text-sm font-medium text-gray-700">Suchen</span>
           </button>
           
-          <button className="flex flex-col items-center p-4 bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform">
+          <button className="flex flex-col items-center p-4 bg-white backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform">
             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-2">
               <Camera className="h-6 w-6 text-white" />
             </div>
@@ -244,7 +244,7 @@ function AddFoodContent() {
           
           <button 
             onClick={() => setShowScanner(true)}
-            className="flex flex-col items-center p-4 bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform"
+            className="flex flex-col items-center p-4 bg-white backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform"
           >
             <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-2">
               <Barcode className="h-6 w-6 text-white" />
@@ -254,7 +254,7 @@ function AddFoodContent() {
         </div>
 
         {/* Search Input */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
+        <div className="bg-white backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
           <div className="relative">
             <input
               type="text"
@@ -271,6 +271,7 @@ function AddFoodContent() {
               <Search className="h-5 w-5" />
             </button>
           </div>
+          <p className="text-xs text-gray-400 mt-2 text-center">Scrollen für mehr Ergebnisse</p>
         </div>
 
         {/* Search Results */}
@@ -286,7 +287,7 @@ function AddFoodContent() {
 
         {/* No Results - Show Add Product Option */}
         {!loading && searchQuery && searchResults.length === 0 && (
-          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 text-center">
+          <div className="bg-white backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 text-center">
             <div className="text-gray-400 text-4xl mb-4">🔍</div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Keine Ergebnisse für &quot;{searchQuery}&quot;
@@ -305,7 +306,7 @@ function AddFoodContent() {
 
         {/* Selected Food */}
         {selectedFood && (
-          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
+          <div className="bg-white backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Ausgewähltes Lebensmittel</h3>
             
             <div className="mb-4">

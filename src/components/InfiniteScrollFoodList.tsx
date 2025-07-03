@@ -31,7 +31,7 @@ const InfiniteScrollFoodList: React.FC<Props> = ({ items, loading, hasMore, onLo
       {items.map((food, idx) => (
         <div
           key={(food.code ? food.code : 'idx-') + idx}
-          className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-2xl transition-colors text-left"
+          className="w-full flex items-center justify-between p-4 bg-white/90 hover:bg-emerald-50 border border-emerald-100 rounded-2xl shadow transition-colors text-left"
         >
           <div className="flex-1" onClick={() => onSelect(food)}>
             <h4 className="font-medium text-gray-900">{food.product_name || 'Unbekanntes Produkt'}</h4>
