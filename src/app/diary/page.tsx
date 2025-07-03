@@ -90,7 +90,7 @@ export default function DiaryPage() {
   const totalCalories = entries.reduce((sum, entry) => sum + entry.calories, 0)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50">
+    <div className="min-h-screen bg-white">
       {/* Mobile Header */}
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-gray-100">
         <div className="px-4 py-4">
