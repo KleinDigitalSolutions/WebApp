@@ -280,10 +280,10 @@ export default function LandingPage() {
                     info@kleindigitalsolutions.de
                   </a>
                   <a 
-                    href="tel:+4915732984853"
+                    href="tel:+4917641678256"
                     className="hover:text-emerald-400 transition-colors"
                   >
-                    +49 157 329 848 53
+                    +49 176 416 782 56
                   </a>
                 </div>
               </div>
