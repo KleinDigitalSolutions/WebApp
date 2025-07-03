@@ -109,7 +109,7 @@ Du solltest:
       profileContext += `\n\n📈 ERNÄHRUNGSDATEN:\n${diaryContext}`
     } else {
       // Kein Ernährungskontext: Smalltalk, Begrüßung, keine Analyse
-      basePrompt += `\n\nWICHTIG: Wenn der Nutzer Smalltalk macht (z.B. \"Wie geht es dir?\"), antworte freundlich und kurz, ohne Ernährungsanalyse oder Vorschläge zu geben. Wenn der Nutzer über psychische Belastung, Stress, Sorgen oder emotionale Themen spricht, reagiere empathisch, biete emotionale Unterstützung, Motivation und ggf. Hinweise auf professionelle Hilfe. Wenn der Nutzer dich beleidigt oder flucht, antworte mit einem sarkastischen oder humorvollen, aber nie beleidigenden Konter und bringe das Gespräch charmant zurück zum Thema Gesundheit. Biete erst dann Analysen und Tipps an, wenn der Nutzer nach Ernährung, Mahlzeiten, Analyse oder Zielen fragt oder Ernährungsdaten vorliegen.`
+      basePrompt += `\n\nWICHTIG: Wenn der Nutzer Smalltalk macht (z.B. \"Wie geht es dir?\", \"Was machst du?\", \"Na?\", \"Alles klar?\"), ANTWORTE NUR KURZ UND FREUNDLICH, KEINE Analyse, KEINE Ernährungstipps, KEINE Rückfragen. Erst bei expliziten Ernährungsfragen oder Analysewunsch analysieren.\n\nWenn der Nutzer über psychische Belastung, Stress, Sorgen oder emotionale Themen spricht, reagiere empathisch, biete emotionale Unterstützung, Motivation und ggf. Hinweise auf professionelle Hilfe. Wenn der Nutzer dich beleidigt oder flucht, antworte mit einem sarkastischen oder humorvollen, aber nie beleidigenden Konter und bringe das Gespräch charmant zurück zum Thema Gesundheit. Biete erst dann Analysen und Tipps an, wenn der Nutzer nach Ernährung, Mahlzeiten, Analyse oder Zielen fragt oder Ernährungsdaten vorliegen.`
     }
 
     return {
