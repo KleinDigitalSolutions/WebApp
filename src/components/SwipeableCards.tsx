@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Cigarette, Coffee, Cookie, Candy, Pizza, Wine, Apple } from 'lucide-react'
 import { supabase, AbstinenceChallenge } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
@@ -223,11 +224,11 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
           </div>
         ))}
       </div>
-      {/* Detail-Overlay/Slide-in */}
-      {showDetail && selectedCard && (
+      {/* Detail-Overlay/Slide-in als echtes Modal/Portal */}
+      {showDetail && selectedCard && typeof window !== 'undefined' && createPortal(
         <div className="fixed inset-0 z-40 flex justify-center md:items-center items-center bg-black/40 backdrop-blur-sm transition-all" onClick={() => setShowDetail(false)}>
           <div
-            className="w-full max-w-md bg-white rounded-t-3xl md:rounded-3xl shadow-2xl p-0 mx-auto animate-slideInUp relative max-h-[90vh] flex flex-col"
+            className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-0 mx-auto animate-slideInUp relative max-h-[90vh] flex flex-col"
             onClick={e => e.stopPropagation()}
           >
             <button className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-xl z-10" onClick={()=>setShowDetail(false)}>&times;</button>
@@ -264,7 +265,7 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
             </div>
             {/* Start-Button sticky am unteren Rand */}
             {!selectedCard.challenge && (
-              <div className="w-full px-6 pb-6 pt-2 bg-white sticky bottom-0 z-10">
+              <div className="w-full px-6 pb-6 pt-2 bg-white sticky bottom-0 z-10 rounded-b-3xl">
                 <button
                   className="w-full py-3 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors disabled:opacity-60"
                   onClick={handleStartChallenge}
@@ -275,7 +276,8 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
