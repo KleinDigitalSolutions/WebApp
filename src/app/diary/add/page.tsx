@@ -49,6 +49,7 @@ function AddFoodContent() {
   const [showScanner, setShowScanner] = useState(false)
   const [offset, setOffset] = useState(0)
   const [hasMore, setHasMore] = useState(true)
+  const [showPhotoHint, setShowPhotoHint] = useState(false)
   const PAGE_SIZE = 20
 
   useEffect(() => {
@@ -225,7 +226,10 @@ function AddFoodContent() {
       <div className="px-4 py-6 space-y-6">
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3 mb-2">
-          <button className="flex flex-col items-center p-2 bg-transparent shadow-none border-none active:scale-95 transition-transform">
+          <button 
+            className="flex flex-col items-center p-2 bg-transparent shadow-none border-none active:scale-95 transition-transform"
+            onClick={() => setShowPhotoHint(true)}
+          >
             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-2">
               <Camera className="h-6 w-6 text-white" />
             </div>
@@ -387,6 +391,28 @@ function AddFoodContent() {
         onScan={handleBarcodeScanned}
         onClose={() => setShowScanner(false)}
       />
+
+      {/* Foto-Hinweis Modal */}
+      {showPhotoHint && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setShowPhotoHint(false)}>
+          <div 
+            className="relative bg-white/80 backdrop-blur-2xl rounded-3xl shadow-2xl p-8 max-w-xs w-full flex flex-col items-center border border-white/40"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+              <Camera className="h-8 w-8 text-white" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2 text-center">Foto-Tracking kommt bald!</h2>
+            <p className="text-gray-700 text-center mb-4">Mit der nächsten Version kannst du Mahlzeiten per Foto erfassen und automatisch analysieren lassen. Stay tuned! 🚀</p>
+            <button 
+              onClick={() => setShowPhotoHint(false)}
+              className="mt-2 px-6 py-2 bg-purple-600 text-white rounded-xl font-medium shadow active:scale-95 transition-transform"
+            >
+              Verstanden
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

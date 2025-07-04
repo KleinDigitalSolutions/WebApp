@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation'
 import { supabase, DiaryEntry } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
 import { 
-  Plus, 
   Calendar, 
   ChevronLeft, 
   ChevronRight,
   Trash2,
-  Edit
+  Edit,
+  Plus // <-- Hinzugefügt
 } from 'lucide-react'
 
 export default function DiaryPage() {
@@ -87,165 +87,181 @@ export default function DiaryPage() {
     { key: 'snack', label: 'Snacks', icon: '🍎' }
   ]
 
-  const totalCalories = entries.reduce((sum, entry) => sum + entry.calories, 0)
-
   return (
-    <div className="min-h-screen bg-white">
-      {/* Tagesübersicht und Navigation jetzt im Seitenfluss, nicht sticky */}
-      <div className="px-4 pt-6 pb-2 space-y-4">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-lg font-semibold text-gray-900">Ernährungstagebuch</h1>
-          <button 
-            onClick={() => router.push('/diary/add')}
-            className="p-2 bg-emerald-500 text-white rounded-full transition-colors active:scale-95"
-          >
-            <Plus className="h-6 w-6" />
-          </button>
-        </div>
-        {/* Date Navigation */}
-        <div className="flex items-center justify-between">
-          <button 
-            onClick={() => changeDate('prev')}
-            className="p-2 rounded-full transition-colors active:scale-95"
-          >
-            <ChevronLeft className="h-5 w-5 text-gray-600" />
-          </button>
-          <div className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5 text-emerald-600" />
-            <span className="font-medium text-gray-900">
-              {selectedDate.toLocaleDateString('de-DE', { 
-                weekday: 'long',
-                day: 'numeric', 
-                month: 'long' 
-              })}
-            </span>
-          </div>
-          <button 
-            onClick={() => changeDate('next')}
-            className="p-2 rounded-full transition-colors active:scale-95"
-            disabled={selectedDate.toDateString() === new Date().toDateString()}
-          >
-            <ChevronRight className={`h-5 w-5 ${
-              selectedDate.toDateString() === new Date().toDateString() 
-                ? 'text-gray-300' 
-                : 'text-gray-600'
-            }`} />
-          </button>
-        </div>
-        {/* Daily Summary */}
-        <div className="mt-2 p-4 bg-emerald-100/80 backdrop-blur-xl rounded-3xl shadow-lg border border-emerald-200/60">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="inline-block px-4 py-2 rounded-xl bg-emerald-500 text-white text-2xl font-bold shadow-sm">
-                {totalCalories}
-              </span>
-              <span className="text-sm text-emerald-700 ml-2 font-semibold">kcal</span>
-            </div>
-            <div className="text-sm text-gray-600">
-              {entries.length} Einträge
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-white relative overflow-x-hidden">
+      {/* Hintergrund-Welle (SVG, wie bei Challenge-Karten) */}
+      <div className="absolute inset-x-0 top-0 z-0 pointer-events-none select-none" aria-hidden="true">
+        <svg viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-32 md:h-40 lg:h-56">
+          <path fill="url(#wave-gradient)" fillOpacity="1" d="M0,160L60,154.7C120,149,240,139,360,154.7C480,171,600,213,720,218.7C840,224,960,192,1080,181.3C1200,171,1320,181,1380,186.7L1440,192L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z" />
+          <defs>
+            <linearGradient id="wave-gradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#a7f3d0" />
+              <stop offset="100%" stopColor="#f0fdf4" />
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
-
-      {/* Water Tracker - Prominent above meals */}
-      <WaterTracker selectedDate={selectedDate} />
-
-      <div className="px-4 py-6 space-y-6">
-        {loading ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+      <div className="relative z-10">
+        {/* Tagesübersicht und Navigation jetzt im Seitenfluss, nicht sticky */}
+        <div className="px-4 pt-6 pb-2 space-y-4">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-lg font-semibold text-gray-900">Ernährungstagebuch</h1>
           </div>
-        ) : (
-          <>
-            {mealTypes.map((mealType) => {
-              const mealEntries = groupedEntries[mealType.key] || []
-              const mealCalories = mealEntries.reduce((sum, entry) => sum + entry.calories, 0)
+          {/* Date Navigation */}
+          <div className="flex items-center justify-between">
+            <button 
+              onClick={() => changeDate('prev')}
+              className="p-2 rounded-full transition-colors active:scale-95"
+            >
+              <ChevronLeft className="h-5 w-5 text-gray-600" />
+            </button>
+            <div className="flex items-center space-x-2">
+              <Calendar className="h-5 w-5 text-emerald-600" />
+              <span className="font-medium text-gray-900">
+                {selectedDate.toLocaleDateString('de-DE', { 
+                  weekday: 'long',
+                  day: 'numeric', 
+                  month: 'long' 
+                })}
+              </span>
+            </div>
+            <button 
+              onClick={() => changeDate('next')}
+              className="p-2 rounded-full transition-colors active:scale-95"
+              disabled={selectedDate.toDateString() === new Date().toDateString()}
+            >
+              <ChevronRight className={`h-5 w-5 ${
+                selectedDate.toDateString() === new Date().toDateString() 
+                  ? 'text-gray-300' 
+                  : 'text-gray-600'
+              }`} />
+            </button>
+          </div>
+        </div>
 
-              return (
-                <div key={mealType.key} className="bg-white rounded-2xl shadow-sm border border-gray-200">
-                  {/* Compact Meal Header */}
-                  <div className="flex items-center justify-between p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                        <span className="text-xl">{mealType.icon}</span>
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-gray-900">{mealType.label}</h3>
-                        <p className="text-sm text-gray-600">{mealCalories} kcal</p>
-                      </div>
+        {/* Water Tracker - Prominent above meals */}
+        <WaterTracker selectedDate={selectedDate} />
+
+        <div className="px-4 py-6 space-y-6">
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+            </div>
+          ) : (
+            <>
+              {mealTypes.map((mealType) => {
+                const mealEntries = groupedEntries[mealType.key] || []
+                const mealCalories = mealEntries.reduce((sum, entry) => sum + entry.calories, 0)
+
+                return (
+                  <div key={mealType.key} className="bg-white rounded-2xl shadow-sm border border-gray-200 relative overflow-hidden">
+                    {/* Design-Effekt: Sanfte Mint-Welle unter der Karte */}
+                    <div className="absolute left-0 bottom-0 w-full h-16 z-0 pointer-events-none select-none">
+                      <svg viewBox="0 0 400 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                        <path d="M0 32 Q100 64 200 32 T400 32 V64 H0Z" fill="url(#mint-wave)" fillOpacity="0.22" />
+                        <defs>
+                          <linearGradient id="mint-wave" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#6ee7b7" />
+                            <stop offset="100%" stopColor="#a7f3d0" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
                     </div>
-                    <button 
-                      onClick={() => router.push(`/diary/add?meal=${mealType.key}`)}
-                      className="w-10 h-10 bg-emerald-500 text-white rounded-full flex items-center justify-center transition-colors active:scale-95"
-                    >
-                      <Plus className="h-5 w-5" />
-                    </button>
-                  </div>
-
-                  {/* Meal Entries - Only show if there are entries */}
-                  {mealEntries.length === 0 ? (
-                    <div className="px-4 pb-4">
-                      <div className="text-center py-6 border-t border-gray-100">
-                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                          <Plus className="h-6 w-6 text-gray-400" />
+                    <div className="relative z-10">
+                      {/* Compact Meal Header */}
+                      <div className="flex items-center justify-between p-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                            <span className="text-xl">{mealType.icon}</span>
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-900">{mealType.label}</h3>
+                            <p className="text-sm text-gray-600">{mealCalories} kcal</p>
+                          </div>
                         </div>
-                        <p className="text-gray-500 text-sm mb-2">Keine Einträge für {mealType.label.toLowerCase()}</p>
                         <button 
                           onClick={() => router.push(`/diary/add?meal=${mealType.key}`)}
-                          className="text-emerald-600 font-medium text-sm"
+                          className="w-10 h-10 bg-emerald-500 text-white rounded-full flex items-center justify-center transition-colors active:scale-95"
                         >
-                          Erstes Lebensmittel hinzufügen
+                          <Plus className="h-5 w-5" />
                         </button>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="border-t border-gray-100">
-                      <div className="px-4 py-3 space-y-2">
-                        {mealEntries.map((entry) => (
-                          <div 
-                            key={entry.id} 
-                            className="group flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-xl transition-all duration-200 hover:bg-gray-100"
-                          >
-                            <div className="flex-1">
-                              <h4 className="font-medium text-gray-900 text-sm">{entry.food_name}</h4>
-                              <div className="flex items-center space-x-3 text-xs text-gray-600 mt-1">
-                                <span>{entry.quantity}{entry.unit}</span>
-                                <span className="font-medium text-emerald-600">{entry.calories} kcal</span>
-                                <span className="text-gray-400">
-                                  {new Date(entry.created_at).toLocaleTimeString('de-DE', { 
-                                    hour: '2-digit', 
-                                    minute: '2-digit' 
-                                  })}
-                                </span>
-                              </div>
+
+                      {/* Meal Entries - Only show if there are entries */}
+                      {mealEntries.length === 0 ? (
+                        <div className="px-4 pb-4">
+                          <div className="text-center py-6 border-t border-gray-100">
+                            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                              <Plus className="h-6 w-6 text-gray-400" />
                             </div>
-                            
-                            {/* Action Buttons */}
-                            <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button 
-                                onClick={() => router.push(`/diary/edit/${entry.id}`)}
-                                className="p-1.5 bg-blue-500 text-white rounded-lg transition-colors active:scale-95"
-                              >
-                                <Edit className="h-3 w-3" />
-                              </button>
-                              <button 
-                                onClick={() => deleteEntry(entry.id)}
-                                className="p-1.5 bg-red-500 text-white rounded-lg transition-colors active:scale-95"
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </button>
-                            </div>
+                            <p className="text-gray-500 text-sm mb-2">Keine Einträge für {mealType.label.toLowerCase()}</p>
+                            <button 
+                              onClick={() => router.push(`/diary/add?meal=${mealType.key}`)}
+                              className="text-emerald-600 font-medium text-sm"
+                            >
+                              Erstes Lebensmittel hinzufügen
+                            </button>
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      ) : (
+                        <div className="border-t border-gray-100">
+                          <div className="px-4 py-3 space-y-2">
+                            {mealEntries.map((entry) => (
+                              <div 
+                                key={entry.id} 
+                                className="group flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-xl transition-all duration-200 hover:bg-gray-100"
+                              >
+                                <div className="flex-1">
+                                  <h4 className="font-medium text-gray-900 text-sm">{entry.food_name}</h4>
+                                  <div className="flex items-center space-x-3 text-xs text-gray-600 mt-1">
+                                    <span>{entry.quantity}{entry.unit}</span>
+                                    <span className="font-medium text-emerald-600">{entry.calories} kcal</span>
+                                    <span className="text-gray-400">
+                                      {new Date(entry.created_at).toLocaleTimeString('de-DE', { 
+                                        hour: '2-digit', 
+                                        minute: '2-digit' 
+                                      })}
+                                    </span>
+                                  </div>
+                                </div>
+                                
+                                {/* Action Buttons */}
+                                <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <button 
+                                    onClick={() => router.push(`/diary/edit/${entry.id}`)}
+                                    className="p-1.5 bg-blue-500 text-white rounded-lg transition-colors active:scale-95"
+                                  >
+                                    <Edit className="h-3 w-3" />
+                                  </button>
+                                  <button 
+                                    onClick={() => deleteEntry(entry.id)}
+                                    className="p-1.5 bg-red-500 text-white rounded-lg transition-colors active:scale-95"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              )
-            })}
-          </>
-        )}
+                  </div>
+                )
+              })}
+            </>
+          )}
+        </div>
+      </div>
+      {/* Motivations-/Tages-Tipp Bereich unter den Mahlzeitenkarten */}
+      <div className="mt-8 mb-8 flex justify-center">
+        <div className="backdrop-blur-xl bg-white/70 border border-emerald-100 rounded-2xl shadow-lg px-6 py-4 flex items-center space-x-3 max-w-md w-full">
+          <span className="text-2xl">🌱</span>
+          <div>
+            <p className="text-sm font-semibold text-emerald-700 mb-1">Tages-Tipp</p>
+            <p className="text-gray-700 text-sm">Trinke heute zu jeder Mahlzeit ein Glas Wasser – dein Körper wird es dir danken! 💧</p>
+          </div>
+        </div>
       </div>
     </div>
   )
