@@ -7,9 +7,6 @@ import { useAuthStore, useDiaryStore } from '@/store'
 import { calculateDailyCalorieGoal, calculateMacroTargets } from '@/lib/nutrition-utils'
 import { 
   PlusCircle, 
-  Droplet, 
-  Beef, 
-  Wheat, 
   TrendingUp,
   Calendar,
   Award,
@@ -218,12 +215,12 @@ export default function Dashboard() {
   const consumedProtein = todayEntries.reduce((sum, entry) => sum + entry.protein_g, 0)
   const consumedCarbs = todayEntries.reduce((sum, entry) => sum + entry.carb_g, 0)
   const consumedFat = todayEntries.reduce((sum, entry) => sum + entry.fat_g, 0)
+  const consumedFiber = todayEntries.reduce((sum, entry) => sum + (entry.fiber_g || 0), 0)
+  const consumedSugar = todayEntries.reduce((sum, entry) => sum + (entry.sugar_g || 0), 0)
+  const consumedSodium = todayEntries.reduce((sum, entry) => sum + (entry.sodium_mg || 0), 0)
 
   // Calculate percentages
   const calorieProgress = dailyGoals.calories ? (consumedCalories / dailyGoals.calories) * 100 : 0
-  const proteinProgress = dailyGoals.protein ? (consumedProtein / dailyGoals.protein) * 100 : 0
-  const carbsProgress = dailyGoals.carbs ? (consumedCarbs / dailyGoals.carbs) * 100 : 0
-  const fatProgress = dailyGoals.fat ? (consumedFat / dailyGoals.fat) * 100 : 0
   const waterProgress = waterGoal ? (waterIntake / waterGoal) * 100 : 0
 
   if (loading) {
@@ -360,48 +357,28 @@ export default function Dashboard() {
           </div>
 
           {/* Macro Distribution */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="text-center p-3 bg-white/30 rounded-2xl border border-white/20 shadow-sm backdrop-blur-xl">
-              <div className="flex items-center justify-center mb-2">
-                <Beef className="h-5 w-5 text-emerald-600" />
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+            {[
+              { label: 'Protein', value: Math.round(consumedProtein) + 'g', color: '#2563eb' }, // kräftiges Blau
+              { label: 'Kohlenhydrate', value: Math.round(consumedCarbs) + 'g', color: '#f59e42' },
+              { label: 'Fett', value: Math.round(consumedFat) + 'g', color: '#f472b6' },
+              { label: 'Ballaststoffe', value: Math.round(consumedFiber) + 'g', color: '#059669' }, // kräftiges Dunkelgrün
+              { label: 'Zucker', value: Math.round(consumedSugar) + 'g', color: '#a78bfa' },
+              { label: 'Natrium', value: Math.round(consumedSodium) + 'mg', color: '#facc15' },
+            ].map((macro) => (
+              <div key={macro.label} className="text-center p-3 bg-white/30 rounded-2xl border border-white/20 shadow-sm backdrop-blur-xl">
+                <div className="flex items-center justify-center mb-2">
+                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/0 shadow-none">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style={{display:'block',margin:'auto'}}>
+                      <circle cx="14" cy="14" r="11" stroke={macro.color} strokeWidth="2.5" fill="none" />
+                      <circle cx="14" cy="14" r="5.5" fill={macro.color} />
+                    </svg>
+                  </span>
+                </div>
+                <div className="text-sm font-semibold text-white drop-shadow-sm">{macro.value}</div>
+                <div className="text-xs text-emerald-50/90 drop-shadow-sm">{macro.label}</div>
               </div>
-              <div className="text-sm font-semibold text-white drop-shadow-sm">{Math.round(consumedProtein)}g</div>
-              <div className="text-xs text-emerald-50/90 drop-shadow-sm">Protein</div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                <div 
-                  className="bg-emerald-500 h-1.5 rounded-full"
-                  style={{ width: `${Math.min(proteinProgress, 100)}%` }}
-                />
-              </div>
-            </div>
-            
-            <div className="text-center p-3 bg-white/30 rounded-2xl border border-white/20 shadow-sm backdrop-blur-xl">
-              <div className="flex items-center justify-center mb-2">
-                <Wheat className="h-5 w-5 text-emerald-600" />
-              </div>
-              <div className="text-sm font-semibold text-white drop-shadow-sm">{Math.round(consumedCarbs)}g</div>
-              <div className="text-xs text-emerald-50/90 drop-shadow-sm">Carbs</div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                <div 
-                  className="bg-emerald-500 h-1.5 rounded-full"
-                  style={{ width: `${Math.min(carbsProgress, 100)}%` }}
-                />
-              </div>
-            </div>
-            
-            <div className="text-center p-3 bg-white/30 rounded-2xl border border-white/20 shadow-sm backdrop-blur-xl">
-              <div className="flex items-center justify-center mb-2">
-                <Droplet className="h-5 w-5 text-emerald-600" />
-              </div>
-              <div className="text-sm font-semibold text-white drop-shadow-sm">{Math.round(consumedFat)}g</div>
-              <div className="text-xs text-emerald-50/90 drop-shadow-sm">Fett</div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                <div 
-                  className="bg-emerald-500 h-1.5 rounded-full"
-                  style={{ width: `${Math.min(fatProgress, 100)}%` }}
-                />
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 

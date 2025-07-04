@@ -45,6 +45,9 @@ export interface DiaryEntry {
   protein_g: number
   carb_g: number
   fat_g: number
+  fiber_g: number // NEU: Ballaststoffe
+  sugar_g: number // NEU: Zucker
+  sodium_mg: number // NEU: Natrium
   entry_date: string
   created_at: string
 }
