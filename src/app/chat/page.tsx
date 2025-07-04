@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store'
 import { Navigation } from '@/components/BottomNavBar'
-import { Button, LoadingSpinner } from '@/components/ui'
 import { ChatMessage } from '@/lib/groq-api'
 import ReactMarkdown from 'react-markdown'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface ChatMessageWithId extends ChatMessage {
   id: string
@@ -32,20 +32,7 @@ export default function ChatPage() {
       const welcomeMessage: ChatMessageWithId = {
         id: 'welcome',
         role: 'assistant',
-        content: `Hallo! 👋 Ich bin dein persönlicher KI-Ernährungsberater. Ich helfe dir gerne mit evidenzbasierten Ernährungstipps, detaillierter Mahlzeitenanalyse und beantworte alle Fragen zu deiner Ernährung und deinen Gesundheitszielen.
-
-🔍 **Personalisierte Analyse:** Ich kann deine Tagebuch-Einträge der letzten 7 Tage detailliert analysieren und dir konkrete, umsetzbare Verbesserungsvorschläge geben!
-
-📊 **Was ich für dich analysiere:**
-• Nährstoffverteilung (Protein, Kohlenhydrate, Fett)
-• Mikronährstoffe und Ballaststoffe  
-• Essgewohnheiten und -muster
-• Potentielle Problembereiche
-• Konkrete Verbesserungsvorschläge
-
-${profile?.goal ? `🎯 Ich sehe, dein Ziel ist "${profile.goal.replace('_', ' ')}". Darauf werde ich meine Empfehlungen abstimmen! ` : ''}
-
-Wie kann ich dir heute helfen? 🌱`,
+        content: `Hallo! 👋 Ich bin dein KI-Ernährungscoach. Stelle mir Fragen oder fordere eine Analyse deiner Ernährung an.\n\n📊 Ich kann deine letzten 7 Tage auswerten und dir konkrete Tipps geben!\n\nWie kann ich dir helfen? 🌱`,
         timestamp: new Date(),
       }
       setMessages([welcomeMessage])
@@ -80,6 +67,12 @@ Wie kann ich dir heute helfen? 🌱`,
         .filter(m => m.id !== 'welcome') // Exclude welcome message from context
         .map(({ role, content }) => ({ role, content }))
         .concat([{ role: 'user', content: inputMessage }])
+      // Debug: Log API-Call-Daten
+      console.log('API-Call /api/chat', {
+        apiMessages,
+        userProfile: profile,
+        userId: user?.id,
+      })
 
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -134,167 +127,191 @@ Wie kann ich dir heute helfen? 🌱`,
     const welcomeMessage: ChatMessageWithId = {
       id: 'welcome',
       role: 'assistant',
-      content: `Hallo! 👋 Ich bin dein persönlicher KI-Ernährungsberater. Ich helfe dir gerne mit evidenzbasierten Ernährungstipps, detaillierter Mahlzeitenanalyse und beantworte alle Fragen zu deiner Ernährung und deinen Gesundheitszielen.
-
-🔍 **Personalisierte Analyse:** Ich kann deine Tagebuch-Einträge der letzten 7 Tage detailliert analysieren und dir konkrete, umsetzbare Verbesserungsvorschläge geben!
-
-📊 **Was ich für dich analysiere:**
-• Nährstoffverteilung (Protein, Kohlenhydrate, Fett)
-• Mikronährstoffe und Ballaststoffe  
-• Essgewohnheiten und -muster
-• Potentielle Problembereiche
-• Konkrete Verbesserungsvorschläge
-
-${profile?.goal ? `🎯 Ich sehe, dein Ziel ist "${profile.goal.replace('_', ' ')}". Darauf werde ich meine Empfehlungen abstimmen! ` : ''}
-
-Wie kann ich dir heute helfen? 🌱`,
+      content: `Hallo! 👋 Ich bin dein KI-Ernährungscoach. Stelle mir Fragen oder fordere eine Analyse deiner Ernährung an.\n\n📊 Ich kann deine letzten 7 Tage auswerten und dir konkrete Tipps geben!\n\nWie kann ich dir helfen? 🌱`,
       timestamp: new Date(),
     }
     setMessages([welcomeMessage])
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <div className="flex-1 w-full px-4 pt-4 pb-20 flex flex-col">
-        {/* Chat Messages */}
-        <div className="flex-1 backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg flex flex-col mb-4 relative">
-          {/* Floating "Neu starten" Button */}
-          {messages.length > 1 && (
-            <button
-              onClick={clearChat}
-              className="absolute top-4 right-4 z-10 bg-white/90 hover:bg-white text-gray-600 hover:text-gray-800 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200 shadow-sm transition-colors"
-            >
-              ↻ Neu
-            </button>
-          )}
-          <div className="flex-1 p-4 overflow-y-auto">
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[85%] px-4 py-3 rounded-2xl ${
-                      message.role === 'user'
-                        ? 'bg-green-600 text-white'
-                        : 'bg-gray-50 text-gray-900 border border-green-50'
-                    }`}
-                  >
-                    <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                      {message.role === 'assistant' ? (
-                        <ReactMarkdown
-                          components={{
-                            strong: (props) => <strong className="text-green-700 font-semibold" {...props} />,
-                            li: (props) => <li className="ml-4 list-disc" {...props} />,
-                            ul: (props) => <ul className="mb-2 ml-2" {...props} />,
-                            p: (props) => <p className="mb-2" {...props} />,
-                          }}
-                        >
-                          {message.content}
-                        </ReactMarkdown>
-                      ) : (
-                        message.content
-                      )}
-                    </div>
-                    <div
-                      className={`text-xs mt-2 ${
-                        message.role === 'user' ? 'text-green-100' : 'text-gray-500'
-                      }`}
-                    >
-                      {message.timestamp.toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              
-              {loading && (
-                <div className="flex justify-start">
-                  <div className="bg-gray-50 text-gray-900 px-4 py-3 rounded-2xl border border-green-50">
-                    <div className="flex items-center space-x-2">
-                      <LoadingSpinner size="sm" />
-                      <span className="text-sm">KI denkt nach...</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input Area */}
-          <div className="border-t border-green-100 p-4">
-            <div className="flex space-x-3">
-              <textarea
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Frage mich zu Ernährung, Mahlzeiten oder deinen Zielen..."
-                className="flex-1 resize-none border border-green-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white text-sm"
-                rows={2}
-                disabled={loading}
-              />
-              <Button
-                onClick={sendMessage}
-                disabled={!inputMessage.trim() || loading}
-                className="self-end px-6 py-3 text-sm"
-              >
-                Senden
-              </Button>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">
-              Enter zum Senden, Shift+Enter für neue Zeile
-            </p>
-          </div>
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      {/* Liquid Glass Animated Background */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse 120% 80% at 60% 10%, #059669cc 0%, #064e3b 60%, #0e172a 100%)',
+          filter: 'blur(0px) saturate(1.2)',
+          transition: 'background 1s',
+        }}
+      />
+      {/* Subtle animated glass waves */}
+      <motion.div
+        className="absolute -bottom-24 left-0 w-full h-48 z-0 pointer-events-none"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 0.7, y: 0 }}
+        transition={{ duration: 1.2 }}
+        style={{
+          background:
+            'linear-gradient(120deg, #a7f3d0cc 0%, #6ee7b7bb 40%, #05966988 100%)',
+          filter: 'blur(32px) saturate(1.3)',
+        }}
+      />
+      {/* Header */}
+      <div className="w-full max-w-lg mx-auto px-4 pt-6 pb-2 flex items-center gap-3 z-10">
+        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/30 shadow-lg backdrop-blur-md border border-white/30">
+          <span className="text-2xl">🤖</span>
         </div>
-
-        {/* Suggested Questions */}
-        <div>
-          <h3 className="text-sm font-medium text-gray-700 mb-3">🍎 Ernährungsanalyse starten:</h3>
-          <div className="space-y-2">
-            {[
-              "📊 Analysiere meine Ernährung der letzten 7 Tage detailliert",
-              "⚠️ Was esse ich zu viel und was sollte ich reduzieren?",
-              "💪 Bekomme ich genug Protein und alle wichtigen Nährstoffe?",
-              "🍬 Wie viel Zucker und verarbeitete Lebensmittel esse ich?",
-              "🥗 Welche gesunden Alternativen passten zu meinen Gewohnheiten?",
-              "📋 Erstelle mir einen Wochenplan basierend auf meiner Analyse",
-              "🎯 Wie kann ich mein Ernährungsziel optimal erreichen?",
-              "⚖️ Ist meine Kalorienzufuhr für mein Ziel angemessen?",
-            ].map((question, index) => (
-              <button
-                key={index}
-                onClick={() => setInputMessage(question)}
-                className="w-full text-left p-4 backdrop-blur-sm bg-green-50/80 rounded-xl text-sm text-green-800 border border-green-100 shadow-sm active:bg-green-100/80 hover:bg-green-100/60 transition-colors"
-              >
-                {question}
-              </button>
-            ))}
-          </div>
-          <div className="mt-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">💬 Oder frage mich direkt:</h3>
-            <div className="grid grid-cols-1 gap-2">
-              {[
-                "Was sind gesunde Snacks zum Abnehmen?",
-                "Wie kann ich mehr Gemüse in meine Ernährung einbauen?",
-                "Welche Proteinquellen sind am besten?",
-              ].map((question, index) => (
-                <button
-                  key={index}
-                  onClick={() => setInputMessage(question)}
-                  className="text-left p-3 bg-blue-50/80 rounded-lg text-sm text-blue-800 border border-blue-100 hover:bg-blue-100/60 transition-colors"
-                >
-                  {question}
-                </button>
-              ))}
-            </div>
-          </div>
+        <div className="flex-1">
+          <h1 className="text-lg font-bold text-white drop-shadow">KI Ernährungsberater</h1>
+          <p className="text-xs text-emerald-50/80">Stelle Fragen oder starte eine Analyse</p>
         </div>
+        <button onClick={() => router.push('/dashboard')} className="p-2 rounded-full bg-white/20 hover:bg-white/40 transition-colors">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
       </div>
-      
+
+      {/* Chat-Container */}
+      <div className="flex-1 w-full max-w-lg mx-auto flex flex-col px-2 pt-2 z-10" style={{overflow:'hidden'}}>
+        <div
+          className="flex-1 flex flex-col gap-2 overflow-y-auto rounded-3xl bg-white/30 shadow-2xl border border-white/30 backdrop-blur-2xl p-4 mb-3"
+          style={{
+            minHeight: '180px',
+            maxHeight: 'calc(100dvh - 320px)', // Weniger Platz für Chat, mehr für Input auf kleinen Screens
+            boxShadow: '0 8px 40px 0 #05966933',
+          }}
+        >
+          <AnimatePresence initial={false}>
+            {messages.map((message) => (
+              <motion.div
+                key={message.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.25, type: 'spring', bounce: 0.2 }}
+                className={`flex items-end gap-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                {message.role === 'assistant' && (
+                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shadow border border-emerald-200">
+                    <span className="text-lg">🤖</span>
+                  </div>
+                )}
+                <div
+                  className={`max-w-[75%] px-4 py-3 rounded-2xl shadow-xl backdrop-blur-2xl border relative ${message.role === 'user' ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white ml-auto' : 'bg-white/80 text-emerald-900 border-emerald-100'}`}
+                  style={message.role === 'user'
+                    ? { boxShadow: '0 2px 16px 0 #05966955, 0 0 0 2px #05966933', border: '1.5px solid #05966933', backdropFilter: 'blur(18px) saturate(1.2)' }
+                    : { boxShadow: '0 2px 16px 0 #05966922', border: '1.5px solid #a7f3d0', backdropFilter: 'blur(18px) saturate(1.2)' }
+                  }
+                >
+                  {/* Glanz-Overlay */}
+                  <div className="absolute left-0 top-0 w-full h-full pointer-events-none rounded-2xl" style={{background:'linear-gradient(120deg,rgba(255,255,255,0.13) 0%,rgba(255,255,255,0.07) 100%)'}} />
+                  <div className="whitespace-pre-wrap text-sm leading-relaxed relative z-10">
+                    {message.role === 'assistant' ? (
+                      <ReactMarkdown
+                        components={{
+                          strong: (props) => <strong className="text-emerald-700 font-semibold" {...props} />,
+                          li: (props) => <li className="ml-4 list-disc" {...props} />,
+                          ul: (props) => <ul className="mb-2 ml-2" {...props} />,
+                          p: (props) => <p className="mb-2" {...props} />,
+                        }}
+                      >
+                        {message.content}
+                      </ReactMarkdown>
+                    ) : (
+                      message.content
+                    )}
+                  </div>
+                  <div className={`text-xs mt-2 ${message.role === 'user' ? 'text-emerald-100' : 'text-emerald-500'}`}>{message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</div>
+                </div>
+                {message.role === 'user' && (
+                  <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow border border-emerald-200">
+                    <span className="text-white font-bold">{profile?.first_name?.[0]?.toUpperCase() || 'U'}</span>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+            {loading && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.25, type: 'spring', bounce: 0.2 }}
+                className="flex items-end gap-2 justify-start"
+              >
+                <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shadow border border-emerald-200">
+                  <span className="text-lg">🤖</span>
+                </div>
+                <div className="px-4 py-3 rounded-2xl shadow-xl bg-white/90 border border-emerald-100 flex items-center gap-2 backdrop-blur-2xl">
+                  <span className="animate-bounce text-emerald-500 text-lg">...</span>
+                  <span className="text-sm text-emerald-500">KI denkt nach...</span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="flex gap-2 overflow-x-auto pb-2 mb-2 scrollbar-hide z-10">
+          {["📊 7-Tage-Analyse", "⚠️ Problemstellen", "💪 Protein & Nährstoffe", "🍬 Zucker & Snacks", "🥗 Gesunde Alternativen", "📋 Wochenplan", "🎯 Ziel erreichen", "⚖️ Kalorien-Check"].map((q) => (
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05, boxShadow: '0 0 0 4px #05966933' }}
+              key={q}
+              onClick={()=>setInputMessage(q)}
+              className="px-4 py-2 rounded-full bg-white/60 hover:bg-white/80 text-emerald-700 font-medium text-xs shadow border border-emerald-100 transition-colors whitespace-nowrap backdrop-blur-xl"
+              style={{boxShadow:'0 2px 8px 0 #05966922'}}
+            >{q}</motion.button>
+          ))}
+        </div>
+
+        {/* Input Area */}
+        <motion.div
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
+          className="flex items-end gap-2 bg-white/80 rounded-2xl shadow-2xl border border-emerald-100 backdrop-blur-2xl px-4 py-3 relative mb-2"
+          style={{boxShadow:'0 8px 32px 0 #05966933'}}
+        >
+          <textarea
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Frage mich zu Ernährung, Mahlzeiten oder deinen Zielen..."
+            className="flex-1 resize-none border-none bg-transparent focus:outline-none text-emerald-900 placeholder-emerald-400 text-sm"
+            rows={1}
+            disabled={loading}
+            style={{minHeight:'36px',maxHeight:'80px'}}
+          />
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.08 }}
+            onClick={sendMessage}
+            disabled={!inputMessage.trim() || loading}
+            className="p-3 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow transition-colors disabled:opacity-50 relative"
+            aria-label="Senden"
+            style={{boxShadow:'0 0 0 4px #05966933'}}
+          >
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </motion.button>
+        </motion.div>
+        <div className="flex flex-col items-center mb-2">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.05 }}
+            onClick={clearChat}
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-emerald-100 text-emerald-700 shadow hover:bg-emerald-50 transition-colors"
+            style={{boxShadow:'0 0 0 2px #05966922'}}
+            aria-label="Chat zurücksetzen"
+          >
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <span className="text-sm font-medium">Chat zurücksetzen</span>
+          </motion.button>
+        </div>
+        <p className="text-xs text-emerald-100 mt-2 text-center">Enter zum Senden, Shift+Enter für neue Zeile</p>
+      </div>
       <Navigation />
     </div>
   )

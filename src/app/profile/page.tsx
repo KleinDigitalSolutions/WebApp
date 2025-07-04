@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store'
 import { Navigation } from '@/components/BottomNavBar'
 import { Button, Input, Select, LoadingSpinner } from '@/components/ui'
 import { calculateBMI, getBMICategory, calculateDailyCalorieGoal, calculateMacroTargets } from '@/lib/nutrition-utils'
+import { motion } from 'framer-motion'
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -134,8 +135,21 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
-        <div className="flex items-center justify-center py-12">
+      <div className="min-h-screen flex flex-col relative overflow-hidden">
+        {/* Liquid Glass Animated Background */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 z-0 pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(ellipse 120% 80% at 60% 10%, #059669cc 0%, #064e3b 60%, #0e172a 100%)',
+            filter: 'blur(0px) saturate(1.2)',
+            transition: 'background 1s',
+          }}
+        />
+        <div className="flex items-center justify-center py-12 flex-1 z-10">
           <LoadingSpinner size="lg" />
         </div>
         <Navigation />
@@ -144,11 +158,66 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="w-full px-4 pt-4 pb-20">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Persönliche Daten</h2>
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      {/* Liquid Glass Animated Background */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse 120% 80% at 60% 10%, #059669cc 0%, #064e3b 60%, #0e172a 100%)',
+          filter: 'blur(0px) saturate(1.2)',
+          transition: 'background 1s',
+        }}
+      />
+      {/* Subtle animated glass waves */}
+      <motion.div
+        className="absolute -bottom-24 left-0 w-full h-48 z-0 pointer-events-none"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 0.7, y: 0 }}
+        transition={{ duration: 1.2 }}
+        style={{
+          background:
+            'linear-gradient(120deg, #a7f3d0cc 0%, #6ee7b7bb 40%, #05966988 100%)',
+          filter: 'blur(32px) saturate(1.3)',
+        }}
+      />
+      <div className="w-full max-w-lg mx-auto px-2 pt-6 pb-32 flex flex-col gap-6 z-10">
+        {/* Avatar & Name */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
+          className="flex flex-col items-center gap-2 mb-2"
+        >
+          <div className="w-20 h-20 rounded-full bg-white/40 shadow-lg border-2 border-emerald-200 flex items-center justify-center text-4xl font-bold text-emerald-700 backdrop-blur-2xl mb-1" style={{boxShadow:'0 4px 32px #05966933'}}>
+            {formData.first_name?.[0]?.toUpperCase() || 'U'}
+          </div>
+          <div className="text-xl font-bold text-white drop-shadow text-center">{formData.first_name} {formData.last_name}</div>
+          {formData.goal && (
+            <div className="text-xs px-3 py-1 rounded-full bg-emerald-600/80 text-white shadow border border-emerald-200 mb-1">🎯 Ziel: {(() => {
+              switch(formData.goal) {
+                case 'lose_weight': return 'Abnehmen';
+                case 'maintain_weight': return 'Gewicht halten';
+                case 'gain_weight': return 'Zunehmen';
+                case 'build_muscle': return 'Muskelaufbau';
+                default: return formData.goal;
+              }
+            })()}</div>
+          )}
+        </motion.div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Persönliche Daten */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
+            className="rounded-3xl border border-white/30 bg-white/30 shadow-2xl backdrop-blur-2xl p-6"
+            style={{boxShadow:'0 8px 40px 0 #05966933'}}
+          >
+            <h2 className="text-lg font-bold text-white mb-4 bg-gradient-to-r from-emerald-400 via-emerald-600 to-emerald-800 bg-clip-text drop-shadow">Persönliche Daten</h2>
             
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -223,10 +292,17 @@ export default function ProfilePage() {
                 </p>
               </div>
             )}
-          </div>
+          </motion.div>
 
-          <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Aktivität & Ziele</h2>
+          {/* Aktivität & Ziele */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
+            className="rounded-3xl border border-white/30 bg-white/30 shadow-2xl backdrop-blur-2xl p-6"
+            style={{boxShadow:'0 8px 40px 0 #05966933'}}
+          >
+            <h2 className="text-lg font-bold text-white mb-4 bg-gradient-to-r from-emerald-400 via-emerald-600 to-emerald-800 bg-clip-text drop-shadow">Aktivität & Ziele</h2>
             
             <div className="space-y-4">
               <Select
@@ -256,11 +332,18 @@ export default function ProfilePage() {
                 ]}
               />
             </div>
-          </div>
+          </motion.div>
 
+          {/* Geschätzte Tagesziele */}
           {estimatedCalories > 0 && (
-            <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg p-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Deine geschätzten Tagesziele</h2>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
+              className="rounded-3xl border border-white/30 bg-white/30 shadow-2xl backdrop-blur-2xl p-6"
+              style={{boxShadow:'0 8px 40px 0 #05966933'}}
+            >
+              <h2 className="text-lg font-bold text-white mb-4 bg-gradient-to-r from-emerald-400 via-emerald-600 to-emerald-800 bg-clip-text drop-shadow">Deine geschätzten Tagesziele</h2>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-4 bg-green-50 rounded-xl">
@@ -285,7 +368,7 @@ export default function ProfilePage() {
                 <strong>Hinweis:</strong> Dies sind Schätzungen basierend auf der Mifflin-St Jeor Gleichung. 
                 Individuelle Bedürfnisse können variieren. Konsultiere einen Arzt für personalisierte Beratung.
               </p>
-            </div>
+            </motion.div>
           )}
 
           {/* Produktverwaltung */}
@@ -327,6 +410,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
+          {/* Unverträglichkeiten */}
           <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Unverträglichkeiten</h2>
             <div className="flex flex-wrap gap-3">
