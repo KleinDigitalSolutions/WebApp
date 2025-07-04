@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "./fix-scroll.css";
 import { Navigation } from "@/components/BottomNavBar";
 import CookieConsent from '@/components/ui/CookieConsent';
 import GoogleTagManagerClient from '@/components/ui/GoogleTagManagerClient';

@@ -91,64 +91,58 @@ export default function DiaryPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Mobile Header */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-gray-100">
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-lg font-semibold text-gray-900">Ernährungstagebuch</h1>
-            <button 
-              onClick={() => router.push('/diary/add')}
-              className="p-2 bg-emerald-500 text-white rounded-full transition-colors active:scale-95"
-            >
-              <Plus className="h-6 w-6" />
-            </button>
+      {/* Tagesübersicht und Navigation jetzt im Seitenfluss, nicht sticky */}
+      <div className="px-4 pt-6 pb-2 space-y-4">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-lg font-semibold text-gray-900">Ernährungstagebuch</h1>
+          <button 
+            onClick={() => router.push('/diary/add')}
+            className="p-2 bg-emerald-500 text-white rounded-full transition-colors active:scale-95"
+          >
+            <Plus className="h-6 w-6" />
+          </button>
+        </div>
+        {/* Date Navigation */}
+        <div className="flex items-center justify-between">
+          <button 
+            onClick={() => changeDate('prev')}
+            className="p-2 rounded-full transition-colors active:scale-95"
+          >
+            <ChevronLeft className="h-5 w-5 text-gray-600" />
+          </button>
+          <div className="flex items-center space-x-2">
+            <Calendar className="h-5 w-5 text-emerald-600" />
+            <span className="font-medium text-gray-900">
+              {selectedDate.toLocaleDateString('de-DE', { 
+                weekday: 'long',
+                day: 'numeric', 
+                month: 'long' 
+              })}
+            </span>
           </div>
-
-          {/* Date Navigation */}
+          <button 
+            onClick={() => changeDate('next')}
+            className="p-2 rounded-full transition-colors active:scale-95"
+            disabled={selectedDate.toDateString() === new Date().toDateString()}
+          >
+            <ChevronRight className={`h-5 w-5 ${
+              selectedDate.toDateString() === new Date().toDateString() 
+                ? 'text-gray-300' 
+                : 'text-gray-600'
+            }`} />
+          </button>
+        </div>
+        {/* Daily Summary */}
+        <div className="mt-2 p-4 bg-emerald-100/80 backdrop-blur-xl rounded-3xl shadow-lg border border-emerald-200/60">
           <div className="flex items-center justify-between">
-            <button 
-              onClick={() => changeDate('prev')}
-              className="p-2 rounded-full transition-colors active:scale-95"
-            >
-              <ChevronLeft className="h-5 w-5 text-gray-600" />
-            </button>
-            
-            <div className="flex items-center space-x-2">
-              <Calendar className="h-5 w-5 text-emerald-600" />
-              <span className="font-medium text-gray-900">
-                {selectedDate.toLocaleDateString('de-DE', { 
-                  weekday: 'long',
-                  day: 'numeric', 
-                  month: 'long' 
-                })}
+            <div>
+              <span className="inline-block px-4 py-2 rounded-xl bg-emerald-500 text-white text-2xl font-bold shadow-sm">
+                {totalCalories}
               </span>
+              <span className="text-sm text-emerald-700 ml-2 font-semibold">kcal</span>
             </div>
-            
-            <button 
-              onClick={() => changeDate('next')}
-              className="p-2 rounded-full transition-colors active:scale-95"
-              disabled={selectedDate.toDateString() === new Date().toDateString()}
-            >
-              <ChevronRight className={`h-5 w-5 ${
-                selectedDate.toDateString() === new Date().toDateString() 
-                  ? 'text-gray-300' 
-                  : 'text-gray-600'
-              }`} />
-            </button>
-          </div>
-
-          {/* Daily Summary */}
-          <div className="mt-4 p-4 bg-emerald-100/80 backdrop-blur-xl rounded-3xl shadow-lg border border-emerald-200/60">
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="inline-block px-4 py-2 rounded-xl bg-emerald-500 text-white text-2xl font-bold shadow-sm">
-                  {totalCalories}
-                </span>
-                <span className="text-sm text-emerald-700 ml-2 font-semibold">kcal</span>
-              </div>
-              <div className="text-sm text-gray-600">
-                {entries.length} Einträge
-              </div>
+            <div className="text-sm text-gray-600">
+              {entries.length} Einträge
             </div>
           </div>
         </div>
@@ -322,7 +316,6 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
     loadWaterIntake()
   }, [loadWaterIntake])
 
-  const glasses = Math.floor(waterIntake / glassSize)
   const percentage = Math.min((waterIntake / dailyGoal) * 100, 100)
   
   const addWater = async (amount: number) => {
@@ -344,162 +337,152 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
 
   return (
     <div className="mx-4 mt-4 mb-6">
-      <div className="bg-blue-500 rounded-3xl shadow-lg p-6 border border-blue-100">
-        {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          </div>
-        ) : (
-          <>
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-xl text-white">💧</span>
+      <div className="relative rounded-3xl shadow-2xl p-6 border-0 overflow-hidden backdrop-blur-xl bg-gradient-to-br from-blue-400 via-blue-500 to-blue-700" style={{boxShadow:'0 8px 32px 0 rgba(31,38,135,0.25), 0 1.5px 8px 0 rgba(0,0,0,0.10)'}}>
+        {/* Hochglanz-Overlay */}
+        <div className="absolute inset-0 rounded-3xl pointer-events-none z-0">
+          <div className="absolute left-0 top-0 w-full h-1/2 rounded-t-3xl bg-white/30 blur-[2px] opacity-60" />
+          <div className="absolute right-0 bottom-0 w-2/3 h-1/3 rounded-br-3xl bg-white/10 blur-[2px] opacity-40" />
+          <div className="absolute left-0 top-0 w-full h-full rounded-3xl border border-white/30" />
+        </div>
+        <div className="relative z-10">
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-200"></div>
+            </div>
+          ) : (
+            <>
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-xl text-white">💧</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">Wasser</h3>
+                    <p className="text-sm text-blue-100">{waterIntake}ml von {dailyGoal}ml</p>
+                    {selectedDate.toDateString() !== new Date().toDateString() && (
+                      <p className="text-xs text-blue-200">
+                        {selectedDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}
+                      </p>
+                    )}
+                  </div>
                 </div>
+                <button
+                  onClick={resetWater}
+                  disabled={saving}
+                  className="text-blue-200 hover:text-white transition-colors disabled:opacity-50"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </button>
+              </div>
+
+          {/* Water Progress Visualization */}
+          <div className="mb-6">
+            {/* Water Bottle Visualization */}
+            <div className="flex justify-center mb-4">
+              <div className="relative w-16 h-32 bg-blue-50 rounded-full border-4 border-blue-200 overflow-hidden">
+                {/* Water level */}
+                <div 
+                  className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-400 to-blue-300 transition-all duration-700 ease-out"
+                  style={{ height: `${percentage}%` }}
+                >
+                  {/* Water animation bubbles */}
+                  <div className="absolute inset-0 opacity-30">
+                    <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-bounce"></div>
+                    <div className="absolute top-4 right-3 w-1 h-1 bg-white rounded-full animate-bounce" style={{animationDelay: '0.3s'}}></div>
+                    <div className="absolute top-6 left-3 w-1 h-1 bg-white rounded-full animate-bounce" style={{animationDelay: '0.6s'}}></div>
+                  </div>
+                </div>
+                {/* Bottle cap */}
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-8 h-4 bg-gray-300 rounded-t-lg"></div>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="relative mb-3">
+              <div className="w-full bg-blue-100 rounded-full h-3 overflow-hidden">
+                <div
+                  className="h-3 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full transition-all duration-700 ease-out relative"
+                  style={{ width: `${percentage}%` }}
+                >
+                  <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                </div>
+              </div>
+              <div className="flex justify-between text-xs text-blue-100 mt-1">
+                <span>0ml</span>
+                <span className="font-medium text-white">{Math.round(percentage)}%</span>
+                <span>{dailyGoal}ml</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Add Buttons */}
+          <div className="grid grid-cols-4 gap-2 mb-4">
+            <button
+              onClick={() => addWater(100)}
+              className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95 text-blue-700"
+            >
+              <span className="text-2xl block mb-1">🥛</span>
+              <div className="text-xs font-medium">100ml</div>
+            </button>
+            <button
+              onClick={() => addWater(250)}
+              className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95 text-blue-700"
+            >
+              <span className="text-2xl block mb-1">🥛</span>
+              <div className="text-xs font-medium">250ml</div>
+            </button>
+            <button
+              onClick={() => addWater(500)}
+              className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95 text-blue-700"
+            >
+              <span className="text-2xl block mb-1">🥛</span>
+              <div className="text-xs font-medium">500ml</div>
+            </button>
+            <button
+              onClick={() => addWater(750)}
+              className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95 text-blue-700"
+            >
+              <span className="text-2xl block mb-1">🥛</span>
+              <div className="text-xs font-medium">750ml</div>
+            </button>
+          </div>
+
+          {/* Control Buttons */}
+          <div className="flex space-x-3">
+            <button
+              onClick={removeWater}
+              disabled={waterIntake === 0 || saving}
+              className="flex-1 p-3 bg-red-50 hover:bg-red-100 disabled:bg-gray-50 disabled:text-gray-400 text-red-600 rounded-xl font-medium transition-colors active:scale-95"
+            >
+              - {glassSize}ml
+            </button>
+            <button
+              onClick={() => addWater(glassSize)}
+              disabled={saving}
+              className="flex-1 p-3 bg-blue-700 hover:bg-blue-800 disabled:bg-blue-400 text-white rounded-xl font-medium transition-colors active:scale-95"
+            >
+              + {glassSize}ml
+            </button>
+          </div>
+
+          {/* Achievement */}
+          {waterIntake >= dailyGoal && (
+            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-xl">
+              <div className="flex items-center space-x-2">
+                <span className="text-lg">🎉</span>
                 <div>
-                  <h3 className="text-lg font-semibold text-white">Wasser</h3>
-                  <p className="text-sm text-blue-100">{waterIntake}ml von {dailyGoal}ml</p>
-                  {selectedDate.toDateString() !== new Date().toDateString() && (
-                    <p className="text-xs text-blue-200">
-                      {selectedDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}
-                    </p>
-                  )}
+                  <p className="text-sm font-medium text-green-800">Tagesziel erreicht!</p>
+                  <p className="text-xs text-green-600">Du hast dein Wasserziel geschafft</p>
                 </div>
               </div>
-              <button
-                onClick={resetWater}
-                disabled={saving}
-                className="text-blue-200 hover:text-white transition-colors disabled:opacity-50"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </button>
             </div>
-
-        {/* Water Progress Visualization */}
-        <div className="mb-6">
-          {/* Water Bottle Visualization */}
-          <div className="flex justify-center mb-4">
-            <div className="relative w-16 h-32 bg-blue-50 rounded-full border-4 border-blue-200 overflow-hidden">
-              {/* Water level */}
-              <div 
-                className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-400 to-blue-300 transition-all duration-700 ease-out"
-                style={{ height: `${percentage}%` }}
-              >
-                {/* Water animation bubbles */}
-                <div className="absolute inset-0 opacity-30">
-                  <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-bounce"></div>
-                  <div className="absolute top-4 right-3 w-1 h-1 bg-white rounded-full animate-bounce" style={{animationDelay: '0.3s'}}></div>
-                  <div className="absolute top-6 left-3 w-1 h-1 bg-white rounded-full animate-bounce" style={{animationDelay: '0.6s'}}></div>
-                </div>
-              </div>
-              {/* Bottle cap */}
-              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-8 h-4 bg-gray-300 rounded-t-lg"></div>
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="relative mb-3">
-            <div className="w-full bg-blue-100 rounded-full h-3 overflow-hidden">
-              <div
-                className="h-3 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full transition-all duration-700 ease-out relative"
-                style={{ width: `${percentage}%` }}
-              >
-                <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-              </div>
-            </div>
-            <div className="flex justify-between text-xs text-blue-100 mt-1">
-              <span>0ml</span>
-              <span className="font-medium text-white">{Math.round(percentage)}%</span>
-              <span>{dailyGoal}ml</span>
-            </div>
-          </div>
-
-          {/* Glasses Counter */}
-          <div className="flex justify-center space-x-1 mb-4">
-            {Array.from({ length: 8 }, (_, i) => (
-              <div
-                key={i}
-                className={`w-6 h-8 rounded border-2 transition-all duration-300 ${
-                  i < glasses
-                    ? 'bg-blue-400 border-blue-500'
-                    : 'bg-blue-50 border-blue-200'
-                }`}
-              >
-                {i < glasses && (
-                  <div className="w-full h-full bg-gradient-to-t from-blue-500 to-blue-400 rounded animate-pulse"></div>
-                )}
-              </div>
-            ))}
-          </div>
+          )}
+          </>
+          )}
         </div>
-
-        {/* Quick Add Buttons */}
-        <div className="grid grid-cols-4 gap-2 mb-4">
-          <button
-            onClick={() => addWater(100)}
-            className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95 text-blue-700"
-          >
-            <span className="text-2xl block mb-1">🥛</span>
-            <div className="text-xs font-medium">100ml</div>
-          </button>
-          <button
-            onClick={() => addWater(250)}
-            className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95 text-blue-700"
-          >
-            <span className="text-2xl block mb-1">🥛</span>
-            <div className="text-xs font-medium">250ml</div>
-          </button>
-          <button
-            onClick={() => addWater(500)}
-            className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95 text-blue-700"
-          >
-            <span className="text-2xl block mb-1">🥛</span>
-            <div className="text-xs font-medium">500ml</div>
-          </button>
-          <button
-            onClick={() => addWater(750)}
-            className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95 text-blue-700"
-          >
-            <span className="text-2xl block mb-1">🥛</span>
-            <div className="text-xs font-medium">750ml</div>
-          </button>
-        </div>
-
-        {/* Control Buttons */}
-        <div className="flex space-x-3">
-          <button
-            onClick={removeWater}
-            disabled={waterIntake === 0 || saving}
-            className="flex-1 p-3 bg-red-50 hover:bg-red-100 disabled:bg-gray-50 disabled:text-gray-400 text-red-600 rounded-xl font-medium transition-colors active:scale-95"
-          >
-            - {glassSize}ml
-          </button>
-          <button
-            onClick={() => addWater(glassSize)}
-            disabled={saving}
-            className="flex-1 p-3 bg-blue-700 hover:bg-blue-800 disabled:bg-blue-400 text-white rounded-xl font-medium transition-colors active:scale-95"
-          >
-            + {glassSize}ml
-          </button>
-        </div>
-
-        {/* Achievement */}
-        {waterIntake >= dailyGoal && (
-          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-xl">
-            <div className="flex items-center space-x-2">
-              <span className="text-lg">🎉</span>
-              <div>
-                <p className="text-sm font-medium text-green-800">Tagesziel erreicht!</p>
-                <p className="text-xs text-green-600">Du hast dein Wasserziel geschafft</p>
-              </div>
-            </div>
-          </div>
-        )}
-        </>
-        )}
       </div>
     </div>
   )

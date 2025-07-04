@@ -13,10 +13,7 @@ import {
   TrendingUp,
   Calendar,
   Award,
-  Sparkles,
   ChevronRight,
-  Camera,
-  Search,
   RefreshCw
 } from 'lucide-react'
 import FastingCardStack from '@/components/FastingCardStack'
@@ -239,44 +236,38 @@ export default function Dashboard() {
 
   return (
     <PullToRefresh onRefresh={loadData}>
-      <div className="min-h-screen bg-gradient-to-br from-emerald-500 to-emerald-600" style={{scrollBehavior:'smooth'}}>
-        {/* Mobile Header */}
-        <div className="sticky top-0 z-40 bg-emerald-100/80 backdrop-blur-xl border-b border-emerald-200/60">
-          <div className="px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {getGreeting()}{getFirstName() && `, ${getFirstName()}`}!
-                </h1>
-                <p className="text-sm text-gray-600 mt-1">
-                  {new Date().toLocaleDateString('de-DE', { 
-                    weekday: 'long', 
-                    day: 'numeric', 
-                    month: 'long' 
-                  })}
-                </p>
+      <div className="flex-1 flex flex-col min-h-0 overflow-x-hidden bg-gradient-to-br from-emerald-500 to-emerald-600" style={{scrollBehavior:'smooth'}}>
+        <div className="px-4 pt-6 flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-white drop-shadow-sm">
+              {getGreeting()}{getFirstName() && `, ${getFirstName()}`}!
+            </h1>
+            <p className="text-sm text-emerald-50/90 drop-shadow-sm mt-1">
+              {new Date().toLocaleDateString('de-DE', { 
+                weekday: 'long', 
+                day: 'numeric', 
+                month: 'long' 
+              })}
+            </p>
+          </div>
+          {/* Achievement Badges */}
+          <div className="flex items-center space-x-2">
+            {calorieProgress >= 80 && calorieProgress <= 120 && (
+              <div className="flex items-center px-2 py-1 bg-emerald-500 rounded-full shadow-lg">
+                <Award className="h-3 w-3 text-white mr-1" />
+                <span className="text-xs font-medium text-white">Kalorien</span>
               </div>
-              
-              {/* Achievement Badges */}
-              <div className="flex items-center space-x-2">
-                {calorieProgress >= 80 && calorieProgress <= 120 && (
-                  <div className="flex items-center px-2 py-1 bg-emerald-500 rounded-full shadow-lg">
-                    <Award className="h-3 w-3 text-white mr-1" />
-                    <span className="text-xs font-medium text-white">Kalorien</span>
-                  </div>
-                )}
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
-      <div className="px-4 space-y-6 pb-6 pt-4">
+      <div className="px-4 space-y-6 pb-20 pt-4 flex-1">
         {/* Quick Stats Card */}
         <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Tagesübersicht</h2>
-            <div className="flex items-center text-sm text-emerald-600 font-medium">
-              <Calendar className="h-4 w-4 mr-1" />
+            <div className="flex items-center text-sm text-white font-medium drop-shadow-sm">
+              <Calendar className="h-4 w-4 mr-1 text-white drop-shadow-sm" />
               Heute
             </div>
           </div>
@@ -316,12 +307,12 @@ export default function Dashboard() {
                   </defs>
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-lg font-bold text-gray-900">{Math.round(consumedCalories)}</span>
-                  <span className="text-xs text-gray-500">kcal</span>
+                  <span className="text-lg font-bold text-white drop-shadow-sm">{Math.round(consumedCalories)}</span>
+                  <span className="text-xs font-semibold text-emerald-50/90 drop-shadow-sm">kcal</span>
                 </div>
               </div>
               <div className="text-center mt-2">
-                <div className="text-xs text-gray-500">von {dailyGoals.calories}</div>
+                <div className="text-xs font-semibold text-emerald-50/90 drop-shadow-sm">von {dailyGoals.calories}</div>
               </div>
             </div>
 
@@ -358,12 +349,12 @@ export default function Dashboard() {
                   </defs>
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-lg font-bold text-gray-900">{Math.round(waterIntake / 100) / 10}L</span>
-                  <span className="text-xs text-gray-500">Wasser</span>
+                  <span className="text-lg font-bold text-white drop-shadow-sm">{Math.round(waterIntake / 100) / 10}L</span>
+                  <span className="text-xs font-semibold text-emerald-50/90 drop-shadow-sm">Wasser</span>
                 </div>
               </div>
               <div className="text-center mt-2">
-                <div className="text-xs text-gray-500">von {waterGoal / 1000}L</div>
+                <div className="text-xs font-semibold text-emerald-50/90 drop-shadow-sm">von {waterGoal / 1000}L</div>
               </div>
             </div>
           </div>
@@ -374,8 +365,8 @@ export default function Dashboard() {
               <div className="flex items-center justify-center mb-2">
                 <Beef className="h-5 w-5 text-emerald-600" />
               </div>
-              <div className="text-sm font-semibold text-gray-900">{Math.round(consumedProtein)}g</div>
-              <div className="text-xs text-gray-600">Protein</div>
+              <div className="text-sm font-semibold text-white drop-shadow-sm">{Math.round(consumedProtein)}g</div>
+              <div className="text-xs text-emerald-50/90 drop-shadow-sm">Protein</div>
               <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
                 <div 
                   className="bg-emerald-500 h-1.5 rounded-full"
@@ -388,8 +379,8 @@ export default function Dashboard() {
               <div className="flex items-center justify-center mb-2">
                 <Wheat className="h-5 w-5 text-emerald-600" />
               </div>
-              <div className="text-sm font-semibold text-gray-900">{Math.round(consumedCarbs)}g</div>
-              <div className="text-xs text-gray-600">Carbs</div>
+              <div className="text-sm font-semibold text-white drop-shadow-sm">{Math.round(consumedCarbs)}g</div>
+              <div className="text-xs text-emerald-50/90 drop-shadow-sm">Carbs</div>
               <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
                 <div 
                   className="bg-emerald-500 h-1.5 rounded-full"
@@ -402,8 +393,8 @@ export default function Dashboard() {
               <div className="flex items-center justify-center mb-2">
                 <Droplet className="h-5 w-5 text-emerald-600" />
               </div>
-              <div className="text-sm font-semibold text-gray-900">{Math.round(consumedFat)}g</div>
-              <div className="text-xs text-gray-600">Fett</div>
+              <div className="text-sm font-semibold text-white drop-shadow-sm">{Math.round(consumedFat)}g</div>
+              <div className="text-xs text-emerald-50/90 drop-shadow-sm">Fett</div>
               <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
                 <div 
                   className="bg-emerald-500 h-1.5 rounded-full"
@@ -414,40 +405,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
-          <h3 className="text-lg font-semibold text-white mb-4">Schnellaktionen</h3>
-          <div className="grid grid-cols-2 gap-3">
-            <button 
-              onClick={() => router.push('/diary/add')}
-              className="flex items-center justify-center p-4 bg-emerald-500/90 rounded-2xl text-white shadow-lg"
-            >
-              <PlusCircle className="h-6 w-6 mr-2" />
-              <span className="font-medium">Hinzufügen</span>
-            </button>
-            <button 
-              onClick={() => router.push('/scanner')}
-              className="flex items-center justify-center p-4 bg-white/30 border border-white/20 rounded-2xl text-white shadow-sm backdrop-blur-xl"
-            >
-              <Camera className="h-6 w-6 mr-2" />
-              <span className="font-medium">Scannen</span>
-            </button>
-            <button 
-              onClick={() => router.push('/recipes')}
-              className="flex items-center justify-center p-4 bg-white/30 border border-white/20 rounded-2xl text-white shadow-sm backdrop-blur-xl"
-            >
-              <Search className="h-6 w-6 mr-2" />
-              <span className="font-medium">Rezepte</span>
-            </button>
-            <button 
-              onClick={() => router.push('/chat')}
-              className="flex items-center justify-center p-4 bg-white/30 border border-white/20 rounded-2xl text-white shadow-sm backdrop-blur-xl"
-            >
-              <Sparkles className="h-6 w-6 mr-2" />
-              <span className="font-medium">KI-Berater</span>
-            </button>
-          </div>
-        </div>
+        {/* Quick Actions entfernt */}
 
         {/* Recent Meals */}
         <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
@@ -504,7 +462,7 @@ export default function Dashboard() {
         <ChallengeSection />
 
         {/* Insights Card */}
-        <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent text-white" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+        <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 pb-2 bg-transparent text-white" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
           <div className="flex items-center mb-3">
             <TrendingUp className="h-6 w-6 mr-2" />
             <h3 className="text-lg font-semibold">Deine Fortschritte</h3>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
 import { Clock, Play, Square, Timer, ChevronLeft, ChevronRight } from 'lucide-react'
+import TinderCard from 'react-tinder-card'
 
 interface FastingSession {
   id: string
@@ -47,10 +48,43 @@ const fastingTypes = [
   }
 ]
 
+// Farbzuordnung für Fastenarten
+const fastingColors = [
+  {
+    progress: '#6366f1', // Indigo (16:8, passend zur Karte)
+    indicator: 'bg-indigo-500',
+    button: 'bg-indigo-400 hover:bg-indigo-500',
+    card: 'bg-indigo-600', // Indigo, Safari-kompatibel
+    border: 'border-indigo-700/60',
+  },
+  {
+    progress: '#fbbf24', // Amber (18:6)
+    indicator: 'bg-amber-400',
+    button: 'bg-amber-400 hover:bg-amber-500',
+    card: 'bg-amber-500', // Amber, Safari-kompatibel
+    border: 'border-amber-700/60',
+  },
+  {
+    progress: '#38bdf8', // Sky (20:4)
+    indicator: 'bg-sky-400',
+    button: 'bg-sky-400 hover:bg-sky-500',
+    card: 'bg-sky-600', // Sky, Safari-kompatibel
+    border: 'border-sky-700/60',
+  },
+  {
+    progress: '#ec4899', // Pink (24h)
+    indicator: 'bg-pink-500',
+    button: 'bg-pink-500 hover:bg-pink-600',
+    card: 'bg-pink-600', // Pink, Safari-kompatibel
+    border: 'border-pink-700/60',
+  },
+]
+
 export default function FastingCardStack() {
   const { user } = useAuthStore()
   const [currentSession, setCurrentSession] = useState<FastingSession | null>(null)
   const [loading, setLoading] = useState(true)
+  const [buttonLoading, setButtonLoading] = useState(false)
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [activeCardIndex, setActiveCardIndex] = useState(0)
 
@@ -103,7 +137,8 @@ export default function FastingCardStack() {
 
   const startFasting = async (type: typeof fastingTypes[0]) => {
     if (!user?.id) return
-
+    if (currentSession) return // Verhindere Doppelstart
+    setButtonLoading(true)
     try {
       const insertData = {
         user_id: user.id,
@@ -114,28 +149,33 @@ export default function FastingCardStack() {
         status: 'active',
         fasting_type: type.id
       }
-
       const { data, error } = await supabase
         .from('fasting_sessions')
         .insert(insertData)
         .select()
-
+      setButtonLoading(false)
       if (error) {
         alert('Fehler: ' + error.message)
         return
       }
-
       if (data && data.length > 0) {
         setCurrentSession(data[0])
+        const idx2 = fastingTypes.findIndex(t => t.duration === data[0].target_duration_hours)
+        if (idx2 !== -1) setActiveCardIndex(idx2)
       }
     } catch (error) {
-      console.error('Start error:', error)
+      setButtonLoading(false)
+      if (typeof error === 'object' && error && 'message' in error) {
+        alert('Fehler: ' + (error as { message: string }).message)
+      } else {
+        alert('Fehler: ' + String(error))
+      }
     }
   }
 
   const endFasting = async () => {
     if (!currentSession?.id) return
-
+    setButtonLoading(true)
     try {
       await supabase
         .from('fasting_sessions')
@@ -145,11 +185,17 @@ export default function FastingCardStack() {
           status: 'completed'
         })
         .eq('id', currentSession.id)
-
       setCurrentSession(null)
       setTimeElapsed(0)
+      setActiveCardIndex(0)
+      setButtonLoading(false)
     } catch (error) {
-      console.error('End error:', error)
+      setButtonLoading(false)
+      if (typeof error === 'object' && error && 'message' in error) {
+        alert('Fehler: ' + (error as { message: string }).message)
+      } else {
+        alert('Fehler: ' + String(error))
+      }
     }
   }
 
@@ -186,16 +232,16 @@ export default function FastingCardStack() {
   }
 
   const currentType = fastingTypes[activeCardIndex]
+  const color = fastingColors[activeCardIndex]
   const isActiveSession = currentSession && currentSession.target_duration_hours === currentType.duration
 
   return (
     <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-white flex items-center">
-          <Timer className="h-5 w-5 mr-2 text-purple-300" />
+          <Timer className="h-5 w-5 mr-2" style={{color: color.progress}} />
           Fasten
         </h3>
-        
         <div className="flex items-center space-x-2">
           <button
             onClick={prevCard}
@@ -203,18 +249,14 @@ export default function FastingCardStack() {
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
-          
           <div className="flex space-x-1">
             {fastingTypes.map((_, index) => (
               <div
                 key={index}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === activeCardIndex ? 'bg-purple-600' : 'bg-gray-300'
-                }`}
+                className={`w-2 h-2 rounded-full transition-colors ${index === activeCardIndex ? color.indicator : 'bg-gray-300'}`}
               />
             ))}
           </div>
-          
           <button
             onClick={nextCard}
             className="p-2 rounded-full hover:bg-emerald-200/50 transition-colors"
@@ -224,90 +266,133 @@ export default function FastingCardStack() {
         </div>
       </div>
 
-      {/* Karten Container */}
-      <div className="bg-white/30 rounded-3xl p-8 shadow-lg border border-white/20 min-h-[300px] backdrop-blur-xl">
-        
-        {/* Progress Circle */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="relative w-32 h-32 mb-6">
-            <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                stroke="currentColor"
-                strokeWidth="6"
-                fill="transparent"
-                className="text-gray-200"
-              />
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                stroke="#8b5cf6"
-                strokeWidth="6"
-                fill="transparent"
-                strokeDasharray={283}
-                strokeDashoffset={283 * (1 - getProgress() / 100)}
-                className="transition-all duration-1000"
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              {isActiveSession ? (
-                <>
-                  <span className="text-xl font-bold text-gray-900">{formatTime(timeElapsed)}</span>
-                  <span className="text-xs text-gray-500">{Math.round(getProgress())}%</span>
-                </>
-              ) : (
-                <>
-                  <Clock className="h-8 w-8 text-gray-400 mb-1" />
-                  <span className="text-xs text-gray-500">Bereit</span>
-                </>
-              )}
+      {/* Swipebare Karten-Container */}
+      <div className="flex justify-center">
+        <TinderCard
+          key={currentType.id}
+          onSwipe={dir => {
+            if (dir === 'left') nextCard()
+            if (dir === 'right') prevCard()
+          }}
+          flickOnSwipe={true}
+          swipeRequirementType="position"
+          swipeThreshold={120}
+          preventSwipe={['up', 'down']}
+        >
+          <div className={`relative rounded-3xl p-8 shadow-2xl min-h-[300px] flex flex-col items-center justify-center ${getFastingCardGradient(activeCardIndex)}`}
+            style={{minWidth:'320px', maxWidth:'400px', boxShadow:'0 8px 32px 0 rgba(31,38,135,0.25), 0 1.5px 8px 0 rgba(0,0,0,0.10)'}}>
+            {/* Hochglanz-Overlay */}
+            <div className="absolute inset-0 rounded-3xl pointer-events-none z-10">
+              <div className="absolute left-0 top-0 w-full h-1/2 rounded-t-3xl bg-white/30 blur-[2px] opacity-60" />
+              <div className="absolute right-0 bottom-0 w-2/3 h-1/3 rounded-br-3xl bg-white/10 blur-[2px] opacity-40" />
+              <div className="absolute left-0 top-0 w-full h-full rounded-3xl border border-white/30" />
+            </div>
+            {/* Progress Circle */}
+            <div className="flex flex-col items-center mb-8 relative z-20">
+              <div className="relative w-32 h-32 mb-6">
+                <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    stroke="currentColor"
+                    strokeWidth="6"
+                    fill="transparent"
+                    className="text-gray-200"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    stroke={color.progress}
+                    strokeWidth="6"
+                    fill="transparent"
+                    strokeDasharray={283}
+                    strokeDashoffset={283 * (1 - (currentSession && currentSession.target_duration_hours === currentType.duration ? getProgress() / 100 : 0))}
+                    className={currentSession && currentSession.target_duration_hours === currentType.duration && activeCardIndex === fastingTypes.findIndex(t => t.duration === currentSession.target_duration_hours) ? "transition-all duration-1000" : undefined}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  {isActiveSession ? (
+                    <>
+                      <span className="text-xl font-bold text-white drop-shadow-lg">{formatTime(timeElapsed)}</span>
+                      <span className="text-xs text-white/80 drop-shadow">{Math.round(getProgress())}%</span>
+                    </>
+                  ) : (
+                    <>
+                      <Clock className="h-8 w-8 text-white/80 mb-1 drop-shadow" />
+                      <span className="text-xs text-white/70">Bereit</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+            {/* Card Info */}
+            <div className="text-center space-y-6 relative z-20">
+              <div>
+                <h4 className="text-2xl font-bold text-white drop-shadow-lg mb-2">{currentType.name}</h4>
+                <p className="text-white/90 drop-shadow">{currentType.description}</p>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Card Info */}
-        <div className="text-center space-y-6">
-          <div>
-            <h4 className="text-2xl font-bold text-white mb-2">{currentType.name}</h4>
-            <p className="text-white/80">{currentType.description}</p>
-          </div>
-
-          {/* Buttons */}
-          <div className="space-y-4">
-            {isActiveSession ? (
-              <div className="flex justify-center space-x-4">
-                <button
-                  onClick={endFasting}
-                  className="flex items-center justify-center px-8 py-3 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors shadow-lg"
-                >
-                  <Square className="h-5 w-5 mr-2" />
-                  Stop
-                </button>
-              </div>
+        </TinderCard>
+      </div>
+      {/* Buttons jetzt außerhalb der swipebaren Karte */}
+      <div className="flex justify-center mt-4">
+        {isActiveSession ? (
+          <button
+            onClick={endFasting}
+            className={`flex items-center justify-center px-8 py-3 text-white rounded-lg font-medium transition-colors shadow-lg ${color.button} relative`}
+            style={{background: color.progress, borderColor: color.progress, pointerEvents: 'auto'}}
+            disabled={buttonLoading}
+          >
+            {buttonLoading ? (
+              <span className="absolute left-2 animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
             ) : (
-              <div className="flex justify-center">
-                <button
-                  onClick={() => startFasting(currentType)}
-                  className="flex items-center justify-center px-8 py-3 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors shadow-lg"
-                >
-                  <Play className="h-5 w-5 mr-2" />
-                  Start
-                </button>
-              </div>
+              <Square className="h-5 w-5" />
             )}
-          </div>
-        </div>
+          </button>
+        ) : (
+          <button
+            onClick={() => startFasting(currentType)}
+            className={`flex items-center justify-center px-8 py-3 text-white rounded-lg font-medium transition-colors shadow-lg ${color.button} relative`}
+            style={{background: color.progress, borderColor: color.progress, pointerEvents: 'auto'}}
+            disabled={buttonLoading}
+          >
+            {buttonLoading ? (
+              <span className="absolute left-2 animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
+            ) : (
+              <Play className="h-5 w-5" />
+            )}
+          </button>
+        )}
       </div>
 
       <div className="mt-4 text-center">
         <p className="text-xs text-white/70">
-          Nutze die Pfeile um zwischen den Fasten-Arten zu wechseln
+          Nutze die Pfeile oder Swipe um zwischen den Fasten-Arten zu wechseln
         </p>
       </div>
+
+      {/* Tailwind Safelist für dynamische Farben (damit die Kartenfarben wirklich gebaut werden): */}
+      <div className="hidden bg-indigo-600 bg-amber-500 bg-sky-600 bg-pink-600" />
     </div>
   )
+}
+
+// Am Ende der Datei, vor export default:
+function getFastingCardGradient(idx: number) {
+  switch (idx) {
+    case 0: // 16:8 Indigo
+      return 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-indigo-400';
+    case 1: // 18:6 Amber
+      return 'bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-300';
+    case 2: // 20:4 Sky
+      return 'bg-gradient-to-br from-sky-400 via-sky-500 to-blue-400';
+    case 3: // 24h Pink
+      return 'bg-gradient-to-br from-pink-400 via-pink-500 to-fuchsia-400';
+    default:
+      return 'bg-gradient-to-br from-emerald-400 to-emerald-600';
+  }
 }

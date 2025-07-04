@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Cigarette, Coffee, Cookie, Candy, Pizza, Wine, Apple } from 'lucide-react'
 import { supabase, AbstinenceChallenge } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
+import styles from './SwipeableCards.module.css'
 
 interface SwipeCard {
   id: string
@@ -83,18 +84,16 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
   const { user } = useAuthStore()
   const [cards, setCards] = useState<SwipeCard[]>([])
   const [challenges, setChallenges] = useState<AbstinenceChallenge[]>([])
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
+  const [selectedCard, setSelectedCard] = useState<SwipeCard | null>(null)
+  const [showDetail, setShowDetail] = useState(false)
+  const [challengeDuration, setChallengeDuration] = useState(30)
+  const [isStarting, setIsStarting] = useState(false)
+  // useRef, error entfernt
+  // any durch unknown oder spezifischen Typ ersetzt
 
   // Load user's challenges
   useEffect(() => {
-    if (!user?.id) {
-      return
-    }
-
+    if (!user?.id) return
     const loadChallenges = async () => {
       try {
         const { data } = await supabase
@@ -102,11 +101,8 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
           .select('*')
           .eq('user_id', user.id)
           .eq('is_active', true)
-
         if (data) {
           setChallenges(data)
-          
-          // Map cards with challenge data
           const cardsWithProgress = swipeCards.map(card => {
             const challenge = data.find(c => c.challenge_type === card.id && c.is_active)
             return {
@@ -115,278 +111,172 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
               streakDays: challenge?.current_streak_days || 0
             }
           })
-          
-          // Show only cards without active challenges
-          const availableCards = cardsWithProgress.filter(card => !card.challenge)
-          console.log('Available cards after filtering:', availableCards)
-          setCards(availableCards)
+          setCards(cardsWithProgress)
         } else {
           setCards(swipeCards)
         }
-      } catch (error) {
-        console.error('Error loading challenges:', error)
+      } catch {
         setCards(swipeCards)
       }
     }
-
     loadChallenges()
   }, [user?.id])
 
-  const startChallenge = async (card: SwipeCard) => {
-    if (!user?.id) return false
+  const handleCardClick = (card: SwipeCard) => {
+    setSelectedCard(card)
+    setChallengeDuration(card.challenge?.target_days || 30)
+    setShowDetail(true)
+  }
 
+  const handleStartChallenge = async () => {
+    if (!user?.id || !selectedCard) return
+    setIsStarting(true)
     try {
-      console.log('Starting challenge for:', card.title)
-      
-      // Check if challenge already exists
-      const existingChallenge = challenges.find(c => c.challenge_type === card.id && c.is_active)
+      const existingChallenge = challenges.find(c => c.challenge_type === selectedCard.id && c.is_active)
       if (existingChallenge) {
-        console.log('Challenge already exists:', existingChallenge)
         alert('Diese Challenge ist bereits aktiv!')
-        return false
+        setIsStarting(false)
+        return
       }
-      
       const insertData = {
         user_id: user.id,
-        challenge_type: card.id,
-        challenge_name: card.title,
+        challenge_type: selectedCard.id,
+        challenge_name: selectedCard.title,
         start_date: new Date().toISOString(),
         current_streak_days: 0,
         longest_streak_days: 0,
         total_attempts: 1,
-        target_days: 30,
+        target_days: challengeDuration,
         status: 'active',
         is_active: true
       }
-
-      console.log('Insert data:', insertData)
-
       const { data, error } = await supabase
         .from('abstinence_challenges')
         .insert(insertData)
         .select()
         .single()
-
-      console.log('Supabase response:', { data, error })
-
       if (error) {
-        console.error('Error starting challenge:', error)
         alert('Fehler beim Erstellen der Challenge: ' + error.message)
-        return false
+        setIsStarting(false)
+        return
       }
-
-      if (data) {
-        console.log('Challenge created successfully:', data)
-        setChallenges(prev => [...prev, data])
-        
-        // Notify parent component that a challenge was started
-        if (onChallengeStarted) {
-          onChallengeStarted()
-        }
-        
-        return true
-      }
-      
-      return false
-    } catch (error) {
-      console.error('Error starting challenge:', error)
-      alert('Unerwarteter Fehler: ' + error)
-      return false
+      setChallenges(prev => [...prev, data])
+      setShowDetail(false)
+      setSelectedCard(null)
+      if (onChallengeStarted) onChallengeStarted()
+    } catch (e) {
+      alert('Unerwarteter Fehler: ' + e)
     }
+    setIsStarting(false)
   }
 
-  const handleTouchStart = (e: React.TouchEvent, index: number) => {
-    if (index !== currentIndex) return
-    setIsDragging(true)
-    setDragStart({
-      x: e.touches[0].clientX,
-      y: e.touches[0].clientY
-    })
-  }
-
-  const handleTouchMove = (e: React.TouchEvent, index: number) => {
-    if (!isDragging || index !== currentIndex) return
-    
-    const deltaX = e.touches[0].clientX - dragStart.x
-    const deltaY = e.touches[0].clientY - dragStart.y
-    
-    setDragOffset({ x: deltaX, y: deltaY })
-  }
-
-  const handleTouchEnd = (index: number) => {
-    if (!isDragging || index !== currentIndex) return
-    
-    const threshold = 100
-    const { x } = dragOffset
-
-    if (Math.abs(x) > threshold) {
-      // Card swiped away
-      const direction = x > 0 ? 'right' : 'left'
-      animateCardOut(direction)
+  // Scroll-Lock für Body, wenn Overlay offen
+  useEffect(() => {
+    if (showDetail) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
     } else {
-      // Snap back to center
-      setDragOffset({ x: 0, y: 0 })
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
     }
-    
-    setIsDragging(false)
-  }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [showDetail]);
 
-  const animateCardOut = async (direction: 'left' | 'right') => {
-    const card = cardRefs.current[currentIndex]
-    const currentCard = cards[currentIndex]
-    if (!card || !currentCard) return
-
-    const translateX = direction === 'right' ? '150%' : '-150%'
-    card.style.transform = `translateX(${translateX}) rotate(${direction === 'right' ? '30deg' : '-30deg'})`
-    card.style.opacity = '0'
-
-    // If swiped right (yes), start the challenge
-    let challengeStarted = false
-    if (direction === 'right') {
-      challengeStarted = await startChallenge(currentCard)
-    }
-
-    setTimeout(() => {
-      // Only remove card if challenge was successfully started or if swiped left
-      if (direction === 'left' || challengeStarted) {
-        setCards(prev => prev.filter((_, i) => i !== currentIndex))
-        if (currentIndex >= cards.length - 1) {
-          setCurrentIndex(0)
-        }
-      } else {
-        // Reset card position if challenge failed
-        card.style.transform = 'translateX(0) rotate(0deg)'
-        card.style.opacity = '1'
-      }
-      setDragOffset({ x: 0, y: 0 })
-    }, 300)
-  }
-
-  const resetCards = () => {
-    setCards(swipeCards)
-    setCurrentIndex(0)
-    setDragOffset({ x: 0, y: 0 })
-  }
-
-  const getCardStyle = (index: number) => {
-    const isTopCard = index === currentIndex
-    const offset = index - currentIndex
-
-    if (isTopCard && isDragging) {
-      const rotation = dragOffset.x * 0.1
-      return {
-        transform: `translateX(${dragOffset.x}px) translateY(${dragOffset.y}px) rotate(${rotation}deg)`,
-        zIndex: 10,
-        scale: 1
-      }
-    }
-
-    return {
-      transform: `translateY(${offset * 8}px) scale(${1 - offset * 0.05})`,
-      zIndex: 10 - offset,
-      opacity: offset > 2 ? 0 : 1 - offset * 0.2
-    }
-  }
-
-  if (cards.length === 0) {
-    return (
-      <div className="bg-emerald-100/80 rounded-3xl p-6 shadow-lg border border-emerald-200/60">
-        <div className="text-center py-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Alle Karten abgearbeitet! 🎉</h3>
-          <button
-            onClick={resetCards}
-            className="px-6 py-3 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors"
-          >
-            Neu starten
-          </button>
-        </div>
-      </div>
-    )
-  }
-
+  // Carousel-Ansicht
   return (
-    <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-white">Verzicht-Challenge</h3>
-        <div className="text-sm text-white/80">
-          {cards.length} von {swipeCards.length} übrig
-        </div>
-      </div>
-      <div
-        className="relative h-64 flex items-center justify-center"
-        style={{ touchAction: 'pan-x' }}
-      >
-        {cards.map((card, index) => (
+    <div>
+      <div className="w-full overflow-x-auto flex space-x-6 pb-4 scrollbar-hide" style={{scrollSnapType:'x mandatory'}}>
+        {cards.map((card, idx) => (
           <div
-            key={`${card.id}-${index}`}
-            ref={el => { cardRefs.current[index] = el }}
-            className={`absolute w-48 h-56 bg-white/30 rounded-2xl shadow-lg border border-white/20 cursor-grab active:cursor-grabbing transition-all duration-300 ease-out backdrop-blur-xl`}
-            style={getCardStyle(index)}
-            onTouchStart={(e) => handleTouchStart(e, index)}
-            onTouchMove={(e) => handleTouchMove(e, index)}
-            onTouchEnd={() => handleTouchEnd(index)}
-            onMouseDown={(e) => {
-              if (index !== currentIndex) return
-              setIsDragging(true)
-              setDragStart({ x: e.clientX, y: e.clientY })
-            }}
-            onMouseMove={(e) => {
-              if (!isDragging || index !== currentIndex) return
-              const deltaX = e.clientX - dragStart.x
-              const deltaY = e.clientY - dragStart.y
-              setDragOffset({ x: deltaX, y: deltaY })
-            }}
-            onMouseUp={() => handleTouchEnd(index)}
-            onMouseLeave={() => {
-              if (isDragging && index === currentIndex) {
-                handleTouchEnd(index)
-              }
-            }}
+            key={card.id}
+            className={
+              `${styles['card-gradient-border']} flex-shrink-0 w-56 h-72 rounded-2xl shadow-2xl border-0 cursor-pointer transition-transform duration-300 relative group`
+            }
+            style={{
+              scrollSnapAlign: 'center',
+              minWidth: '14rem',
+              maxWidth: '14rem',
+              boxShadow: '0 8px 32px 0 rgba(31,38,135,0.25), 0 1.5px 8px 0 rgba(0,0,0,0.10)',
+              // SVG-Wellenmuster: Emerald-Gradient für harmonischen, modernen Look
+              ['--card-gradient']: `url('/wave-gradient-emerald.svg')`,
+              ['--card-gradient-position-x']: `${idx * -224}px`,
+              ['--card-gradient-size']: '1568px 300px'
+            } as React.CSSProperties}
+            data-idx={idx}
+            onClick={() => handleCardClick(card)}
           >
-            <div className="h-full flex flex-col items-center justify-center p-6 text-center">
-              <div className={`${card.color} mb-4`}>{card.icon}</div>
-              <h4 className="text-lg font-bold text-white mb-2">{card.title}</h4>
-              <p className="text-sm text-white/80">{card.description}</p>
+            {/* Hochglanz-Overlay */}
+            <div className="absolute inset-0 rounded-2xl pointer-events-none">
+              {/* Unteres Glanz-Overlay entfernt, um Kante zu vermeiden */}
             </div>
-            {/* Swipe indicators */}
-            {index === currentIndex && (
-              <>
-                <div 
-                  className="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold opacity-0 transition-opacity"
-                  style={{ opacity: dragOffset.x > 50 ? 1 : 0 }}
-                >
-                  ✓ JA
-                </div>
-                <div 
-                  className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold opacity-0 transition-opacity"
-                  style={{ opacity: dragOffset.x < -50 ? 1 : 0 }}
-                >
-                  ✗ NEIN
-                </div>
-              </>
-            )}
+            <div className="h-full flex flex-col items-center justify-center p-6 text-center relative z-10">
+              <div className={`mb-4 drop-shadow-lg text-white text-opacity-90`}>{card.icon}</div>
+              <h4 className="text-lg font-bold text-white drop-shadow-lg mb-2">{card.title}</h4>
+              <p className="text-sm text-white/90 drop-shadow mb-2">{card.description}</p>
+              {card.challenge && (
+                <div className="mt-2 text-xs text-emerald-100/90 bg-emerald-700/60 px-2 py-1 rounded-full font-semibold shadow">Aktiv: {card.challenge.current_streak_days} Tage</div>
+              )}
+            </div>
           </div>
         ))}
       </div>
-      <div className="mt-6 text-center">
-        <p className="text-xs text-white/70 mb-3">
-          Swipe nach rechts = Ja, ich verzichte | Swipe nach links = Nein, nicht heute
-        </p>
-        <div className="flex justify-center space-x-4">
-          <button
-            onClick={() => animateCardOut('left')}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors"
+      {/* Detail-Overlay/Slide-in */}
+      {showDetail && selectedCard && (
+        <div className="fixed inset-0 z-40 flex justify-center md:items-center items-center bg-black/40 backdrop-blur-sm transition-all" onClick={() => setShowDetail(false)}>
+          <div
+            className="w-full max-w-md bg-white rounded-t-3xl md:rounded-3xl shadow-2xl p-0 mx-auto animate-slideInUp relative max-h-[90vh] flex flex-col"
+            onClick={e => e.stopPropagation()}
           >
-            ✗ Nein
-          </button>
-          <button
-            onClick={() => animateCardOut('right')}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600 transition-colors"
-          >
-            ✓ Ja
-          </button>
+            <button className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-xl z-10" onClick={()=>setShowDetail(false)}>&times;</button>
+            <div className="flex-1 flex flex-col items-center px-6 pt-8 pb-4 w-full select-none" style={{overflow:'hidden', overscrollBehavior:'none'}}>
+              <div className={`${selectedCard.color} mb-4`}>{selectedCard.icon}</div>
+              <h4 className="text-xl font-bold text-gray-900 mb-2">{selectedCard.title}</h4>
+              <p className="text-base text-gray-700 mb-4">{selectedCard.description}</p>
+              {/* Challenge-Dauer-Auswahl jetzt oben */}
+              {!selectedCard.challenge && (
+                <div className="w-full mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Wie lange möchtest du verzichten?</label>
+                  <select
+                    className="w-full rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500"
+                    value={challengeDuration}
+                    onChange={e => setChallengeDuration(Number(e.target.value))}
+                    disabled={isStarting}
+                  >
+                    {[7, 14, 21, 30, 60, 90].map(d => (
+                      <option key={d} value={d}>{d} Tage</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {/* Fortschritt nur wenn Challenge aktiv */}
+              {selectedCard.challenge && (
+                <div className="w-full text-center mt-2">
+                  <div className="text-emerald-600 font-semibold mb-1">Aktiv: {selectedCard.challenge.current_streak_days} / {selectedCard.challenge.target_days} Tage</div>
+                  <div className="w-full bg-emerald-100 rounded-full h-2 mb-2">
+                    <div className="bg-emerald-500 h-2 rounded-full" style={{width: `${Math.min(100, Math.round((selectedCard.challenge.current_streak_days/selectedCard.challenge.target_days)*100))}%`}}></div>
+                  </div>
+                  <div className="text-xs text-gray-500">Challenge läuft!</div>
+                </div>
+              )}
+            </div>
+            {/* Start-Button sticky am unteren Rand */}
+            {!selectedCard.challenge && (
+              <div className="w-full px-6 pb-6 pt-2 bg-white sticky bottom-0 z-10">
+                <button
+                  className="w-full py-3 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors disabled:opacity-60"
+                  onClick={handleStartChallenge}
+                  disabled={isStarting}
+                >
+                  {isStarting ? 'Starte...' : 'Challenge starten'}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

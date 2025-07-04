@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ericblade/quagga2": "^1.8.4",
+    "@react-spring/web": "^9.7.5",
     "@supabase/supabase-js": "^2.50.2",
     "@types/axios": "^0.9.36",
     "@types/cheerio": "^0.22.35",
@@ -27,6 +28,7 @@
     "react-dom": "^19.0.0",
     "react-intersection-observer": "^9.16.0",
     "react-markdown": "^10.1.0",
+    "react-tinder-card": "^1.6.4",
     "tailwind-merge": "^3.3.1",
     "zustand": "^5.0.6"
   },

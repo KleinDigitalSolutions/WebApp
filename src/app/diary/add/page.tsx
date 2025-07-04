@@ -224,54 +224,43 @@ function AddFoodContent() {
 
       <div className="px-4 py-6 space-y-6">
         {/* Quick Actions */}
-        <div className="grid grid-cols-3 gap-3">
-          <button 
-            onClick={() => handleSearch(true)}
-            className="flex flex-col items-center p-4 bg-white/60 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform"
-          >
-            <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-2">
-              <Search className="h-6 w-6 text-white" />
-            </div>
-            <span className="text-sm font-medium text-gray-700">Suchen</span>
-          </button>
-          
-          <button className="flex flex-col items-center p-4 bg-white/60 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform">
+        <div className="grid grid-cols-2 gap-3 mb-2">
+          <button className="flex flex-col items-center p-2 bg-transparent shadow-none border-none active:scale-95 transition-transform">
             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-2">
               <Camera className="h-6 w-6 text-white" />
             </div>
-            <span className="text-sm font-medium text-gray-700">Foto</span>
+            <span className="text-sm font-medium text-white">Foto</span>
           </button>
-          
           <button 
             onClick={() => setShowScanner(true)}
-            className="flex flex-col items-center p-4 bg-white/60 backdrop-blur-xl rounded-3xl shadow-lg border border-white/20 active:scale-95 transition-transform"
+            className="flex flex-col items-center p-2 bg-transparent shadow-none border-none active:scale-95 transition-transform"
           >
             <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-2">
               <Barcode className="h-6 w-6 text-white" />
             </div>
-            <span className="text-sm font-medium text-gray-700">Scannen</span>
+            <span className="text-sm font-medium text-white">Scannen</span>
           </button>
         </div>
 
         {/* Search Input */}
-        <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
+        <div>
           <div className="relative">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Lebensmittel suchen..."
-              className="w-full p-4 pr-12 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+              className="w-full p-4 pr-12 bg-white/90 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
             <button 
               onClick={() => handleSearch(true)}
-              className="absolute right-2 top-2 p-2 bg-emerald-500 text-white rounded-xl transition-colors active:scale-95"
+              className="absolute right-2 top-2 p-2 bg-white text-gray-700 rounded-xl transition-colors active:scale-95 border border-gray-200"
             >
               <Search className="h-5 w-5" />
             </button>
           </div>
-          <p className="text-xs text-gray-400 mt-2 text-center">Scrollen für mehr Ergebnisse</p>
+          <p className="text-xs text-white/80 mt-2 text-center">Scrollen für mehr Ergebnisse</p>
         </div>
 
         {/* Search Results */}
@@ -287,12 +276,12 @@ function AddFoodContent() {
 
         {/* No Results - Show Add Product Option */}
         {!loading && searchQuery && searchResults.length === 0 && (
-          <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20 text-center">
+          <div className="text-center">
             <div className="text-gray-400 text-4xl mb-4">🔍</div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-white mb-2">
               Keine Ergebnisse für &quot;{searchQuery}&quot;
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-white/80 mb-4">
               Das gesuchte Produkt ist noch nicht in unserer Datenbank verfügbar.
             </p>
             <button 
@@ -306,63 +295,57 @@ function AddFoodContent() {
 
         {/* Selected Food */}
         {selectedFood && (
-          <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/20">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Ausgewähltes Lebensmittel</h3>
-            
+          <div className="bg-white/20 backdrop-blur-xl rounded-2xl shadow-lg border border-white/30 p-6 mb-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Ausgewähltes Lebensmittel</h3>
             <div className="mb-4">
-              <h4 className="font-medium text-gray-900">{selectedFood.product_name || 'Unbekanntes Produkt'}</h4>
-              <p className="text-sm text-gray-600">
+              <h4 className="font-medium text-white">{selectedFood.product_name || 'Unbekanntes Produkt'}</h4>
+              <p className="text-sm text-white/80">
                 {selectedFood.nutriments['energy-kcal_100g'] || 0} kcal pro 100g
               </p>
             </div>
-
             {/* Quantity Selector */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Menge (g)</label>
+              <label className="block text-sm font-medium text-white mb-2">Menge (g)</label>
               <div className="flex items-center space-x-3">
                 <button 
                   onClick={() => setQuantity(Math.max(10, quantity - 10))}
-                  className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center transition-colors active:scale-95"
+                  className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center transition-colors active:scale-95"
                 >
-                  <Minus className="h-4 w-4 text-gray-700" />
+                  <Minus className="h-4 w-4 text-white" />
                 </button>
-                
                 <input
                   type="number"
                   value={quantity}
                   onChange={(e) => setQuantity(parseInt(e.target.value) || 100)}
-                  className="flex-1 text-center p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900"
+                  className="flex-1 text-center p-3 bg-white/80 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900"
                   min="10"
                 />
-                
                 <button 
                   onClick={() => setQuantity(quantity + 10)}
-                  className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center transition-colors active:scale-95"
+                  className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center transition-colors active:scale-95"
                 >
-                  <Plus className="h-4 w-4 text-gray-700" />
+                  <Plus className="h-4 w-4 text-white" />
                 </button>
               </div>
             </div>
-
             {/* Nutrition Info */}
-            <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-4 mb-6">
-              <h5 className="font-medium text-gray-900 mb-2">Nährwerte für {quantity}g</h5>
-              <div className="grid grid-cols-2 gap-3 text-sm text-gray-900">
-                <div>Kalorien: <span className="font-bold text-emerald-600">
+            <div className="bg-white/10 rounded-2xl p-4 mb-6">
+              <h5 className="font-medium text-white mb-2">Nährwerte für {quantity}g</h5>
+              <div className="grid grid-cols-2 gap-3 text-sm text-white/90">
+                <div>Kalorien: <span className="font-bold text-emerald-200">
                   {Math.round(((selectedFood.nutriments['energy-kcal_100g'] || 0) * quantity) / 100)}
                 </span></div>
-                <div>Protein: <span className="font-bold text-blue-600">
+                <div>Protein: <span className="font-bold text-blue-200">
                   {((selectedFood.nutriments['proteins_100g'] || 0) * quantity / 100).toFixed(1)}g
                 </span></div>
-                <div>Kohlenhydrate: <span className="font-bold text-orange-600">
+                <div>Kohlenhydrate: <span className="font-bold text-orange-200">
                   {((selectedFood.nutriments['carbohydrates_100g'] || 0) * quantity / 100).toFixed(1)}g
                 </span></div>
-                <div>Fett: <span className="font-bold text-yellow-600">
+                <div>Fett: <span className="font-bold text-yellow-200">
                   {((selectedFood.nutriments['fat_100g'] || 0) * quantity / 100).toFixed(1)}g
                 </span></div>
               </div>
             </div>
-
             {/* Add Buttons for Meals */}
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -370,28 +353,28 @@ function AddFoodContent() {
                 disabled={adding}
                 className="w-full p-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {adding ? 'Wird hinzugefügt...' : 'Zu Frühstück hinzufügen'}
+                {adding ? 'Wird hinzugefügt...' : 'Frühstück'}
               </button>
               <button
                 onClick={() => handleAddFood('lunch')}
                 disabled={adding}
                 className="w-full p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {adding ? 'Wird hinzugefügt...' : 'Zu Mittagessen hinzufügen'}
+                {adding ? 'Wird hinzugefügt...' : 'Mittagessen'}
               </button>
               <button
                 onClick={() => handleAddFood('dinner')}
                 disabled={adding}
                 className="w-full p-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {adding ? 'Wird hinzugefügt...' : 'Zu Abendessen hinzufügen'}
+                {adding ? 'Wird hinzugefügt...' : 'Abendessen'}
               </button>
               <button
                 onClick={() => handleAddFood('snacks')}
                 disabled={adding}
                 className="w-full p-4 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {adding ? 'Wird hinzugefügt...' : 'Zu Snack hinzufügen'}
+                {adding ? 'Wird hinzugefügt...' : 'Snack'}
               </button>
             </div>
           </div>

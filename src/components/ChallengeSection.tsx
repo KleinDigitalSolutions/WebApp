@@ -5,25 +5,27 @@ import SwipeableCards from './SwipeableCards'
 import ActiveChallenges from './ActiveChallenges'
 
 export default function ChallengeSection() {
-  const [refreshTrigger, setRefreshTrigger] = useState(0)
+  const [refreshActive, setRefreshActive] = useState(0)
+  const [refreshCards, setRefreshCards] = useState(0)
 
   const handleChallengeStarted = useCallback(() => {
-    // Trigger a refresh of both components
-    setRefreshTrigger(prev => prev + 1)
+    // Nach Start: beide Bereiche aktualisieren
+    setRefreshCards(prev => prev + 1)
+    setRefreshActive(prev => prev + 1)
   }, [])
 
   const handleChallengeAborted = useCallback(() => {
-    // Trigger a refresh of both components when challenge is aborted
-    setRefreshTrigger(prev => prev + 1)
+    // Nach Abbruch: nur ActiveChallenges aktualisieren
+    setRefreshActive(prev => prev + 1)
   }, [])
 
   return (
     <>
       {/* Swipeable Cards */}
-      <SwipeableCards key={`swipe-${refreshTrigger}`} onChallengeStarted={handleChallengeStarted} />
+      <SwipeableCards key={`swipe-${refreshCards}`} onChallengeStarted={handleChallengeStarted} />
 
       {/* Active Challenges */}
-      <ActiveChallenges key={`active-${refreshTrigger}`} onChallengeAborted={handleChallengeAborted} />
+      <ActiveChallenges key={`active-${refreshActive}`} onChallengeAborted={handleChallengeAborted} />
     </>
   )
 }

@@ -7,7 +7,7 @@ import {
   BookOpen, 
   ChefHat, 
   User,
-  PlusCircle 
+  Sparkles
 } from 'lucide-react'
 
 interface NavItem {
@@ -28,31 +28,31 @@ export function MobileBottomNav() {
   const navItems: NavItem[] = [
     {
       href: '/dashboard',
-      icon: <Home size={24} />,
+      icon: <Home size={24} />, // Startseite
       label: 'Start',
       isActive: pathname === '/dashboard'
     },
     {
       href: '/diary',
-      icon: <BookOpen size={24} />,
+      icon: <BookOpen size={24} />, // Tagebuch
       label: 'Tagebuch',
       isActive: pathname === '/diary'
     },
     {
-      href: '/diary/add',
-      icon: <PlusCircle size={28} />,
-      label: 'Hinzufügen',
-      isActive: pathname === '/diary/add'
+      href: '/chat',
+      icon: <Sparkles size={28} />, // KI Berater (neues Icon)
+      label: 'KI Berater',
+      isActive: pathname === '/chat'
     },
     {
       href: '/recipes',
-      icon: <ChefHat size={24} />,
+      icon: <ChefHat size={24} />, // Rezepte
       label: 'Rezepte',
       isActive: pathname === '/recipes'
     },
     {
       href: '/profile',
-      icon: <User size={24} />,
+      icon: <User size={24} />, // Profil
       label: 'Profil',
       isActive: pathname === '/profile'
     }
@@ -78,38 +78,20 @@ export function MobileBottomNav() {
                     ? 'text-emerald-600' 
                     : 'text-gray-500'
                   }
-                  ${item.label === 'Hinzufügen' 
-                    ? 'transform -translate-y-2' 
-                    : ''
-                  }
                 `}
               >
-                {/* Special styling for the add button */}
-                {item.label === 'Hinzufügen' ? (
-                  <div className={`
-                    p-3 rounded-full shadow-lg
-                    bg-gradient-to-r from-emerald-500 to-purple-600
-                    text-white
-                    ${item.isActive ? 'scale-110' : ''}
-                    transition-transform duration-200
-                  `}>
-                    {item.icon}
-                  </div>
-                ) : (
-                  <div className={`
-                    p-2 rounded-xl transition-all duration-200
-                    ${item.isActive 
-                      ? 'bg-emerald-50 text-emerald-600' 
-                      : ''
-                    }
-                  `}>
-                    {item.icon}
-                  </div>
-                )}
+                <div className={`
+                  p-2 rounded-xl transition-all duration-200
+                  ${item.isActive 
+                    ? 'bg-emerald-50 text-emerald-600' 
+                    : ''
+                  }
+                `}>
+                  {item.icon}
+                </div>
                 
                 <span className={`
                   text-xs font-medium
-                  ${item.label === 'Hinzufügen' ? 'mt-1' : ''}
                 `}>
                   {item.label}
                 </span>

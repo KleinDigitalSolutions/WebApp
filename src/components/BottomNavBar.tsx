@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
-import { Home, BookOpen, ChefHat, User, PlusCircle } from 'lucide-react'
+import { Home, BookOpen, ChefHat, User, Sparkles } from 'lucide-react'
 
 export function Navigation() {
   const pathname = usePathname()
@@ -59,10 +59,10 @@ export function Navigation() {
       isActive: pathname === '/diary',
     },
     {
-      href: '/diary/add',
-      icon: <PlusCircle size={28} />, // Hinzufügen (zentral)
-      label: 'Hinzufügen',
-      isActive: pathname === '/diary/add',
+      href: '/chat',
+      icon: <Sparkles size={28} />, // KI Berater (neues Icon)
+      label: 'KI Berater',
+      isActive: pathname === '/chat',
     },
     {
       href: '/recipes',
@@ -84,8 +84,7 @@ export function Navigation() {
 
   return (
     <>
-      {/* Spacer, damit Content nicht hinter der Navigation verschwindet */}
-      <div className="h-20" />
+      {/* Spacer entfernt! */}
       {/* Bottom Navigation - modern, mit prominentem Hinzufügen-Button */}
       <nav className="fixed bottom-0 left-0 right-0 z-50">
         <div className="bg-white/95 backdrop-blur-xl border-t border-gray-200/50 shadow-lg">
@@ -98,31 +97,16 @@ export function Navigation() {
                   flex flex-col items-center justify-center space-y-1 relative
                   transition-all duration-200 active:scale-95
                   ${item.isActive ? 'text-emerald-600' : 'text-gray-500'}
-                  ${item.label === 'Hinzufügen' ? 'transform -translate-y-2' : ''}
                 `}
               >
-                {/* Spezielles Styling für Hinzufügen-Button */}
-                {item.label === 'Hinzufügen' ? (
-                  <div className={`
-                    p-3 rounded-full shadow-lg
-                    bg-gradient-to-r from-emerald-500 to-purple-600
-                    text-white
-                    ${item.isActive ? 'scale-110' : ''}
-                    transition-transform duration-200
-                  `}>
-                    {item.icon}
-                  </div>
-                ) : (
-                  <div className={`
-                    p-2 rounded-xl transition-all duration-200
-                    ${item.isActive ? 'bg-emerald-50 text-emerald-600' : ''}
-                  `}>
-                    {item.icon}
-                  </div>
-                )}
+                <div className={`
+                  p-2 rounded-xl transition-all duration-200
+                  ${item.isActive ? 'bg-emerald-50 text-emerald-600' : ''}
+                `}>
+                  {item.icon}
+                </div>
                 <span className={`
                   text-xs font-medium
-                  ${item.label === 'Hinzufügen' ? 'mt-1' : ''}
                 `}>
                   {item.label}
                 </span>

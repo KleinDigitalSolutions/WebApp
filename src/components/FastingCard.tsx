@@ -161,18 +161,27 @@ export default function FastingCard() {
   }
 
   return (
-    <div className="bg-emerald-100/80 rounded-3xl p-6 shadow-lg border border-emerald-200/60">
-      <div className="flex items-center justify-between mb-6">
+    <div className="relative rounded-3xl p-6 shadow-xl overflow-hidden" style={{
+      background: 'rgba(236, 253, 245, 0.85)', // emerald-50 mit Opazität
+      backdropFilter: 'blur(12px)',
+      boxShadow: '0 4px 32px 0 rgba(16,185,129,0.10), 0 1.5px 8px 0 rgba(16,185,129,0.08)'
+    }}>
+      {/* Emerald Glow */}
+      <div className="pointer-events-none absolute -inset-1 rounded-3xl z-0" style={{
+        boxShadow: '0 0 32px 8px #6ee7b7', opacity: 0.18
+      }} />
+      {/* Glossy-Overlay */}
+      <div className="pointer-events-none absolute left-0 top-0 w-full h-1/3 rounded-t-3xl bg-white/30 blur-[2px] opacity-50 z-10" />
+      <div className="flex items-center justify-between mb-6 relative z-20">
         <h3 className="text-lg font-semibold text-gray-900 flex items-center">
           <Timer className="h-5 w-5 mr-2 text-purple-600" />
           Fasten
         </h3>
-        
         {!currentSession && (
           <select
             value={targetDuration}
             onChange={(e) => setTargetDuration(Number(e.target.value))}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1"
+            className="text-sm border border-gray-200 rounded-lg px-3 py-1 bg-white/60 backdrop-blur"
           >
             <option value={16}>16h (16:8)</option>
             <option value={18}>18h (18:6)</option>
@@ -181,7 +190,6 @@ export default function FastingCard() {
           </select>
         )}
       </div>
-
       <div className="flex flex-col items-center">
         <div className="relative w-32 h-32 mb-4">
           <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
@@ -189,16 +197,15 @@ export default function FastingCard() {
               cx="50"
               cy="50"
               r="45"
-              stroke="currentColor"
+              stroke="#e0f2f1"
               strokeWidth="6"
               fill="transparent"
-              className="text-gray-200"
             />
             <circle
               cx="50"
               cy="50"
               r="45"
-              stroke="#8b5cf6"
+              stroke="url(#emeraldGradient)"
               strokeWidth="6"
               fill="transparent"
               strokeDasharray={283}
@@ -206,6 +213,12 @@ export default function FastingCard() {
               className="transition-all duration-1000"
               strokeLinecap="round"
             />
+            <defs>
+              <linearGradient id="emeraldGradient" x1="0" y1="0" x2="0" y2="100">
+                <stop offset="0%" stopColor="#6ee7b7" />
+                <stop offset="100%" stopColor="#34d399" />
+              </linearGradient>
+            </defs>
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {currentSession ? (
@@ -221,14 +234,13 @@ export default function FastingCard() {
             )}
           </div>
         </div>
-
         <div className="text-center space-y-4">
           {currentSession ? (
             <>
               <div className="text-sm text-gray-600">Ziel: {targetDuration} Stunden</div>
               <button
                 onClick={endFasting}
-                className="flex items-center px-6 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600"
+                className="flex items-center px-6 py-3 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 shadow-md"
               >
                 <Square className="h-5 w-5 mr-2" />
                 Beenden
@@ -239,7 +251,7 @@ export default function FastingCard() {
               <div className="text-sm text-gray-600">{targetDuration} Stunden Fasten</div>
               <button
                 onClick={startFasting}
-                className="flex items-center px-6 py-3 bg-purple-500 text-white rounded-lg font-medium hover:bg-purple-600"
+                className="flex items-center px-6 py-3 bg-purple-500 text-white rounded-lg font-medium hover:bg-purple-600 shadow-md"
               >
                 <Play className="h-5 w-5 mr-2" />
                 Fasten starten

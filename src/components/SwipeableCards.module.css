@@ -1,0 +1,25 @@
+.card-gradient-border {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(16px);
+}
+.card-gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 0;
+  border-radius: inherit;
+  background: var(--card-gradient, url('/wave-gradient.svg'));
+  background-size: 1568px 300px;
+  background-position-x: var(--card-gradient-position-x, 0px);
+  background-position-y: 0px;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+.card-gradient-border > * {
+  position: relative;
+  z-index: 1;
+}

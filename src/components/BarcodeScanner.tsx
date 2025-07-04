@@ -211,7 +211,7 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
     return () => {
       stopScanner()
     }
-  }, [isActive, onScan])
+  }, [isActive, onScan, isIOS, isSafari]) // useEffect dependencies ergänzt
 
   const handleClose = () => {
     try {

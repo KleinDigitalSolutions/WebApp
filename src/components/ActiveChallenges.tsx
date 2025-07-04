@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { supabase, AbstinenceChallenge } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
 import { Cigarette, Coffee, Cookie, Candy, Pizza, Wine, Apple, Trophy, Target } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const challengeIcons: Record<string, React.ReactNode> = {
   no_cigarettes: <Cigarette className="h-6 w-6" />,
@@ -25,7 +26,7 @@ const challengeColors: Record<string, { bg: string; text: string; progress: stri
   no_alcohol: { bg: 'bg-purple-100', text: 'text-purple-600', progress: 'bg-purple-500' }
 }
 
-interface ActiveChallengesProps {
+export interface ActiveChallengesProps {
   onChallengeAborted?: () => void
 }
 
@@ -33,6 +34,8 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
   const { user } = useAuthStore()
   const [challenges, setChallenges] = useState<AbstinenceChallenge[]>([])
   const [loading, setLoading] = useState(true)
+  const [abortingId, setAbortingId] = useState<string | null>(null)
+  const [removingIds, setRemovingIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (!user?.id) {
@@ -42,6 +45,7 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
 
     const loadChallenges = async () => {
       try {
+        setLoading(true) // Nur beim ersten Laden!
         const { data } = await supabase
           .from('abstinence_challenges')
           .select('*')
@@ -59,6 +63,7 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
     }
 
     loadChallenges()
+    // eslint-disable-next-line
   }, [user?.id])
 
   const calculateTimeSince = (startDate: string) => {
@@ -83,10 +88,9 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
     try {
       const challenge = challenges.find(c => c.id === challengeId)
       if (!challenge) return
-
       const confirmAbort = window.confirm(`Möchtest du die Challenge "${challenge.challenge_name}" wirklich abbrechen?`)
       if (!confirmAbort) return
-
+      setAbortingId(challengeId)
       await supabase
         .from('abstinence_challenges')
         .update({
@@ -96,16 +100,11 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
           updated_at: new Date().toISOString()
         })
         .eq('id', challengeId)
-
-      // Remove from local state
-      setChallenges(prev => prev.filter(c => c.id !== challengeId))
-
-      // Notify parent component that a challenge was aborted
-      if (onChallengeAborted) {
-        onChallengeAborted()
-      }
-
+      setRemovingIds(prev => new Set([...prev, challengeId]))
+      setAbortingId(null)
+      if (onChallengeAborted) onChallengeAborted()
     } catch (error) {
+      setAbortingId(null)
       console.error('Error aborting challenge:', error)
     }
   }
@@ -155,67 +154,86 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
         </div>
       </div>
       <div className="space-y-4">
+        <AnimatePresence initial={false} onExitComplete={() => {
+          if (removingIds.size > 0) {
+            setChallenges(prev => prev.filter(c => !removingIds.has(c.id)))
+            setRemovingIds(new Set())
+          }
+        }}>
         {challenges.map((challenge) => {
+          const isRemoving = removingIds.has(challenge.id)
           const colors = challengeColors[challenge.challenge_type]
           const icon = challengeIcons[challenge.challenge_type]
           const progressPercentage = getProgressPercentage(challenge)
           const timeSince = calculateTimeSince(challenge.start_date)
           return (
-            <div key={challenge.id} className="bg-white/30 rounded-2xl p-4 border border-white/20 shadow-sm backdrop-blur-xl">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-3">
-                  <div className={`${colors.text}`}>{icon}</div>
-                  <div>
-                    <h4 className="font-semibold text-white">{challenge.challenge_name}</h4>
-                    <p className="text-sm text-white/80">
-                      Abstinent seit {timeSince.value} {timeSince.unit}
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-white">
-                    {timeSince.value}
-                  </div>
-                  <div className="text-xs text-white/60">{timeSince.unit}</div>
-                </div>
-              </div>
-              {/* Progress Bar */}
-              <div className="mb-4">
-                <div className="flex justify-between text-xs text-white/80 mb-1">
-                  <span>Fortschritt zum {challenge.target_days}-Tage-Ziel</span>
-                  <span>{Math.round(progressPercentage)}%</span>
-                </div>
-                <div className="w-full bg-white/50 rounded-full h-3">
-                  <div 
-                    className={`${colors.progress} h-3 rounded-full transition-all duration-500`}
-                    style={{ width: `${progressPercentage}%` }}
+            <motion.div
+              key={challenge.id}
+              initial={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40, transition: { duration: 0.35, ease: 'easeIn' } }}
+              animate={{ opacity: 1, y: 0 }}
+              // layout removed for performance
+              className="relative bg-white/20 rounded-2xl p-4 border border-white/20 shadow-xl backdrop-blur-2xl flex items-center gap-4 overflow-hidden"
+              style={{boxShadow:'0 8px 32px 0 rgba(31,38,135,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.10)', willChange: 'transform, opacity'}}>
+              {/* Progress Ring + Icon */}
+              <div className="relative flex-shrink-0">
+                <svg className="w-14 h-14" viewBox="0 0 48 48">
+                  <circle
+                    cx="24" cy="24" r="20"
+                    stroke="#e0e7ef" strokeWidth="6" fill="none"
                   />
-                </div>
-                <div className="text-xs text-white/60 mt-1">
-                  Gestartet am {new Date(challenge.start_date).toLocaleDateString('de-DE')}
+                  <circle
+                    cx="24" cy="24" r="20"
+                    stroke={colors.progress.replace('bg-', '').replace('-500','') || '#38bdf8'}
+                    strokeWidth="6"
+                    fill="none"
+                    strokeDasharray={2 * Math.PI * 20}
+                    strokeDashoffset={2 * Math.PI * 20 * (1 - progressPercentage / 100)}
+                    className="transition-all duration-700"
+                    strokeLinecap="round"
+                    style={{filter:'drop-shadow(0 0 8px #38bdf8aa)'}}
+                  />
+                </svg>
+                <div className={`absolute inset-0 flex items-center justify-center rounded-full bg-white/30 backdrop-blur-md shadow-lg`} style={{boxShadow:'0 0 0 4px #fff4'}}>
+                  <span className={`text-xl ${colors.text}`}>{icon}</span>
                 </div>
               </div>
-              {/* Action Button */}
-              <div className="flex justify-center">
+              {/* Challenge Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h4 className="font-semibold text-white truncate">{challenge.challenge_name}</h4>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-white/30 text-white/80 ml-1">{Math.round(progressPercentage)}%</span>
+                </div>
+                <div className="text-xs text-white/80 mb-1 truncate">Abstinent seit {timeSince.value} {timeSince.unit}</div>
+                <div className="flex items-center gap-2 text-xs text-white/60">
+                  <span>Gestartet am {new Date(challenge.start_date).toLocaleDateString('de-DE')}</span>
+                  {challenge.longest_streak_days > 0 && (
+                    <span className="ml-2">| Längste Serie: {challenge.longest_streak_days} Tage</span>
+                  )}
+                  {challenge.total_attempts > 1 && (
+                    <span className="ml-2">| Versuche: {challenge.total_attempts}</span>
+                  )}
+                </div>
+              </div>
+              {/* Action Button oder Spinner */}
+              {abortingId === challenge.id ? (
+                <div className="ml-2 flex-shrink-0 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-7 w-7 border-2 border-white border-t-transparent" />
+                </div>
+              ) : (
                 <button
                   onClick={() => abortChallenge(challenge.id)}
-                  className="bg-red-500 text-white py-2 px-6 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
+                  className="ml-2 flex-shrink-0 bg-red-500/90 hover:bg-red-600 text-white rounded-full p-2 shadow-lg transition-colors"
+                  title="Challenge abbrechen"
+                  disabled={isRemoving}
                 >
-                  Challenge abbrechen
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
-              </div>
-              {/* Stats */}
-              {challenge.longest_streak_days > 0 && (
-                <div className="mt-3 pt-3 border-t border-white/30">
-                  <div className="flex justify-between text-xs text-white/80">
-                    <span>Längste Serie: {challenge.longest_streak_days} Tage</span>
-                    <span>Versuche: {challenge.total_attempts}</span>
-                  </div>
-                </div>
               )}
-            </div>
+            </motion.div>
           )
         })}
+        </AnimatePresence>
       </div>
     </div>
   )
