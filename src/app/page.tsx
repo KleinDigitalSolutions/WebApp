@@ -148,7 +148,7 @@ export default function LandingPage() {
           })}
         />
         {/* Oben rechts, groß */}
-        <img src="/SVG/orange_ganz.svg" alt="Orange"
+        <img src="/SVG/orange_ganz.avif" alt="Orange"
           className="fixed z-0 pointer-events-none select-none"
           style={svgStyle({ x: 120, y: -60, rotate: '8deg' }, {
             right: -50,
