@@ -61,6 +61,11 @@ export default function LandingPage() {
         svgRefs.current[1].style.opacity = String(svgOpacity)
         svgRefs.current[1].style.transform = `translate3d(${120 * svgProgress}px, ${-60 * svgProgress}px, 0) rotate(8deg)`
       }
+      // Himbeere (scrollt mit, aber weniger stark)
+      if (svgRefs.current[5]) {
+        svgRefs.current[5].style.opacity = String(svgOpacity)
+        svgRefs.current[5].style.transform = `translate3d(${-30 * svgProgress}px, ${20 * svgProgress}px, 0) rotate(-10deg)`
+      }
       // Limette
       if (svgRefs.current[2]) {
         svgRefs.current[2].style.opacity = String(svgOpacity)
@@ -163,6 +168,11 @@ export default function LandingPage() {
         <img ref={el => { svgRefs.current[1] = el }} src="/SVG/kirsche.svg" alt="Kirsche"
           className="fixed z-0 pointer-events-none select-none"
           style={{ right: -50, top: -50, width: '38vw', minWidth: 100, maxWidth: 180, willChange: 'opacity, transform' }}
+        />
+        {/* Himbeere, links mittig */}
+        <img ref={el => { svgRefs.current[5] = el }} src="/SVG/himbeere.svg" alt="Himbeere"
+          className="fixed z-0 pointer-events-none select-none"
+          style={{ left: 0, top: '38vh', width: '18vw', minWidth: 60, maxWidth: 100, willChange: 'opacity, transform' }}
         />
         {/* Unten links, groß */}
         <img ref={el => { svgRefs.current[2] = el }} src="/SVG/limette_gruen_ganz.svg" alt="Limette"
