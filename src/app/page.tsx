@@ -61,25 +61,29 @@ export default function LandingPage() {
         svgRefs.current[1].style.opacity = String(svgOpacity)
         svgRefs.current[1].style.transform = `translate3d(${120 * svgProgress}px, ${-60 * svgProgress}px, 0) rotate(8deg)`
       }
-      // Himbeere (scrollt mit, aber weniger stark)
-      if (svgRefs.current[5]) {
-        svgRefs.current[5].style.opacity = String(svgOpacity)
-        svgRefs.current[5].style.transform = `translate3d(${-30 * svgProgress}px, ${20 * svgProgress}px, 0) rotate(-10deg)`
-      }
-      // Limette
+      // Himbeere (scrollt mit, jetzt komplett nach links-unten aus dem Bild)
       if (svgRefs.current[2]) {
         svgRefs.current[2].style.opacity = String(svgOpacity)
-        svgRefs.current[2].style.transform = `translate3d(${-80 * svgProgress}px, ${120 * svgProgress}px, 0) rotate(-8deg)`
+        svgRefs.current[2].style.transform = `translate3d(${-180 * svgProgress}px, ${120 * svgProgress}px, 0) rotate(-10deg)`
       }
-      // Orange halb
+      // Limette
       if (svgRefs.current[3]) {
         svgRefs.current[3].style.opacity = String(svgOpacity)
-        svgRefs.current[3].style.transform = `translate3d(${100 * svgProgress}px, ${120 * svgProgress}px, 0) rotate(160deg)`
+        svgRefs.current[3].style.transform = `translate3d(${-80 * svgProgress}px, ${120 * svgProgress}px, 0) rotate(-8deg)`
       }
-      // Melone
+      // Orange halb
       if (svgRefs.current[4]) {
         svgRefs.current[4].style.opacity = String(svgOpacity)
-        svgRefs.current[4].style.transform = `translate3d(${60 * svgProgress}px, ${60 * svgProgress}px, 0) rotate(90deg)`
+        svgRefs.current[4].style.transform = `translate3d(${100 * svgProgress}px, ${120 * svgProgress}px, 0) rotate(160deg)`
+      }
+      // Melone (Animation nach rechts-unten, Debug garantiert entfernt)
+      if (svgRefs.current[5]) {
+        svgRefs.current[5].style.opacity = String(svgOpacity)
+        svgRefs.current[5].style.transform = `translate3d(${180 * svgProgress}px, ${120 * svgProgress}px, 0) rotate(90deg)`
+        svgRefs.current[5].style.border = 'none'
+        svgRefs.current[5].style.background = 'none'
+      } else {
+        console.log('Melone Ref ist null!')
       }
     }
     window.addEventListener('scroll', onScroll)
@@ -170,24 +174,24 @@ export default function LandingPage() {
           style={{ right: -50, top: -50, width: '38vw', minWidth: 100, maxWidth: 180, willChange: 'opacity, transform' }}
         />
         {/* Himbeere, links mittig */}
-        <img ref={el => { svgRefs.current[5] = el }} src="/SVG/himbeere.svg" alt="Himbeere"
+        <img ref={el => { svgRefs.current[2] = el }} src="/SVG/himbeere.svg" alt="Himbeere"
           className="fixed z-0 pointer-events-none select-none"
-          style={{ left: 0, top: '38vh', width: '18vw', minWidth: 60, maxWidth: 100, willChange: 'opacity, transform' }}
+          style={{ left: 0, top: '48vh', width: '18vw', minWidth: 60, maxWidth: 100, willChange: 'opacity, transform' }}
         />
         {/* Unten links, groß */}
-        <img ref={el => { svgRefs.current[2] = el }} src="/SVG/limette_gruen_ganz.svg" alt="Limette"
+        <img ref={el => { svgRefs.current[3] = el }} src="/SVG/limette_gruen_ganz.svg" alt="Limette"
           className="fixed z-0 pointer-events-none select-none"
           style={{ left: -90, bottom: -180, width: '32vw', minWidth: 280, maxWidth: 140, willChange: 'opacity, transform' }}
         />
         {/* Unten rechts, groß */}
-        <img ref={el => { svgRefs.current[3] = el }} src="/SVG/orange_halb.svg" alt="Orange halb"
+        <img ref={el => { svgRefs.current[4] = el }} src="/SVG/orange_halb.svg" alt="Orange halb"
           className="fixed z-0 pointer-events-none select-none"
           style={{ right: -100, bottom: -180, width: '38vw', minWidth: 280, maxWidth: 280, willChange: 'opacity, transform' }}
         />
         {/* Mitte rechts, vertikal, halb sichtbar */}
-        <img ref={el => { svgRefs.current[4] = el }} src="/SVG/melone.svg" alt="Limette vertikal"
+        <img ref={el => { svgRefs.current[5] = el }} src="/SVG/melone.svg" alt="Melone"
           className="fixed z-0 pointer-events-none select-none"
-          style={{ right: '-10vw', top: '56vh', width: '28vw', minWidth: 80, maxWidth: 120, willChange: 'opacity, transform' }}
+          style={{ right: 0, top: '56vh', width: '28vw', minWidth: 80, maxWidth: 120, willChange: 'opacity, transform', border: 'none', background: 'none' }}
         />
         {/* Hero Section */}
         <section className="min-h-screen bg-transparent flex flex-col items-center justify-center relative overflow-hidden">
