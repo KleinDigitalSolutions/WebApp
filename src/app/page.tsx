@@ -213,10 +213,10 @@ export default function LandingPage() {
                   </span>
                 </h1>
               </div>
-              <div className="w-24 h-1 bg-white mx-auto rounded-full" />
+              <div className="w-24 h-1 bg-white mx-auto rounded-full mb-2" />
             </div>
-            <p className="text-xl text-white text-shadow-strong mb-12 max-w-md mx-auto font-semibold">
-              Intelligente Ernährung für deine Gesundheit
+            <p className="text-xl text-white text-shadow-strong mb-10 max-w-xs sm:max-w-sm md:max-w-md mx-auto font-semibold px-4 text-center">
+              Intelligente Ernährung<br />für deine Gesundheit
             </p>
           </div>
 
