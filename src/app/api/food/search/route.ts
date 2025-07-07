@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GermanProductDatabase } from '@/lib/german-product-database'
 import { createClient } from '@supabase/supabase-js'
-import { searchFatSecretFoods } from '@/lib/fatsecret-api'
+import { OpenFoodFactsAPI } from '@/lib/openfoodfacts-api'
 
 function getSupabaseClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  
   if (!supabaseUrl || !supabaseServiceKey) {
     throw new Error('Missing Supabase environment variables')
   }
-  
   return createClient(supabaseUrl, supabaseServiceKey)
 }
 
@@ -26,23 +24,24 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ products: [], total: 0 })
     }
 
-    // 1. FatSecret Suche
+    // 1. OpenFoodFacts Suche
     try {
-      const fatsecretResults = await searchFatSecretFoods(query)
-      if (fatsecretResults && fatsecretResults.length > 0) {
-        // FatSecret Ergebnis auf das gleiche Format mappen
-        const formattedFatSecret = fatsecretResults.map((food: FatSecretFood) => ({
-          code: food.food_id?.toString() || '',
-          product_name: food.food_name,
-          brands: food.brand_name || '',
-          image_url: '',
-          nutriments: {},
-          source: 'fatsecret',
-        }))
-        return NextResponse.json({ products: formattedFatSecret, total: formattedFatSecret.length, sources: { fatsecret: formattedFatSecret.length } })
+      const offResult = await OpenFoodFactsAPI.searchByBarcode(query)
+      if (offResult) {
+        const formattedOFF = [{
+          code: offResult.code,
+          product_name: offResult.name,
+          brands: offResult.brand,
+          image_url: offResult.image_url,
+          nutriments: offResult.nutrition,
+          category: offResult.category,
+          allergens: offResult.allergens,
+          source: 'openfoodfacts',
+        }]
+        return NextResponse.json({ products: formattedOFF, total: 1, sources: { openfoodfacts: 1 } })
       }
     } catch {
-      // FatSecret Fehler ignorieren, Fallback
+      // Fehler ignorieren, Fallback
     }
 
     // 2. Lokale Produktdatenbank
@@ -146,11 +145,4 @@ type ProductResult = {
   source: string;
   is_verified?: boolean;
   created_by?: string;
-};
-
-// Am Ende der Datei ergänzen:
-interface FatSecretFood {
-  food_id: string | number;
-  food_name: string;
-  brand_name?: string;
 }
