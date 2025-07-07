@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import DesktopNotice from '@/components/DesktopNotice'
 import GoogleLoginButton from '@/components/GoogleLoginButton'
+import OnboardingModal from '@/components/OnboardingModal'
 
 export default function LandingPage() {
   const router = useRouter()
@@ -22,6 +23,7 @@ export default function LandingPage() {
   const targetName = "TrackFood"
   const [showScrollHint, setShowScrollHint] = useState(false)
   const [showDesktopNotice, setShowDesktopNotice] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -92,11 +94,24 @@ export default function LandingPage() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  useEffect(() => {
+    // Onboarding nur beim ersten Login anzeigen
+    if (typeof window !== 'undefined' && !localStorage.getItem('trackfood_onboarded')) {
+      setShowOnboarding(true)
+    }
+  }, [])
+
+  const handleFinishOnboarding = () => {
+    localStorage.setItem('trackfood_onboarded', '1')
+    setShowOnboarding(false)
+  }
+
   if (user) {
     return null
   }
   return (
     <>
+      {showOnboarding && <OnboardingModal onFinish={handleFinishOnboarding} />}
       {showDesktopNotice && <DesktopNotice />}
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=More+Sugar&display=swap" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />

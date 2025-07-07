@@ -144,10 +144,8 @@ export default function ChatPage() {
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#A9E142]">
       {/* Header */}
-      <div className="w-full max-w-lg mx-auto px-4 pt-6 pb-2 flex items-center gap-3 z-10">
-        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg border border-white/60">
-          <span className="text-2xl">🤖</span>
-        </div>
+      <div className="w-full max-w-lg mx-auto px-4 pt-6 pb-2 flex items-center gap-2 z-10">
+        <img src="/SVG/gesicht.svg" alt="KI Gesicht" className="w-16 h-16 object-contain m-0 p-0" style={{display:'block'}} />
         <div className="flex-1">
           <h1 className="text-lg font-bold text-emerald-900 drop-shadow">KI Ernährungsberater</h1>
           <p className="text-xs text-emerald-700/80">Stelle Fragen oder starte eine Analyse</p>
@@ -178,39 +176,36 @@ export default function ChatPage() {
                 transition={{ duration: 0.25, type: 'spring', bounce: 0.2 }}
                 className={`flex items-end gap-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                {message.role === 'assistant' && (
-                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shadow border border-emerald-200">
-                    <span className="text-lg">🤖</span>
+                {message.role === 'assistant' ? (
+                  <div className="flex items-end gap-1">
+                    <img src="/SVG/gesicht.svg" alt="KI Gesicht" className="w-16 h-16 object-contain m-0 p-0" style={{display:'block'}} />
+                    <div className="flex-1 max-w-[75%] px-4 py-3 rounded-2xl shadow-xl border relative bg-white text-emerald-900 border-emerald-100" style={{ boxShadow: '0 2px 16px 0 #05966922', border: '1.5px solid #a7f3d0' }}>
+                      <div className="whitespace-pre-wrap text-sm leading-relaxed relative z-10">
+                        <ReactMarkdown
+                          components={{
+                            strong: (props) => <strong className="text-emerald-700 font-semibold" {...props} />,
+                            li: (props) => <li className="ml-4 list-disc" {...props} />,
+                            ul: (props) => <ul className="mb-2 ml-2" {...props} />,
+                            p: (props) => <p className="mb-2" {...props} />,
+                          }}
+                        >
+                          {message.content}
+                        </ReactMarkdown>
+                      </div>
+                      <div className="text-xs mt-2 text-emerald-500">{message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</div>
+                    </div>
                   </div>
-                )}
-                <div
-                  className={`max-w-[75%] px-4 py-3 rounded-2xl shadow-xl border relative ${message.role === 'user' ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white ml-auto' : 'bg-white text-emerald-900 border-emerald-100'}`}
-                  style={message.role === 'user'
-                    ? { boxShadow: '0 2px 16px 0 #05966955, 0 0 0 2px #05966933', border: '1.5px solid #05966933' }
-                    : { boxShadow: '0 2px 16px 0 #05966922', border: '1.5px solid #a7f3d0' }
-                  }
-                >
-                  <div className="whitespace-pre-wrap text-sm leading-relaxed relative z-10">
-                    {message.role === 'assistant' ? (
-                      <ReactMarkdown
-                        components={{
-                          strong: (props) => <strong className="text-emerald-700 font-semibold" {...props} />,
-                          li: (props) => <li className="ml-4 list-disc" {...props} />,
-                          ul: (props) => <ul className="mb-2 ml-2" {...props} />,
-                          p: (props) => <p className="mb-2" {...props} />,
-                        }}
-                      >
+                ) : (
+                  <div className="flex items-end gap-2 justify-end">
+                    <div className="max-w-[75%] px-4 py-3 rounded-2xl shadow-xl border relative bg-gradient-to-br from-emerald-500 to-emerald-600 text-white ml-auto border-emerald-100" style={{ boxShadow: '0 2px 16px 0 #05966955, 0 0 0 2px #05966933', border: '1.5px solid #05966933' }}>
+                      <div className="whitespace-pre-wrap text-sm leading-relaxed relative z-10">
                         {message.content}
-                      </ReactMarkdown>
-                    ) : (
-                      message.content
-                    )}
-                  </div>
-                  <div className={`text-xs mt-2 ${message.role === 'user' ? 'text-emerald-100' : 'text-emerald-500'}`}>{message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</div>
-                </div>
-                {message.role === 'user' && (
-                  <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow border border-emerald-200">
-                    <span className="text-white font-bold">{profile?.first_name?.[0]?.toUpperCase() || 'U'}</span>
+                      </div>
+                      <div className="text-xs mt-2 text-emerald-100">{message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</div>
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow border border-emerald-200 ml-2">
+                      <span className="text-white font-bold">{profile?.first_name?.[0]?.toUpperCase() || 'U'}</span>
+                    </div>
                   </div>
                 )}
               </motion.div>
@@ -221,12 +216,10 @@ export default function ChatPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.25, type: 'spring', bounce: 0.2 }}
-                className="flex items-end gap-2 justify-start"
+                className="flex items-end gap-4 justify-start"
               >
-                <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shadow border border-emerald-200">
-                  <span className="text-lg">🤖</span>
-                </div>
-                <div className="px-4 py-3 rounded-2xl shadow-xl bg-white border border-emerald-100 flex items-center gap-2">
+                <img src="/SVG/gesicht.svg" alt="KI Gesicht" className="w-16 h-16 min-w-[4rem] min-h-[4rem] object-contain flex-shrink-0" />
+                <div className="flex-1 max-w-[75%] px-8 py-6 rounded-2xl shadow-xl bg-white border border-emerald-100 flex items-center gap-2">
                   <span className="animate-bounce text-emerald-500 text-lg">...</span>
                   <span className="text-sm text-emerald-500">KI denkt nach...</span>
                 </div>
