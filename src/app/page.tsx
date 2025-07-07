@@ -144,18 +144,18 @@ export default function LandingPage() {
       <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: '#A9E142', scrollBehavior: 'smooth' }}>
         {/* Dekorative Zitronen/Orangen/Limetten: Mobile-first, dominant und exakt an den Ecken/Rändern */}
         {/* Oben links, groß */}
-        <img src="/SVG/zitrone.svg" alt="Zitrone"
+        <img src="/SVG/ananas_1.svg" alt="Ananas"
           className="fixed z-0 pointer-events-none select-none"
-          style={svgStyle({ x: -120, y: -80, rotate: '-80deg' }, {
-            left: -100,
-            top: -100,
+          style={svgStyle({ x: -120, y: -80, rotate: '-30deg' }, {
+            left: -50,
+            top: -30,
             width: '52vw',
-            minWidth: 320,
-            maxWidth: 320,
+            minWidth: 200,
+            maxWidth: 200,
           })}
         />
         {/* Oben rechts, groß */}
-        <img src="/SVG/orange_ganz.avif" alt="Orange"
+        <img src="/SVG/kirsche.svg" alt="Kirsche"
           className="fixed z-0 pointer-events-none select-none"
           style={svgStyle({ x: 120, y: -60, rotate: '8deg' }, {
             right: -50,
@@ -188,7 +188,7 @@ export default function LandingPage() {
           })}
         />
         {/* Mitte rechts, vertikal, halb sichtbar */}
-        <img src="/SVG/limette_gruen.svg" alt="Limette vertikal"
+        <img src="/SVG/melone.svg" alt="Limette vertikal"
           className="fixed z-0 pointer-events-none select-none"
           style={svgStyle({ x: 60, y: 60, rotate: '90deg' }, {
             right: '-10vw',
