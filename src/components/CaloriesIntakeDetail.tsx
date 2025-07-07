@@ -91,7 +91,7 @@ export default function CaloriesIntakeDetail({ userId, month, year }: CaloriesIn
       </div>
       <h4 className="font-semibold mt-6 mb-2 text-lg text-emerald-200 flex items-center gap-2"><FaAppleAlt className="text-emerald-300" /> Top-Lebensmittel</h4>
       <ul className="space-y-2">
-        {topFoods.map(([name, kcal], idx) => (
+        {topFoods.map(([name, kcal]) => (
           <li key={name} className="flex items-center gap-3 text-base font-semibold text-white">
             <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-950/90 shadow text-xl border border-emerald-900/60">
               <FaAppleAlt className="text-emerald-300" />

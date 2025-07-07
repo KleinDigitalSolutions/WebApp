@@ -148,7 +148,7 @@ export default function CaloriesBurnedDetail({ userId, month, year }: CaloriesBu
       </div>
       <h4 className="font-semibold mt-6 mb-2 text-lg text-emerald-200 flex items-center gap-2"><FaCrown className="text-yellow-400" /> Top-Aktivitäten</h4>
       <ul className="space-y-2">
-        {topActivities.map(([name, kcal], idx) => (
+        {topActivities.map(([name, kcal]) => (
           <li key={name} className="flex items-center gap-3 text-base font-semibold text-white">
             <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-950/90 shadow text-xl border border-emerald-900/60">
               {activityIcons[name] || <FaDumbbell className="text-emerald-300" />}

@@ -69,17 +69,17 @@ export default function MonthlyOverviewCard() {
         .lt('created_at', `${end}T00:00:00`)
       // Stats
       setStats({
-        totalCalories: diary?.reduce((sum, e) => sum + (e.calories || 0), 0) || 0,
-        totalBurned: activities?.reduce((sum, a) => sum + (a.calories || 0), 0) || 0,
-        fastingCount: fasting?.length || 0,
-        fastingHours: fasting?.reduce((sum, f) => {
+        totalCalories: (diary as DiaryEntry[] | null)?.reduce((sum, e) => sum + (e.calories || 0), 0) || 0,
+        totalBurned: (activities as UserActivity[] | null)?.reduce((sum, a) => sum + (a.calories || 0), 0) || 0,
+        fastingCount: (fasting as FastingSession[] | null)?.length || 0,
+        fastingHours: (fasting as FastingSession[] | null)?.reduce((sum, f) => {
           if (f.end_time && f.start_time) {
             return sum + (new Date(f.end_time).getTime() - new Date(f.start_time).getTime()) / 1000 / 60 / 60
           }
           return sum
         }, 0) || 0,
-        challengeCount: challenges?.length || 0,
-        challengeCompleted: challenges?.filter(c => c.status === 'completed').length || 0,
+        challengeCount: (challenges as AbstinenceChallenge[] | null)?.length || 0,
+        challengeCompleted: (challenges as AbstinenceChallenge[] | null)?.filter(c => c.status === 'completed').length || 0,
       })
       setLoading(false)
     }
