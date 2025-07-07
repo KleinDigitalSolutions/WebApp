@@ -16,7 +16,6 @@ import {
 import FastingCardStack from '@/components/FastingCardStack'
 import ChallengeSection from '@/components/ChallengeSection'
 import ActivitiesCard from '@/components/ActivitiesCard'
-import MonthlyOverviewCard from '@/components/MonthlyOverviewCard'
 import DashboardOverviewSwiper from '@/components/DashboardOverviewSwiper'
 
 interface PullToRefreshProps {
