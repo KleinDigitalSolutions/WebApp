@@ -12,6 +12,7 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!user) {
+      setShowOnboarding(false)
       setLoading(false)
       return
     }
@@ -20,7 +21,7 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
       setProfile(data)
       // Prüfe, ob justLoggedIn im LocalStorage gesetzt ist
       const justLoggedIn = typeof window !== 'undefined' && localStorage.getItem('justLoggedIn') === 'true'
-      setShowOnboarding(data?.show_onboarding && justLoggedIn)
+      setShowOnboarding(!!(data?.show_onboarding && justLoggedIn))
       setLoading(false)
     }
     fetchProfile()
