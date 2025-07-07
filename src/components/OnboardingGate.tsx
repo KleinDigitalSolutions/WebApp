@@ -11,7 +11,10 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!user) return
+    if (!user) {
+      setLoading(false)
+      return
+    }
     const fetchProfile = async () => {
       const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
       setProfile(data)
@@ -35,6 +38,6 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
     }
   }
 
-  if (loading) return null
+  if (loading) return <>{children}</>
   return <>{showOnboarding && <OnboardingModal onFinish={handleFinish} />}{children}</>
 }
