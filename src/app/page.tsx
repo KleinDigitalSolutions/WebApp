@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import DesktopNotice from '@/components/DesktopNotice'
 import GoogleLoginButton from '@/components/GoogleLoginButton'
+import DraggableSvg from '@/components/DraggableSvg'
 
 export default function LandingPage() {
   const router = useRouter()
@@ -97,7 +98,18 @@ export default function LandingPage() {
           60% { transform: translateY(0); }
         }
       `}</style>
-      <div className="min-h-screen bg-gradient-to-br from-emerald-500 to-emerald-600" style={{ scrollBehavior: 'smooth' }}>
+      <div className="min-h-screen bg-gradient-to-br from-[#A9E142] to-emerald-600 relative overflow-hidden" style={{ scrollBehavior: 'smooth' }}>
+        {/* Dekorative Zitronen-SVGs, jetzt als DraggableSvg für Dev-Mode */}
+        {/* Oben links, groß */}
+        <DraggableSvg src="/SVG/zitrone.svg" alt="Zitrone" initial={{ x: 600, y: 300, rot: -18, width: 160 }} />
+        {/* Oben rechts, mittel */}
+        <DraggableSvg src="/SVG/orange_ganz.svg" alt="Zitrone" initial={{ x: 650, y: 300, rot: 0, width: 120 }} />
+        {/* Unten links, klein */}
+        <DraggableSvg src="/SVG/limette_gruen_ganz.svg" alt="Zitrone" initial={{ x: 700, y: 300, rot: 0, width: 120 }} />
+        {/* Unten rechts, groß */}
+        <DraggableSvg src="/SVG/orange_halb.svg" alt="Zitrone" initial={{ x: 750, y: 300, rot: 0, width: 120 }} />
+        {/* Mitte rechts, vertikal, halb sichtbar */}
+        <DraggableSvg src="/SVG/limette_gruen.svg" alt="Zitrone" initial={{ x: 800, y: 300, rot: 0, width: 120 }} />
         {/* Hero Section */}
         <section className="min-h-screen bg-transparent flex flex-col items-center justify-center relative overflow-hidden">
           <div className="text-center z-10">
