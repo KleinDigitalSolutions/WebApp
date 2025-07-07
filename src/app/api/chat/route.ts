@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { GroqAPI, ChatMessage } from '@/lib/groq-api'
+import { GeminiAPI, ChatMessage } from '@/lib/gemini-api'
 
 // Server-side Supabase client for accessing user data
 function getSupabaseAdmin() {
@@ -27,13 +27,6 @@ export async function POST(request: NextRequest) {
       } else {
         userProfile.health_conditions = `Unverträglichkeiten: ${intolerancesText}`
       }
-    }
-
-    if (!process.env.GROQ_API_KEY) {
-      return NextResponse.json(
-        { error: 'Groq API key not configured' },
-        { status: 500 }
-      )
     }
 
     // Get user's recent diary entries for context
@@ -151,7 +144,8 @@ WICHTIG FÜR KI-ANALYSE:
 - Erkenne Zielkonflikte (z.B. Abnehmen, aber hoher Zuckerkonsum) und gib konstruktive Hinweise.
 - Lobe Fortschritte, wenn sich Werte verbessern.
 - Gib niemals medizinische Diagnosen, sondern verweise freundlich auf ärztliche Beratung.
-- Bei Smalltalk oder Beleidigungen: bleibe charmant und bringe das Gespräch zurück zum Thema Gesundheit.
+- Du darfst Smalltalk führen, auf allgemeine Fragen (z.B. Wetter, Alltag, Motivation, Witze, Fun Facts) eingehen und freundlich plaudern.
+- Wenn das Thema zu weit abschweift, bringe das Gespräch charmant und humorvoll zurück zu Gesundheit oder Ernährung.
 - Schlage auf Wunsch einfache, gesunde Rezepte vor, die zu den Zielen und Einschränkungen passen.
 - Stelle bei Bedarf Rückfragen, um gezielter helfen zu können.`
       } catch (error) {
@@ -163,14 +157,24 @@ WICHTIG FÜR KI-ANALYSE:
       }
     }
 
-    // Generate response using Groq API
-    const groqAPI = new GroqAPI()
-    // System-Prompt mit Kontext erzeugen
-    const systemPrompt = groqAPI.createNutritionExpertPrompt(userProfile, diaryContext)
-    const allMessages: ChatMessage[] = [systemPrompt, ...messages]
-    const response = await groqAPI.chat(allMessages)
-
-    return NextResponse.json({ message: response })
+    // Kontext als System-Prompt als erste History-Nachricht
+    const chatHistory: ChatMessage[] = []
+    if (diaryContext) {
+      chatHistory.push({ role: 'user', content: diaryContext })
+    }
+    // Vorherige Chat-History (ohne aktuelle User-Frage)
+    if (messages && Array.isArray(messages)) {
+      for (const m of messages) {
+        if (m.role === 'user' || m.role === 'assistant' || m.role === 'model') {
+          chatHistory.push({ role: m.role === 'assistant' ? 'model' : m.role, content: m.content })
+        }
+      }
+    }
+    // Letzte User-Frage extrahieren
+    const lastUserMsg = messages && messages.length > 0 ? messages[messages.length-1].content : ''
+    const gemini = new GeminiAPI()
+    const aiResponse = await gemini.chat(chatHistory.slice(0, -1), lastUserMsg)
+    return NextResponse.json({ message: aiResponse })
   } catch (error) {
     console.error('Error in POST /api/chat:', error)
     return NextResponse.json(

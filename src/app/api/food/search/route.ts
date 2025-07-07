@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GermanProductDatabase } from '@/lib/german-product-database'
 import { createClient } from '@supabase/supabase-js'
+import { searchFatSecretFoods } from '@/lib/fatsecret-api'
 
 function getSupabaseClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -25,9 +26,28 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ products: [], total: 0 })
     }
 
-    // 1. Suche in lokaler Produktdatenbank
+    // 1. FatSecret Suche
+    try {
+      const fatsecretResults = await searchFatSecretFoods(query)
+      if (fatsecretResults && fatsecretResults.length > 0) {
+        // FatSecret Ergebnis auf das gleiche Format mappen
+        const formattedFatSecret = fatsecretResults.map((food: FatSecretFood) => ({
+          code: food.food_id?.toString() || '',
+          product_name: food.food_name,
+          brands: food.brand_name || '',
+          image_url: '',
+          nutriments: {},
+          source: 'fatsecret',
+        }))
+        return NextResponse.json({ products: formattedFatSecret, total: formattedFatSecret.length, sources: { fatsecret: formattedFatSecret.length } })
+      }
+    } catch {
+      // FatSecret Fehler ignorieren, Fallback
+    }
+
+    // 2. Lokale Produktdatenbank
     const localResults = GermanProductDatabase.searchProducts(query)
-    // 2. Suche in Supabase
+    // 3. Supabase
     const { data: supabaseProducts, error, count } = await supabase
       .from('products')
       .select('*', { count: 'exact' })
@@ -127,3 +147,10 @@ type ProductResult = {
   is_verified?: boolean;
   created_by?: string;
 };
+
+// Am Ende der Datei ergänzen:
+interface FatSecretFood {
+  food_id: string | number;
+  food_name: string;
+  brand_name?: string;
+}

@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Cigarette, Coffee, Cookie, Candy, Pizza, Wine, Apple } from 'lucide-react'
 import { supabase, AbstinenceChallenge } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
-import styles from './SwipeableCards.module.css'
 
 interface SwipeCard {
   id: string
@@ -89,8 +88,7 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
   const [showDetail, setShowDetail] = useState(false)
   const [challengeDuration, setChallengeDuration] = useState(30)
   const [isStarting, setIsStarting] = useState(false)
-  // useRef, error entfernt
-  // any durch unknown oder spezifischen Typ ersetzt
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   // Load user's challenges
   useEffect(() => {
@@ -187,42 +185,74 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
   }, [showDetail]);
 
   // Carousel-Ansicht
+  // Ref für Scroll-Container
+  // const scrollContainerRef = useRef<HTMLDivElement>(null) // ENTFERNT!
+
+  // Wheel-Handler für horizontales Scrollen auf Desktop
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY !== 0 && Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        // Nur auf Desktop (keine Touch-Events)
+        if (window.innerWidth >= 768) {
+          e.preventDefault();
+          el.scrollLeft += e.deltaY;
+        }
+      }
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
+
   return (
     <div>
-      <div className="w-full overflow-x-auto flex space-x-6 pb-4 scrollbar-hide" style={{scrollSnapType:'x mandatory'}}>
-        {cards.map((card, idx) => (
-          <div
-            key={card.id}
-            className={
-              `${styles['card-gradient-border']} flex-shrink-0 w-56 h-72 rounded-2xl shadow-2xl border-0 cursor-pointer transition-transform duration-300 relative group`
-            }
-            style={{
-              scrollSnapAlign: 'center',
-              minWidth: '14rem',
-              maxWidth: '14rem',
-              boxShadow: '0 8px 32px 0 rgba(31,38,135,0.25), 0 1.5px 8px 0 rgba(0,0,0,0.10)',
-              // SVG-Wellenmuster: Emerald-Gradient für harmonischen, modernen Look
-              ['--card-gradient']: `url('/wave-gradient-emerald.svg')`,
-              ['--card-gradient-position-x']: `${idx * -224}px`,
-              ['--card-gradient-size']: '1568px 300px'
-            } as React.CSSProperties}
-            data-idx={idx}
-            onClick={() => handleCardClick(card)}
-          >
-            {/* Hochglanz-Overlay */}
-            <div className="absolute inset-0 rounded-2xl pointer-events-none">
-              {/* Unteres Glanz-Overlay entfernt, um Kante zu vermeiden */}
+      <div
+        ref={scrollContainerRef}
+        className="w-full overflow-x-auto flex space-x-6 pb-4 relative" // scrollbar-hide entfernt
+        style={{ scrollSnapType: 'x mandatory' }}
+      >
+        {/* Gemeinsame Wave als absolutes Hintergrund-Element entfernt */}
+        {cards.map((card, idx) => {
+          // Bei der letzten Karte: Wave etwas nach links verschieben, damit der Abschluss nicht sichtbar ist
+          const isLast = idx === cards.length - 1;
+          const bgPosX = isLast
+            ? `${-1 * idx * (224 + 24) - 40}px` // 40px nach links verschieben (anpassbar)
+            : `${-1 * idx * (224 + 24)}px`;
+          return (
+            <div
+              key={card.id}
+              className={
+                `flex-shrink-0 w-56 h-72 rounded-2xl shadow-2xl border-0 cursor-pointer transition-transform duration-300 relative group bg-transparent`
+              }
+              style={{
+                scrollSnapAlign: 'center',
+                minWidth: '14rem',
+                maxWidth: '14rem',
+                boxShadow: '0 8px 32px 0 rgba(31,38,135,0.25), 0 1.5px 8px 0 rgba(0,0,0,0.10)',
+                background: `#7CB518 url('/wave-gradient-emerald.svg') repeat-x`,
+                backgroundSize: '1568px 300px',
+                backgroundPositionX: bgPosX,
+                backgroundPositionY: '0px',
+              } as React.CSSProperties}
+              data-idx={idx}
+              onClick={() => handleCardClick(card)}
+            >
+              {/* Hochglanz-Overlay */}
+              <div className="absolute inset-0 rounded-2xl pointer-events-none">
+                {/* Unteres Glanz-Overlay entfernt, um Kante zu vermeiden */}
+              </div>
+              <div className="h-full flex flex-col items-center justify-center p-6 text-center relative z-10">
+                <div className={`mb-4 drop-shadow-lg text-white text-opacity-90`}>{card.icon}</div>
+                <h4 className="text-lg font-bold text-white drop-shadow-lg mb-2">{card.title}</h4>
+                <p className="text-sm text-white/90 drop-shadow mb-2">{card.description}</p>
+                {card.challenge && (
+                  <div className="mt-2 text-xs text-emerald-100/90 bg-emerald-700/60 px-2 py-1 rounded-full font-semibold shadow">Aktiv: {card.challenge.current_streak_days} Tage</div>
+                )}
+              </div>
             </div>
-            <div className="h-full flex flex-col items-center justify-center p-6 text-center relative z-10">
-              <div className={`mb-4 drop-shadow-lg text-white text-opacity-90`}>{card.icon}</div>
-              <h4 className="text-lg font-bold text-white drop-shadow-lg mb-2">{card.title}</h4>
-              <p className="text-sm text-white/90 drop-shadow mb-2">{card.description}</p>
-              {card.challenge && (
-                <div className="mt-2 text-xs text-emerald-100/90 bg-emerald-700/60 px-2 py-1 rounded-full font-semibold shadow">Aktiv: {card.challenge.current_streak_days} Tage</div>
-              )}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       {/* Detail-Overlay/Slide-in als echtes Modal/Portal */}
       {showDetail && selectedCard && typeof window !== 'undefined' && createPortal(

@@ -14,8 +14,8 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false, // Prevent zoom on mobile for app-like feel
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#10b981" },
-    { media: "(prefers-color-scheme: dark)", color: "#059669" }
+    { media: "(prefers-color-scheme: light)", color: "#A9E142" },
+    { media: "(prefers-color-scheme: dark)", color: "#A9E142" }
   ],
   viewportFit: "cover", // Support for iPhone notch
 };

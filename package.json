@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ericblade/quagga2": "^1.8.4",
+    "@google/generative-ai": "^0.24.1",
     "@heroicons/react": "^2.2.0",
     "@react-spring/web": "^9.7.5",
     "@supabase/supabase-js": "^2.50.2",

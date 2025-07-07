@@ -135,20 +135,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col relative overflow-hidden">
-        {/* Liquid Glass Animated Background */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="absolute inset-0 z-0 pointer-events-none"
-          style={{
-            background:
-              'radial-gradient(ellipse 120% 80% at 60% 10%, #059669cc 0%, #064e3b 60%, #0e172a 100%)',
-            filter: 'blur(0px) saturate(1.2)',
-            transition: 'background 1s',
-          }}
-        />
+      <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#A9E142]">
         <div className="flex items-center justify-center py-12 flex-1 z-10">
           <LoadingSpinner size="lg" />
         </div>
@@ -158,32 +145,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Liquid Glass Animated Background */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="absolute inset-0 z-0 pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(ellipse 120% 80% at 60% 10%, #059669cc 0%, #064e3b 60%, #0e172a 100%)',
-          filter: 'blur(0px) saturate(1.2)',
-          transition: 'background 1s',
-        }}
-      />
-      {/* Subtle animated glass waves */}
-      <motion.div
-        className="absolute -bottom-24 left-0 w-full h-48 z-0 pointer-events-none"
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 0.7, y: 0 }}
-        transition={{ duration: 1.2 }}
-        style={{
-          background:
-            'linear-gradient(120deg, #a7f3d0cc 0%, #6ee7b7bb 40%, #05966988 100%)',
-          filter: 'blur(32px) saturate(1.3)',
-        }}
-      />
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#A9E142]">
       <div className="w-full max-w-lg mx-auto px-2 pt-6 pb-32 flex flex-col gap-6 z-10">
         {/* Avatar & Name */}
         <motion.div
@@ -195,9 +157,9 @@ export default function ProfilePage() {
           <div className="w-20 h-20 rounded-full bg-white/40 shadow-lg border-2 border-emerald-200 flex items-center justify-center text-4xl font-bold text-emerald-700 backdrop-blur-2xl mb-1" style={{boxShadow:'0 4px 32px #05966933'}}>
             {formData.first_name?.[0]?.toUpperCase() || 'U'}
           </div>
-          <div className="text-xl font-bold text-white drop-shadow text-center">{formData.first_name} {formData.last_name}</div>
+          <div className="text-xl font-bold text-emerald-900 drop-shadow text-center">{formData.first_name} {formData.last_name}</div>
           {formData.goal && (
-            <div className="text-xs px-3 py-1 rounded-full bg-emerald-600/80 text-white shadow border border-emerald-200 mb-1">🎯 Ziel: {(() => {
+            <div className="text-xs px-3 py-1 rounded-full bg-[#7CB518] text-white shadow border border-emerald-200 mb-1">🎯 Ziel: {(() => {
               switch(formData.goal) {
                 case 'lose_weight': return 'Abnehmen';
                 case 'maintain_weight': return 'Gewicht halten';
@@ -214,7 +176,7 @@ export default function ProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
-            className="rounded-3xl border border-white/30 bg-white/30 shadow-2xl backdrop-blur-2xl p-6"
+            className="bg-[#7CB518] rounded-3xl border border-white/30 shadow-2xl p-6"
             style={{boxShadow:'0 8px 40px 0 #05966933'}}
           >
             <h2 className="text-lg font-bold text-white mb-4 bg-gradient-to-r from-emerald-400 via-emerald-600 to-emerald-800 bg-clip-text drop-shadow">Persönliche Daten</h2>
@@ -299,7 +261,7 @@ export default function ProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
-            className="rounded-3xl border border-white/30 bg-white/30 shadow-2xl backdrop-blur-2xl p-6"
+            className="bg-[#7CB518] rounded-3xl border border-white/30 shadow-2xl p-6"
             style={{boxShadow:'0 8px 40px 0 #05966933'}}
           >
             <h2 className="text-lg font-bold text-white mb-4 bg-gradient-to-r from-emerald-400 via-emerald-600 to-emerald-800 bg-clip-text drop-shadow">Aktivität & Ziele</h2>
@@ -340,7 +302,7 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
-              className="rounded-3xl border border-white/30 bg-white/30 shadow-2xl backdrop-blur-2xl p-6"
+              className="bg-[#7CB518] rounded-3xl border border-white/30 shadow-2xl p-6"
               style={{boxShadow:'0 8px 40px 0 #05966933'}}
             >
               <h2 className="text-lg font-bold text-white mb-4 bg-gradient-to-r from-emerald-400 via-emerald-600 to-emerald-800 bg-clip-text drop-shadow">Deine geschätzten Tagesziele</h2>
@@ -372,13 +334,12 @@ export default function ProfilePage() {
           )}
 
           {/* Produktverwaltung */}
-          <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-blue-100 shadow-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Community & Produkte</h2>
-            
+          <div className="bg-[#7CB518] rounded-2xl border border-white/30 shadow-2xl p-6">
+            <h2 className="text-lg font-medium text-white mb-4">Community & Produkte</h2>
             <div className="space-y-3">
               <div 
                 onClick={() => router.push('/products/add')}
-                className="flex items-center justify-between p-4 bg-blue-50 rounded-xl cursor-pointer hover:bg-blue-100 transition-colors"
+                className="flex items-center justify-between p-4 bg-white/80 rounded-xl cursor-pointer hover:bg-white transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
@@ -391,10 +352,9 @@ export default function ProfilePage() {
                 </div>
                 <span className="text-blue-500">→</span>
               </div>
-
               <div 
                 onClick={() => router.push('/products/my')}
-                className="flex items-center justify-between p-4 bg-green-50 rounded-xl cursor-pointer hover:bg-green-100 transition-colors"
+                className="flex items-center justify-between p-4 bg-white/80 rounded-xl cursor-pointer hover:bg-white transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
@@ -411,11 +371,11 @@ export default function ProfilePage() {
           </div>
 
           {/* Unverträglichkeiten */}
-          <div className="backdrop-blur-sm bg-white/50 rounded-2xl border border-green-100 shadow-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Unverträglichkeiten</h2>
+          <div className="bg-[#7CB518] rounded-2xl border border-white/30 shadow-2xl p-6">
+            <h2 className="text-lg font-medium text-white mb-4">Unverträglichkeiten</h2>
             <div className="flex flex-wrap gap-3">
               {intoleranceOptions.map((item) => (
-                <label key={item} className="flex items-center space-x-2 bg-green-50 px-3 py-2 rounded-xl cursor-pointer border border-green-100">
+                <label key={item} className="flex items-center space-x-2 bg-white/80 px-3 py-2 rounded-xl cursor-pointer border border-white/30">
                   <input
                     type="checkbox"
                     checked={formData.intolerances?.includes(item) || false}
@@ -428,7 +388,7 @@ export default function ProfilePage() {
                       }))
                     }}
                   />
-                  <span className="text-sm text-green-800">{item}</span>
+                  <span className="text-gray-900 font-medium">{item}</span>
                 </label>
               ))}
             </div>

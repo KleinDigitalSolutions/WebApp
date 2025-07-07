@@ -88,19 +88,8 @@ export default function DiaryPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-white relative overflow-x-hidden">
-      {/* Hintergrund-Welle (SVG, wie bei Challenge-Karten) */}
-      <div className="absolute inset-x-0 top-0 z-0 pointer-events-none select-none" aria-hidden="true">
-        <svg viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-32 md:h-40 lg:h-56">
-          <path fill="url(#wave-gradient)" fillOpacity="1" d="M0,160L60,154.7C120,149,240,139,360,154.7C480,171,600,213,720,218.7C840,224,960,192,1080,181.3C1200,171,1320,181,1380,186.7L1440,192L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z" />
-          <defs>
-            <linearGradient id="wave-gradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#a7f3d0" />
-              <stop offset="100%" stopColor="#f0fdf4" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
+    <div className="min-h-screen bg-[#A9E142] relative overflow-x-hidden">
+      {/* Hintergrund-Welle entfernt */}
       <div className="relative z-10">
         {/* Tagesübersicht und Navigation jetzt im Seitenfluss, nicht sticky */}
         <div className="px-4 pt-6 pb-2 space-y-4">

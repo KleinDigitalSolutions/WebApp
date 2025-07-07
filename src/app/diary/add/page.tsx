@@ -206,7 +206,7 @@ function AddFoodContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-500 to-emerald-600 flex flex-col">
+    <div className="min-h-screen bg-[#A9E142] flex flex-col">
       {/* Mobile Header */}
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-gray-100">
         <div className="flex items-center justify-between px-4 py-4">
@@ -299,7 +299,7 @@ function AddFoodContent() {
 
         {/* Selected Food */}
         {selectedFood && (
-          <div className="bg-white/20 backdrop-blur-xl rounded-2xl shadow-lg border border-white/30 p-6 mb-4">
+          <div className="bg-[#7CB518] backdrop-blur-xl rounded-2xl shadow-lg border border-white/30 p-6 mb-4">
             <h3 className="text-lg font-semibold text-white mb-4">Ausgewähltes Lebensmittel</h3>
             <div className="mb-4">
               <h4 className="font-medium text-white">{selectedFood.product_name || 'Unbekanntes Produkt'}</h4>
@@ -374,7 +374,7 @@ function AddFoodContent() {
                 {adding ? 'Wird hinzugefügt...' : 'Abendessen'}
               </button>
               <button
-                onClick={() => handleAddFood('snacks')}
+                onClick={() => handleAddFood('snack')}
                 disabled={adding}
                 className="w-full p-4 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               >

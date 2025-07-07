@@ -236,7 +236,8 @@ export default function FastingCardStack() {
   const isActiveSession = currentSession && currentSession.target_duration_hours === currentType.duration
 
   return (
-    <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+    <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6"
+      style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-white flex items-center">
           <Timer className="h-5 w-5 mr-2" style={{color: color.progress}} />

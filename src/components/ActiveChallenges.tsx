@@ -132,7 +132,8 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
 
   if (challenges.length === 0) {
     return (
-      <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+      <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6"
+        style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
         <div className="text-center py-8">
           <Target className="h-12 w-12 text-white/60 mx-auto mb-3" />
           <h3 className="text-lg font-semibold text-white mb-2">Keine aktiven Challenges</h3>
@@ -143,7 +144,8 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
   }
 
   return (
-    <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 bg-transparent" style={{background:'transparent', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+    <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6"
+      style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-white flex items-center">
           <Trophy className="h-5 w-5 mr-2 text-yellow-300" />
@@ -173,8 +175,8 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
               exit={{ opacity: 0, y: 40, transition: { duration: 0.35, ease: 'easeIn' } }}
               animate={{ opacity: 1, y: 0 }}
               // layout removed for performance
-              className="relative bg-white/20 rounded-2xl p-4 border border-white/20 shadow-xl backdrop-blur-2xl flex items-center gap-4 overflow-hidden"
-              style={{boxShadow:'0 8px 32px 0 rgba(31,38,135,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.10)', willChange: 'transform, opacity'}}>
+              className="relative rounded-2xl p-4 border border-white/20 shadow-xl backdrop-blur-2xl flex items-center gap-4 overflow-hidden"
+              style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31,38,135,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.10)', willChange: 'transform, opacity'}}>
               {/* Progress Ring + Icon */}
               <div className="relative flex-shrink-0">
                 <svg className="w-14 h-14" viewBox="0 0 48 48">
