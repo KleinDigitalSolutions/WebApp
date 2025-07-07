@@ -61,7 +61,7 @@ export default function OnboardingModal({ onFinish }: { onFinish: () => void }) 
               className="flex-1 py-3 rounded-xl bg-emerald-600 text-white font-semibold text-lg shadow-md hover:bg-emerald-700 transition"
               onClick={onFinish}
             >
-              Los geht's!
+              Los geht&apos;s!
             </button>
           )}
           <button
