@@ -61,7 +61,7 @@ export default function LandingPage() {
         svgRefs.current[1].style.opacity = String(svgOpacity)
         svgRefs.current[1].style.transform = `translate3d(${120 * svgProgress}px, ${-60 * svgProgress}px, 0) rotate(8deg)`
       }
-      // Himbeere (scrollt mit, jetzt komplett nach links-unten aus dem Bild)
+      // Himbeere (scrollt mit, aber jetzt wieder weiter aus dem Bild)
       if (svgRefs.current[2]) {
         svgRefs.current[2].style.opacity = String(svgOpacity)
         svgRefs.current[2].style.transform = `translate3d(${-180 * svgProgress}px, ${120 * svgProgress}px, 0) rotate(-10deg)`
