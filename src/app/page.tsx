@@ -208,7 +208,7 @@ export default function LandingPage() {
               </div>
               <div className="w-24 h-1 bg-white mx-auto rounded-full" />
             </div>
-            <p className="text-xl text-black text-shadow-soft mb-12 max-w-md mx-auto font-light">
+            <p className="text-xl text-white text-shadow-strong mb-12 max-w-md mx-auto font-semibold">
               Intelligente Ernährung für deine Gesundheit
             </p>
           </div>
@@ -216,9 +216,9 @@ export default function LandingPage() {
           {/* Scroll Indicator */}
           {showScrollHint && (
             <div className="absolute left-1/2 transform -translate-x-1/2" style={{ bottom: '4.5rem' }}>
-              <div className="scroll-bounce text-black/80">
-                <span className="text-sm mb-2 font-light scroll-bounce-text">Scroll für mehr</span>
-                <ChevronDown className="w-6 h-6 scroll-bounce-chevron" />
+              <div className="scroll-bounce text-white">
+                <span className="text-sm mb-2 font-semibold scroll-bounce-text text-shadow-strong">Scroll für mehr</span>
+                <ChevronDown className="w-6 h-6 scroll-bounce-chevron text-white text-shadow-strong" />
               </div>
             </div>
           )}
@@ -229,10 +229,10 @@ export default function LandingPage() {
           {/* Test-Muster-Hintergrund für gesamten Features-Bereich entfernt */}
           <div className="max-w-5xl mx-auto px-2 sm:px-6 lg:px-8 relative" style={{zIndex:1}}>
             <div className="text-center mb-12 md:mb-16">
-              <h2 className="text-4xl font-bold text-black mb-4">
+              <h2 className="text-4xl font-bold text-white mb-4 text-shadow-strong">
                 Alles was du für eine gesunde Ernährung brauchst
               </h2>
-              <p className="text-xl text-black text-shadow-soft max-w-3xl mx-auto">
+              <p className="text-xl text-white text-shadow-strong max-w-3xl mx-auto">
                 Von intelligentem Barcode-Scanning bis hin zu personalisierten KI-Empfehlungen – 
                 TrackFood macht gesunde Ernährung einfach und smart.
               </p>
@@ -319,10 +319,10 @@ export default function LandingPage() {
         {/* CTA Section */}
         <section className="py-20 bg-transparent relative z-10">
           <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-black mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 text-shadow-strong">
               Bereit für eine gesündere Zukunft?
             </h2>
-            <p className="text-xl text-black text-shadow-soft mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-white text-shadow-strong mb-8 max-w-2xl mx-auto">
               Starte heute deine Reise zu einer besseren Ernährung. 
               Kostenlos, ohne Verpflichtungen und mit sofortigen Ergebnissen.
             </p>
