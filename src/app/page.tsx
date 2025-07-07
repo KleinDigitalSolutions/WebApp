@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store'
 import { Button } from '@/components/ui'
@@ -43,34 +43,45 @@ export default function LandingPage() {
     return () => clearTimeout(timeout)
   }, [])
 
-  // SVG-Fade & Move: Smoothes, direktes Scroll-Tracking ohne "Snap"-Effekt
-  // Nutze requestAnimationFrame für butterweiche Animation
-  const [svgScroll, setSvgScroll] = useState(0)
+  // SVG-Refs für direkte Manipulation
+  const svgRefs = useRef<(HTMLImageElement | null)[]>([])
+
   useEffect(() => {
-    let ticking = false
     const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setSvgScroll(window.scrollY)
-          ticking = false
-        })
-        ticking = true
+      const scrollY = window.scrollY
+      const svgProgress = Math.min(scrollY, 220) / 220
+      const svgOpacity = 1 - svgProgress * 0.9
+      // Ananas
+      if (svgRefs.current[0]) {
+        svgRefs.current[0].style.opacity = String(svgOpacity)
+        svgRefs.current[0].style.transform = `translate3d(${-120 * svgProgress}px, ${-80 * svgProgress}px, 0) rotate(-30deg)`
+      }
+      // Kirsche
+      if (svgRefs.current[1]) {
+        svgRefs.current[1].style.opacity = String(svgOpacity)
+        svgRefs.current[1].style.transform = `translate3d(${120 * svgProgress}px, ${-60 * svgProgress}px, 0) rotate(8deg)`
+      }
+      // Limette
+      if (svgRefs.current[2]) {
+        svgRefs.current[2].style.opacity = String(svgOpacity)
+        svgRefs.current[2].style.transform = `translate3d(${-80 * svgProgress}px, ${120 * svgProgress}px, 0) rotate(-8deg)`
+      }
+      // Orange halb
+      if (svgRefs.current[3]) {
+        svgRefs.current[3].style.opacity = String(svgOpacity)
+        svgRefs.current[3].style.transform = `translate3d(${100 * svgProgress}px, ${120 * svgProgress}px, 0) rotate(160deg)`
+      }
+      // Melone
+      if (svgRefs.current[4]) {
+        svgRefs.current[4].style.opacity = String(svgOpacity)
+        svgRefs.current[4].style.transform = `translate3d(${60 * svgProgress}px, ${60 * svgProgress}px, 0) rotate(90deg)`
       }
     }
     window.addEventListener('scroll', onScroll)
+    // Initial-Call für korrekte Position beim Reload
+    onScroll()
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
-  const svgProgress = Math.min(svgScroll, 220) / 220 // 0 bis 1
-  const svgOpacity = 1 - svgProgress * 0.9
-  const svgStyle = (move: {x?:number, y?:number, rotate?:string}, extra = {}) => ({
-    opacity: svgOpacity,
-    willChange: 'opacity, transform',
-    transition: 'opacity 0.25s linear', // transform wird jetzt direkt gesetzt
-    transform:
-      `translate(${(move.x||0)*svgProgress}px, ${(move.y||0)*svgProgress}px)` +
-      (move.rotate ? ` rotate(${move.rotate})` : ''),
-    ...extra
-  })
 
   if (user) {
     return null
@@ -144,59 +155,29 @@ export default function LandingPage() {
       <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: '#A9E142', scrollBehavior: 'smooth' }}>
         {/* Dekorative Zitronen/Orangen/Limetten: Mobile-first, dominant und exakt an den Ecken/Rändern */}
         {/* Oben links, groß */}
-        <img src="/SVG/ananas_1.svg" alt="Ananas"
+        <img ref={el => { svgRefs.current[0] = el }} src="/SVG/ananas_1.svg" alt="Ananas"
           className="fixed z-0 pointer-events-none select-none"
-          style={svgStyle({ x: -120, y: -80, rotate: '-30deg' }, {
-            left: -50,
-            top: -30,
-            width: '52vw',
-            minWidth: 200,
-            maxWidth: 200,
-          })}
+          style={{ left: -50, top: -30, width: '52vw', minWidth: 200, maxWidth: 200, willChange: 'opacity, transform' }}
         />
         {/* Oben rechts, groß */}
-        <img src="/SVG/kirsche.svg" alt="Kirsche"
+        <img ref={el => { svgRefs.current[1] = el }} src="/SVG/kirsche.svg" alt="Kirsche"
           className="fixed z-0 pointer-events-none select-none"
-          style={svgStyle({ x: 120, y: -60, rotate: '8deg' }, {
-            right: -50,
-            top: -50,
-            width: '38vw',
-            minWidth: 100,
-            maxWidth: 180,
-          })}
+          style={{ right: -50, top: -50, width: '38vw', minWidth: 100, maxWidth: 180, willChange: 'opacity, transform' }}
         />
         {/* Unten links, groß */}
-        <img src="/SVG/limette_gruen_ganz.svg" alt="Limette"
+        <img ref={el => { svgRefs.current[2] = el }} src="/SVG/limette_gruen_ganz.svg" alt="Limette"
           className="fixed z-0 pointer-events-none select-none"
-          style={svgStyle({ x: -80, y: 120, rotate: '-8deg' }, {
-            left: -90,
-            bottom: -180,
-            width: '32vw',
-            minWidth: 280,
-            maxWidth: 140,
-          })}
+          style={{ left: -90, bottom: -180, width: '32vw', minWidth: 280, maxWidth: 140, willChange: 'opacity, transform' }}
         />
         {/* Unten rechts, groß */}
-        <img src="/SVG/orange_halb.svg" alt="Orange halb"
+        <img ref={el => { svgRefs.current[3] = el }} src="/SVG/orange_halb.svg" alt="Orange halb"
           className="fixed z-0 pointer-events-none select-none"
-          style={svgStyle({ x: 100, y: 120, rotate: '160deg' }, {
-            right: -100,
-            bottom: -180,
-            width: '38vw',
-            minWidth: 280,
-            maxWidth: 280,
-          })}
+          style={{ right: -100, bottom: -180, width: '38vw', minWidth: 280, maxWidth: 280, willChange: 'opacity, transform' }}
         />
         {/* Mitte rechts, vertikal, halb sichtbar */}
-        <img src="/SVG/melone.svg" alt="Limette vertikal"
+        <img ref={el => { svgRefs.current[4] = el }} src="/SVG/melone.svg" alt="Limette vertikal"
           className="fixed z-0 pointer-events-none select-none"
-          style={svgStyle({ x: 60, y: 60, rotate: '90deg' }, {
-            right: '-10vw',
-            top: '56vh',
-            width: '28vw',
-            minWidth: 80,
-            maxWidth: 120,
-          })}
+          style={{ right: '-10vw', top: '56vh', width: '28vw', minWidth: 80, maxWidth: 120, willChange: 'opacity, transform' }}
         />
         {/* Hero Section */}
         <section className="min-h-screen bg-transparent flex flex-col items-center justify-center relative overflow-hidden">
