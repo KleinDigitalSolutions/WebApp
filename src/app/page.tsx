@@ -78,6 +78,12 @@ export default function LandingPage() {
   return (
     <>
       {showDesktopNotice && <DesktopNotice />}
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=More+Sugar&display=swap" />
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+      {/* Google Fonts Nunito einbinden */}
+      <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
       <style jsx global>{`
         html {
           scroll-behavior: smooth;
@@ -85,6 +91,11 @@ export default function LandingPage() {
         }
         body, html {
           background: #A9E142 !important;
+        }
+        .moresugar, .moresugar * {
+          font-family: 'Pacifico', cursive !important;
+          font-weight: 400 !important;
+          letter-spacing: 0.01em !important;
         }
         .hero-title-glow {
           position: relative;
@@ -131,10 +142,6 @@ export default function LandingPage() {
         }
       `}</style>
       <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: '#A9E142', scrollBehavior: 'smooth' }}>
-        {/* Google Fonts Nunito einbinden */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
         {/* Dekorative Zitronen/Orangen/Limetten: Mobile-first, dominant und exakt an den Ecken/Rändern */}
         {/* Oben links, groß */}
         <img src="/SVG/zitrone.svg" alt="Zitrone"
@@ -197,7 +204,7 @@ export default function LandingPage() {
             <div className="mb-8">
               <div className="relative flex justify-center items-center">
                 <h1
-                  className="text-6xl md:text-8xl font-bold text-white text-shadow-strong mb-4 hero-title-glow trackfood-animate flex items-center"
+                  className="text-6xl md:text-8xl font-bold text-white text-shadow-strong mb-4 hero-title-glow trackfood-animate flex items-center moresugar"
                   data-text={targetName}
                   style={{ perspective: '1000px' }}
                 >

@@ -1,0 +1,13 @@
+/* Gagalin Font Import (Google Fonts CDN) */
+@import url('https://fonts.googleapis.com/css2?family=Gagalin&display=swap');
+
+.gagalin {
+  font-family: 'Gagalin', cursive;
+}
+
+/* Alternativ: Pacifico (Google Fonts, Schreibschrift-ähnlich) */
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+.pacifico {
+  font-family: 'Pacifico', cursive;
+}
