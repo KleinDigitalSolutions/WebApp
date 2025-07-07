@@ -229,7 +229,7 @@ export default function LandingPage() {
           {/* Test-Muster-Hintergrund für gesamten Features-Bereich entfernt */}
           <div className="max-w-5xl mx-auto px-2 sm:px-6 lg:px-8 relative" style={{zIndex:1}}>
             <div className="text-center mb-12 md:mb-16">
-              <h2 className="text-4xl font-bold text-black text-shadow-strong mb-4">
+              <h2 className="text-4xl font-bold text-black mb-4">
                 Alles was du für eine gesunde Ernährung brauchst
               </h2>
               <p className="text-xl text-black text-shadow-soft max-w-3xl mx-auto">
@@ -319,7 +319,7 @@ export default function LandingPage() {
         {/* CTA Section */}
         <section className="py-20 bg-transparent relative z-10">
           <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-black text-shadow-strong mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-black mb-6">
               Bereit für eine gesündere Zukunft?
             </h2>
             <p className="text-xl text-black text-shadow-soft mb-8 max-w-2xl mx-auto">
