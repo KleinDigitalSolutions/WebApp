@@ -17,6 +17,7 @@ import FastingCardStack from '@/components/FastingCardStack'
 import ChallengeSection from '@/components/ChallengeSection'
 import ActivitiesCard from '@/components/ActivitiesCard'
 import MonthlyOverviewCard from '@/components/MonthlyOverviewCard'
+import DashboardOverviewSwiper from '@/components/DashboardOverviewSwiper'
 
 interface PullToRefreshProps {
   children: React.ReactNode
@@ -291,8 +292,8 @@ export default function Dashboard() {
           </div>
 
         <div className="px-4 space-y-6 pb-20 pt-4 flex-1">
-          {/* Monatsübersicht */}
-          <MonthlyOverviewCard />
+          {/* Neue swipebare/touchbare Dashboard-Übersichtskarte */}
+          <DashboardOverviewSwiper />
 
           {/* Quick Stats Card */}
           <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6" style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
