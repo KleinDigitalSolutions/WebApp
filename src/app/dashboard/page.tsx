@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase, DiaryEntry } from '@/lib/supabase'
+import { supabase, DiaryEntry, UserActivity } from '@/lib/supabase'
 import { useAuthStore, useDiaryStore } from '@/store'
 import { calculateDailyCalorieGoal, calculateMacroTargets } from '@/lib/nutrition-utils'
 import { 
@@ -15,6 +15,8 @@ import {
 } from 'lucide-react'
 import FastingCardStack from '@/components/FastingCardStack'
 import ChallengeSection from '@/components/ChallengeSection'
+import ActivitiesCard from '@/components/ActivitiesCard'
+import MonthlyOverviewCard from '@/components/MonthlyOverviewCard'
 
 interface PullToRefreshProps {
   children: React.ReactNode
@@ -87,6 +89,7 @@ export default function Dashboard() {
   const { dailyGoals, setEntries, setDailyGoals } = useDiaryStore()
   const [loading, setLoading] = useState(true)
   const [todayEntries, setTodayEntries] = useState<DiaryEntry[]>([])
+  const [todayActivities, setTodayActivities] = useState<UserActivity[]>([])
   const [waterIntake, setWaterIntake] = useState(0)
   const [waterGoal, setWaterGoal] = useState(2000) // 2L = 2000ml
 
@@ -181,6 +184,16 @@ export default function Dashboard() {
         setTodayEntries(entries)
         setEntries(entries)
       }
+
+      // Load today's activities
+      const { data: activities } = await supabase
+        .from('user_activities')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('activity_date', today)
+        .order('created_at', { ascending: false })
+
+      if (activities) setTodayActivities(activities)
 
       // Load water intake for today
       try {
@@ -278,6 +291,9 @@ export default function Dashboard() {
           </div>
 
         <div className="px-4 space-y-6 pb-20 pt-4 flex-1">
+          {/* Monatsübersicht */}
+          <MonthlyOverviewCard />
+
           {/* Quick Stats Card */}
           <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6" style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
             <div className="flex items-center justify-between mb-4">
@@ -401,7 +417,36 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Quick Actions entfernt */}
+          {/* Aktivitäten des Tages */}
+          <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6" style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Heutige Aktivitäten</h3>
+            </div>
+            {todayActivities.length === 0 ? (
+              <div className="text-center py-6 text-white/80 text-sm">Noch keine Aktivitäten eingetragen</div>
+            ) : (
+              <div className="space-y-3">
+                {todayActivities.slice(0, 3).map((act) => (
+                  <div key={act.id} className="flex items-center justify-between p-4 bg-white/20 rounded-2xl">
+                    <div className="flex items-center">
+                      <span className="text-2xl mr-3">{act.emoji}</span>
+                      <div>
+                        <div className="font-medium text-white">{act.activity_name}</div>
+                        <div className="text-xs text-white/80">{act.duration_min} min • {act.calories} kcal</div>
+                      </div>
+                    </div>
+                    <div className="text-right text-xs text-white/60">
+                      {act.note && <div className="italic">{act.note}</div>}
+                      <div>{new Date(act.created_at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Neue Aktivitäten-Karte */}
+          <ActivitiesCard />
 
           {/* Recent Meals */}
           <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6" style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>

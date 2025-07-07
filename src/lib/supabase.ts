@@ -171,3 +171,19 @@ export interface AbstinenceLog {
   mood_rating: number | null
   created_at: string
 }
+
+// User Activity Tracking
+export interface UserActivity {
+  id: string
+  user_id: string
+  activity_id: string
+  activity_name: string
+  emoji?: string
+  met: number
+  duration_min: number
+  weight_kg: number
+  calories: number
+  note?: string
+  activity_date: string
+  created_at: string
+}
