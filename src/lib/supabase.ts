@@ -32,6 +32,7 @@ export interface Profile {
   created_at?: string
   updated_at?: string
   intolerances?: string[] // NEU: Unverträglichkeiten
+  show_onboarding?: boolean // Onboarding-Modal nach Login anzeigen
 }
 
 export interface DiaryEntry {
