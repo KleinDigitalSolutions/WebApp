@@ -20,7 +20,14 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
       const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
       setProfile(data)
       // Prüfe, ob justLoggedIn im LocalStorage gesetzt ist
-      const justLoggedIn = typeof window !== 'undefined' && localStorage.getItem('justLoggedIn') === 'true'
+      let justLoggedIn = false
+      if (typeof window !== 'undefined') {
+        justLoggedIn = localStorage.getItem('justLoggedIn') === 'true'
+        if (justLoggedIn) {
+          // Flag direkt nach dem ersten Lesen entfernen
+          localStorage.removeItem('justLoggedIn')
+        }
+      }
       setShowOnboarding(!!(data?.show_onboarding && justLoggedIn))
       setLoading(false)
     }
@@ -33,7 +40,7 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
       await supabase.from('profiles').update({ show_onboarding: false }).eq('id', user.id)
       setProfile({ ...profile, show_onboarding: false })
     }
-    // Flag nach Onboarding entfernen
+    // Flag nach Onboarding entfernen (zur Sicherheit, falls noch vorhanden)
     if (typeof window !== 'undefined') {
       localStorage.removeItem('justLoggedIn')
     }
