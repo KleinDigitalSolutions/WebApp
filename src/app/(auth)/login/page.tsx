@@ -55,7 +55,19 @@ export default function LoginPage() {
 
       if (data.user) {
         setUser(data.user)
-        router.push('/dashboard')
+        
+        // Prüfen, ob Onboarding abgeschlossen ist
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', data.user.id)
+          .single()
+        
+        if (profile && !profile.onboarding_completed) {
+          router.push('/onboarding')
+        } else {
+          router.push('/dashboard')
+        }
       }
     } catch {
       setError('Ein unerwarteter Fehler ist aufgetreten')
