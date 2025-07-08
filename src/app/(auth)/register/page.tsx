@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
@@ -14,7 +14,6 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
   const router = useRouter()
   const { setUser } = useAuthStore()
 
@@ -38,11 +37,14 @@ export default function RegisterPage() {
     }
 
     try {
+      // Registrierung ohne E-Mail-Bestätigung
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/onboarding`,
+          data: {
+            // Zusätzliche Benutzerdaten können hier hinzugefügt werden
+          }
         },
       })
 
@@ -52,19 +54,28 @@ export default function RegisterPage() {
       }
 
       if (data.user) {
-        setSuccess(true)
-        // Direkt nach Registrierung: Profil in Supabase anlegen
+        // Profil in Supabase anlegen
         await supabase.from('profiles').insert({
           id: data.user.id,
           email: data.user.email,
           onboarding_completed: false,
           onboarding_step: 1
         })
-        // If user is immediately confirmed, redirect to onboarding
-        if (data.user.email_confirmed_at) {
-          setUser(data.user)
-          router.push('/onboarding')
+        
+        // Benutzer anmelden
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        })
+        
+        if (signInError) {
+          setError(signInError.message)
+          return
         }
+        
+        // Benutzer ist jetzt angemeldet, zum Onboarding weiterleiten
+        setUser(data.user)
+        router.push('/onboarding')
       }
     } catch {
       setError('Ein unerwarteter Fehler ist aufgetreten')
@@ -75,48 +86,58 @@ export default function RegisterPage() {
 
   const handleGoogleSignup = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/onboarding`,
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
       })
 
       if (error) {
         setError(error.message)
       }
+      
+      // Wir können hier kein Profil erstellen, da wir die User-ID noch nicht haben.
+      // Dies muss im Callback-Handler erfolgen.
+      
     } catch {
       setError('Registrierung mit Google fehlgeschlagen')
     }
   }
 
-  if (success) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
-        <div className="max-w-md w-full space-y-8">
-          <div className="text-center">
-            <div className="mx-auto h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
-              <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">E-Mail prüfen</h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Wir haben einen Bestätigungslink an <strong>{email}</strong> gesendet
-            </p>
-            <p className="mt-4 text-sm text-gray-600">
-              Klicke auf den Link in der E-Mail, um dein Konto zu aktivieren.
-            </p>
-            <div className="mt-6">
-              <Link href="/login" className="font-medium text-green-600">
-                Zurück zur Anmeldung
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // Nach der E-Mail-Bestätigung prüfen, ob der Benutzer automatisch eingeloggt ist
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (session?.user) {
+          console.log('User is already logged in after email confirmation')
+          setUser(session.user)
+          
+          // Wenn das Profil bereits existiert, zum Onboarding weiterleiten
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('onboarding_completed')
+            .eq('id', session.user.id)
+            .single()
+            
+          if (profile && !profile.onboarding_completed) {
+            router.push('/onboarding')
+          } else {
+            router.push('/dashboard')
+          }
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error)
+      }
+    }
+    
+    checkAuthStatus()
+  }, [router, setUser])
+  
+  // Da wir keine E-Mail-Bestätigung mehr verwenden, brauchen wir keine success-Nachricht mehr
+  // Der Benutzer wird direkt zum Onboarding weitergeleitet
 
   return (
     <div className="min-h-screen bg-[#ffffff] flex flex-col items-center justify-center py-2 px-2">

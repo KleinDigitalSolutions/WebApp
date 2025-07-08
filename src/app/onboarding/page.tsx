@@ -24,20 +24,60 @@ export default function OnboardingPage() {
 
     // Check if user profile exists and onboarding is completed
     const checkOnboardingStatus = async () => {
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
+      console.log("Checking onboarding status for user:", user.id)
+      
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
 
-      if (data) {
-        setProfile(data)
-        if (data.onboarding_completed) {
-          router.push('/dashboard')
-        } else if (data.onboarding_step > 0) {
-          // Resume from last step
-          setCurrentStep(data.onboarding_step)
+        console.log("Profile data:", data)
+
+        if (error) {
+          console.error("Error fetching profile:", error)
+          // Bei Fehler versuchen wir, ein Profil zu erstellen
+          const { error: insertError } = await supabase.from('profiles').insert({
+            id: user.id,
+            email: user.email,
+            onboarding_completed: false,
+            onboarding_step: 1,
+            show_onboarding: true
+          })
+          
+          if (insertError) {
+            console.error("Failed to create profile:", insertError)
+          } else {
+            setCurrentStep(1)
+          }
+          return
         }
+
+        if (data) {
+          setProfile(data)
+          if (data.onboarding_completed) {
+            console.log("Onboarding completed, redirecting to dashboard")
+            router.push('/dashboard')
+          } else if (data.onboarding_step > 0) {
+            // Resume from last step
+            console.log("Resuming onboarding from step:", data.onboarding_step)
+            setCurrentStep(data.onboarding_step)
+          } else {
+            console.log("Starting onboarding from step 1")
+            setCurrentStep(1)
+            
+            // Aktualisiere den Onboarding-Schritt auf 1, falls er 0 ist
+            if (data.onboarding_step === 0) {
+              await supabase
+                .from('profiles')
+                .update({ onboarding_step: 1 })
+                .eq('id', user.id)
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Unexpected error:", err)
       }
     }
 

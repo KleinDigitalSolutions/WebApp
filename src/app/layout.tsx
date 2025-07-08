@@ -5,6 +5,7 @@ import "./fix-scroll.css";
 import { Navigation } from "@/components/BottomNavBar";
 import CookieConsent from '@/components/ui/CookieConsent';
 import GoogleTagManagerClient from '@/components/ui/GoogleTagManagerClient';
+import AuthProvider from '@/components/AuthProvider';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -151,18 +152,20 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} h-full bg-white antialiased`}>
-        {/* GTM nur nach Consent laden (Client-Komponente) */}
-        <GoogleTagManagerClient />
-        {/* Main app container with proper mobile spacing */}
-        <div className="min-h-full">
-          {/* Content area with bottom navigation spacing on mobile */}
-          <main className="pb-20 md:pb-0">
-            {children}
-          </main>
-        </div>
-        {/* Globale Bottom Navigation Bar für eingeloggte Nutzer */}
-        <Navigation />
-        <CookieConsent />
+        <AuthProvider>
+          {/* GTM nur nach Consent laden (Client-Komponente) */}
+          <GoogleTagManagerClient />
+          {/* Main app container with proper mobile spacing */}
+          <div className="min-h-full">
+            {/* Content area with bottom navigation spacing on mobile */}
+            <main className="pb-20 md:pb-0">
+              {children}
+            </main>
+          </div>
+          {/* Globale Bottom Navigation Bar für eingeloggte Nutzer */}
+          <Navigation />
+          <CookieConsent />
+        </AuthProvider>
       </body>
     </html>
   );
