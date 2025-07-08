@@ -70,7 +70,7 @@ export default function OnboardingAge() {
         animate="visible"
       >
         <motion.h1
-          className="text-3xl sm:text-4xl font-extrabold text-gray-900 text-center mb-8 leading-tight"
+          className="text-3xl sm:text-4xl font-extrabold text-center mb-8 leading-tight"
           variants={itemVariants}
         >
           Wie alt bist du?

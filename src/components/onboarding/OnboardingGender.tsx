@@ -37,7 +37,7 @@ export default function OnboardingGender() {
         </button>
       </div>
       <div className="flex-1 flex flex-col items-center justify-start px-4 pt-12 pb-8">
-        <h1 className="text-2xl font-bold text-center mb-6">Welches Geschlecht hast du?</h1>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-8 leading-tight">Welches Geschlecht hast du?</h1>
         <div className="flex flex-col gap-4 w-full max-w-xs mb-8">
           <button
             className={`py-3 rounded-xl border text-lg font-semibold ${localGender === 'male' ? 'bg-emerald-500 text-white' : 'bg-white text-gray-800'}`}

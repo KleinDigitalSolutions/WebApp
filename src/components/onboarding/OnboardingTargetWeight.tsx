@@ -78,7 +78,7 @@ export default function OnboardingTargetWeight() {
               <path d="M12 17.75L5.82799 20.995L7.00699 14.122L2.00699 9.25495L8.90699 8.25495L11.993 2.00195L15.079 8.25495L21.979 9.25495L16.979 14.122L18.158 20.995L12 17.75Z" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-center">Was ist dein Zielgewicht?</h1>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-8 leading-tight">Was ist dein Zielgewicht?</h1>
         </div>
         
         {/* Target Weight Selector */}

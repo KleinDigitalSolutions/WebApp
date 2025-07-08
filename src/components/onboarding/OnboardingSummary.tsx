@@ -217,7 +217,7 @@ export default function OnboardingSummary() {
 
         {/* Konfetti-Grafik (statt des simplen SVG) - dies ist ein Platzhalter, idealerweise ein komplexeres, animiertes Lottie-File oder GIF */}
 
-        <h1 className="text-3xl font-extrabold text-center mb-2 leading-tight">Dein Plan ist fertig!</h1>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-8 leading-tight">Dein Plan ist fertig!</h1>
         <p className="text-gray-500 text-center mb-8 text-base tracking-wide">
           Geschätzter Fortschritt nach <span className="font-semibold">{targetDateLabel.split(' ')[1]}</span>
         </p>

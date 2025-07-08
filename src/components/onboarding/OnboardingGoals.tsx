@@ -147,7 +147,7 @@ export default function OnboardingGoals() {
         initial="hidden"
         animate="visible"
       >
-        <h1 className="text-2xl font-bold text-center mb-8">Was sind deine Ziele?</h1>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-8 leading-tight">Was sind deine Ziele?</h1>
         
         <motion.div
           className="flex flex-col gap-4 w-full max-w-md mb-8"

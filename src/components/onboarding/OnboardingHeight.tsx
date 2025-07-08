@@ -161,7 +161,7 @@ export default function OnboardingHeight() {
               }}
             />
           </div>
-          <h1 className="text-2xl font-bold text-center">Wie groß bist du?</h1>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-8 leading-tight">Wie groß bist du?</h1>
         </div>
         
         {/* Height Picker */}

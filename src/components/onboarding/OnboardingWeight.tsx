@@ -171,7 +171,7 @@ export default function OnboardingWeight() {
               }}
             />
           </div>
-          <h1 className="text-2xl font-bold text-center">Wie viel wiegst du?</h1>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-8 leading-tight">Wie viel wiegst du?</h1>
         </div>
         {/* Weight Picker */}
         <motion.div
