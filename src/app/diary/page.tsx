@@ -8,10 +8,41 @@ import {
   Calendar, 
   ChevronLeft, 
   ChevronRight,
-  Trash2,
-  Edit,
-  Plus // <-- Hinzugefügt
+  Plus,
+  Dumbbell
 } from 'lucide-react'
+
+// Meal types with recommended calories
+const mealTypes = [
+  {
+    key: 'breakfast',
+    label: 'Frühstück',
+    recommendedCalories: 673,
+    image: '/api/placeholder/80/80', // Placeholder für Frühstück
+    gradient: 'from-orange-400 to-red-400'
+  },
+  {
+    key: 'lunch',
+    label: 'Mittagessen',
+    recommendedCalories: 853,
+    image: '/api/placeholder/80/80', // Placeholder für Mittagessen
+    gradient: 'from-green-400 to-emerald-400'
+  },
+  {
+    key: 'dinner',
+    label: 'Abendessen',
+    recommendedCalories: 628,
+    image: '/api/placeholder/80/80', // Placeholder für Abendessen
+    gradient: 'from-blue-400 to-purple-400'
+  },
+  {
+    key: 'snack',
+    label: 'Snack',
+    recommendedCalories: 89,
+    image: '/api/placeholder/80/80', // Placeholder für Snack
+    gradient: 'from-pink-400 to-rose-400'
+  }
+]
 
 export default function DiaryPage() {
   const router = useRouter()
@@ -50,57 +81,39 @@ export default function DiaryPage() {
       return
     }
     loadEntries()
-  }, [user, selectedDate, router, loadEntries])
+  }, [user, router, loadEntries])
+
+  // Group entries by meal type
+  const groupedEntries = entries.reduce((acc, entry) => {
+    const meal = entry.meal_type || 'other'
+    if (!acc[meal]) acc[meal] = []
+    acc[meal].push(entry)
+    return acc
+  }, {} as Record<string, DiaryEntry[]>)
 
   const changeDate = (direction: 'prev' | 'next') => {
     const newDate = new Date(selectedDate)
-    newDate.setDate(newDate.getDate() + (direction === 'next' ? 1 : -1))
+    if (direction === 'prev') {
+      newDate.setDate(selectedDate.getDate() - 1)
+    } else {
+      newDate.setDate(selectedDate.getDate() + 1)
+    }
     setSelectedDate(newDate)
   }
 
-  const deleteEntry = async (entryId: string) => {
-    try {
-      await supabase
-        .from('diary_entries')
-        .delete()
-        .eq('id', entryId)
-      
-      setEntries(entries.filter(entry => entry.id !== entryId))
-    } catch (error) {
-      console.error('Error deleting entry:', error)
-    }
+  if (!user) {
+    return null
   }
 
-  const groupedEntries = entries.reduce((groups, entry) => {
-    const mealType = entry.meal_type
-    if (!groups[mealType]) {
-      groups[mealType] = []
-    }
-    groups[mealType].push(entry)
-    return groups
-  }, {} as Record<string, DiaryEntry[]>)
-
-  const mealTypes = [
-    { key: 'breakfast', label: 'Frühstück', icon: '☕' },
-    { key: 'lunch', label: 'Mittagessen', icon: '🍽️' },
-    { key: 'dinner', label: 'Abendessen', icon: '🥗' },
-    { key: 'snack', label: 'Snacks', icon: '🍎' }
-  ]
-
   return (
-    <div className="min-h-screen bg-[#ffffff] relative overflow-x-hidden">
-      {/* Hintergrund-Welle entfernt */}
-      <div className="relative z-10">
-        {/* Tagesübersicht und Navigation jetzt im Seitenfluss, nicht sticky */}
-        <div className="px-4 pt-6 pb-2 space-y-4">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-lg font-semibold text-gray-800">Ernährungstagebuch</h1>
-          </div>
-          {/* Date Navigation */}
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm">
+        <div className="px-4 py-4">
           <div className="flex items-center justify-between">
             <button 
               onClick={() => changeDate('prev')}
-              className="p-2 rounded-full transition-colors active:scale-95"
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
             >
               <ChevronLeft className="h-5 w-5 text-gray-600" />
             </button>
@@ -116,7 +129,7 @@ export default function DiaryPage() {
             </div>
             <button 
               onClick={() => changeDate('next')}
-              className="p-2 rounded-full transition-colors active:scale-95"
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
               disabled={selectedDate.toDateString() === new Date().toDateString()}
             >
               <ChevronRight className={`h-5 w-5 ${
@@ -127,130 +140,129 @@ export default function DiaryPage() {
             </button>
           </div>
         </div>
-
-        {/* Water Tracker - Prominent above meals */}
-        <WaterTracker selectedDate={selectedDate} />
-
-        <div className="px-4 py-6 space-y-6">
-          {loading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
-            </div>
-          ) : (
-            <>
-              {mealTypes.map((mealType) => {
-                const mealEntries = groupedEntries[mealType.key] || []
-                const mealCalories = mealEntries.reduce((sum, entry) => sum + entry.calories, 0)
-
-                return (
-                  <div key={mealType.key} className="bg-white rounded-2xl shadow-sm border border-gray-200 relative overflow-hidden">
-                    {/* Design-Effekt: Sanfte Mint-Welle unter der Karte */}
-                    <div className="absolute left-0 bottom-0 w-full h-16 z-0 pointer-events-none select-none">
-                      <svg viewBox="0 0 400 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-                        <path d="M0 32 Q100 64 200 32 T400 32 V64 H0Z" fill="url(#mint-wave)" fillOpacity="0.22" />
-                        <defs>
-                          <linearGradient id="mint-wave" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#6ee7b7" />
-                            <stop offset="100%" stopColor="#a7f3d0" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                    </div>
-                    <div className="relative z-10">
-                      {/* Compact Meal Header */}
-                      <div className="flex items-center justify-between p-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                            <span className="text-xl">{mealType.icon}</span>
-                          </div>
-                          <div>
-                            <h3 className="font-medium text-gray-800">{mealType.label}</h3>
-                            <p className="text-sm text-gray-600">{mealCalories} kcal</p>
-                          </div>
-                        </div>
-                        <button 
-                          onClick={() => router.push(`/diary/add?meal=${mealType.key}`)}
-                          className="w-10 h-10 bg-emerald-500 text-white rounded-full flex items-center justify-center transition-colors active:scale-95"
-                        >
-                          <Plus className="h-5 w-5" />
-                        </button>
-                      </div>
-
-                      {/* Meal Entries - Only show if there are entries */}
-                      {mealEntries.length === 0 ? (
-                        <div className="px-4 pb-4">
-                          <div className="text-center py-6 border-t border-gray-100">
-                            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                              <Plus className="h-6 w-6 text-gray-400" />
-                            </div>
-                            <p className="text-gray-500 text-sm mb-2">Keine Einträge für {mealType.label.toLowerCase()}</p>
-                            <button 
-                              onClick={() => router.push(`/diary/add?meal=${mealType.key}`)}
-                              className="text-emerald-600 font-medium text-sm"
-                            >
-                              Erstes Lebensmittel hinzufügen
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="border-t border-gray-100">
-                          <div className="px-4 py-3 space-y-2">
-                            {mealEntries.map((entry) => (
-                              <div 
-                                key={entry.id} 
-                                className="group flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-xl transition-all duration-200 hover:bg-gray-100"
-                              >
-                                <div className="flex-1">
-                                  <h4 className="font-medium text-gray-800 text-sm">{entry.food_name}</h4>
-                                  <div className="flex items-center space-x-3 text-xs text-gray-600 mt-1">
-                                    <span>{entry.quantity}{entry.unit}</span>
-                                    <span className="font-medium text-emerald-600">{entry.calories} kcal</span>
-                                    <span className="text-gray-400">
-                                      {new Date(entry.created_at).toLocaleTimeString('de-DE', { 
-                                        hour: '2-digit', 
-                                        minute: '2-digit' 
-                                      })}
-                                    </span>
-                                  </div>
-                                </div>
-                                
-                                {/* Action Buttons */}
-                                <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <button 
-                                    onClick={() => router.push(`/diary/edit/${entry.id}`)}
-                                    className="p-1.5 bg-blue-500 text-white rounded-lg transition-colors active:scale-95"
-                                  >
-                                    <Edit className="h-3 w-3" />
-                                  </button>
-                                  <button 
-                                    onClick={() => deleteEntry(entry.id)}
-                                    className="p-1.5 bg-red-500 text-white rounded-lg transition-colors active:scale-95"
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                  </button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
-            </>
-          )}
-        </div>
       </div>
-      {/* Motivations-/Tages-Tipp Bereich unter den Mahlzeitenkarten */}
-      <div className="mt-8 mb-8 flex justify-center">
-        <div className="backdrop-blur-xl bg-white/70 border border-emerald-100 rounded-2xl shadow-lg px-6 py-4 flex items-center space-x-3 max-w-md w-full">
-          <span className="text-2xl">🌱</span>
-          <div>
-            <p className="text-sm font-semibold text-emerald-700 mb-1">Tages-Tipp</p>
-            <p className="text-gray-700 text-sm">Trinke heute zu jeder Mahlzeit ein Glas Wasser – dein Körper wird es dir danken! 💧</p>
+
+      {/* Water Tracker */}
+      <WaterTracker selectedDate={selectedDate} />
+
+      {/* Meal Planning Interface */}
+      <div className="px-4 py-6 space-y-4">
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
           </div>
-        </div>
+        ) : (
+          <>
+            {mealTypes.map((mealType) => {
+              const mealEntries = groupedEntries[mealType.key] || []
+              const mealCalories = mealEntries.reduce((sum, entry) => sum + entry.calories, 0)
+
+              return (
+                <div key={mealType.key} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                  <div className="flex items-center justify-between">
+                    {/* Meal Info with Image */}
+                    <div className="flex items-center space-x-4">
+                      <div className="relative">
+                        <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100">
+                          {/* Food SVG Placeholder */}
+                          <div className={`w-full h-full bg-gradient-to-br ${mealType.gradient} flex items-center justify-center`}>
+                            <svg 
+                              width="32" 
+                              height="32" 
+                              viewBox="0 0 24 24" 
+                              fill="none" 
+                              stroke="white" 
+                              strokeWidth="2"
+                              strokeLinecap="round" 
+                              strokeLinejoin="round"
+                            >
+                              {mealType.key === 'breakfast' && (
+                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                              )}
+                              {mealType.key === 'lunch' && (
+                                <path d="M18 15l-6-6-6 6M12 3v18" />
+                              )}
+                              {mealType.key === 'dinner' && (
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                              )}
+                              {mealType.key === 'snack' && (
+                                <circle cx="12" cy="12" r="10" />
+                              )}
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">{mealType.label}</h3>
+                        <p className="text-sm text-gray-600">
+                          empfohlen {mealType.recommendedCalories} kcal
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Add Button */}
+                    <button 
+                      onClick={() => router.push(`/diary/add?meal=${mealType.key}`)}
+                      className="w-12 h-12 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center transition-all active:scale-95 shadow-lg"
+                    >
+                      <Plus className="h-6 w-6" />
+                    </button>
+                  </div>
+
+                  {/* Show added entries if any */}
+                  {mealEntries.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                      <div className="text-sm text-gray-600 mb-2">
+                        Hinzugefügt: {mealCalories} kcal
+                      </div>
+                      <div className="space-y-2">
+                        {mealEntries.slice(0, 3).map((entry) => (
+                          <div key={entry.id} className="flex items-center justify-between text-sm">
+                            <span className="text-gray-700">{entry.food_name}</span>
+                            <span className="text-gray-500">{entry.calories} kcal</span>
+                          </div>
+                        ))}
+                        {mealEntries.length > 3 && (
+                          <div className="text-xs text-gray-500">
+                            +{mealEntries.length - 3} weitere Einträge
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+
+            {/* Training Section */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                    <Dumbbell className="h-8 w-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Training</h3>
+                    <p className="text-sm text-gray-600">
+                      Aktiviere den Schrittzähler
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Erhalte ein genaueres Kalorienbudget.
+                    </p>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => router.push('/activities')}
+                  className="w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-all active:scale-95 shadow-lg"
+                >
+                  <Plus className="h-6 w-6" />
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
@@ -264,8 +276,48 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
   const [glassSize] = useState(250) // Standard glass size in ml
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [streak] = useState(0)
+  const [userWeight, setUserWeight] = useState(70) // kg
+  const [activityLevel, setActivityLevel] = useState<'sedentary' | 'light' | 'moderate' | 'active'>('moderate')
+  const [showSettings, setShowSettings] = useState(false)
+  const [drinkType, setDrinkType] = useState<'water' | 'tea' | 'coffee' | 'juice'>('water')
+  const [customAmounts] = useState([100, 200, 250, 300, 500, 750, 1000])
+  const [achievements, setAchievements] = useState<string[]>([])
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false)
 
   const dateKey = selectedDate.toISOString().split('T')[0] // YYYY-MM-DD format
+  
+  // Smart daily goal calculation
+  const calculateSmartGoal = useCallback(() => {
+    let baseGoal = userWeight * 35 // Basic calculation: 35ml per kg body weight
+    
+    // Activity level multiplier
+    const activityMultiplier = {
+      sedentary: 1.0,
+      light: 1.2,
+      moderate: 1.4,
+      active: 1.6
+    }
+    
+    baseGoal *= activityMultiplier[activityLevel]
+    
+    // Weather adjustment (simplified - in real app would use weather API)
+    const today = new Date()
+    const isWinter = today.getMonth() >= 10 || today.getMonth() <= 2
+    const weatherMultiplier = isWinter ? 0.9 : 1.1
+    
+    baseGoal *= weatherMultiplier
+    
+    return Math.round(baseGoal)
+  }, [userWeight, activityLevel])
+  
+  // Drink type multipliers for hydration effectiveness
+  const drinkMultipliers = {
+    water: 1.0,
+    tea: 0.85,
+    coffee: 0.7,
+    juice: 0.8
+  }
 
   // Load water intake for the selected date from Supabase
   const loadWaterIntake = useCallback(async () => {
@@ -278,14 +330,19 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
       
       if (response.ok) {
         setWaterIntake(data.amount_ml || 0)
-        setDailyGoal(data.daily_goal_ml || 2000)
+        const smartGoal = calculateSmartGoal()
+        setDailyGoal(data.daily_goal_ml || smartGoal)
+        // setStreak(data.streak || 0) // Commented out as streak is read-only
+        setUserWeight(data.user_weight || 70)
+        setActivityLevel(data.activity_level || 'moderate')
+        setAchievements(data.achievements || [])
       }
     } catch (error) {
       console.error('Error loading water intake:', error)
     } finally {
       setLoading(false)
     }
-  }, [user, dateKey])
+  }, [user, dateKey, calculateSmartGoal])
 
   // Save water intake to Supabase
   const saveWaterIntake = useCallback(async (amount: number) => {
@@ -293,6 +350,16 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
 
     try {
       setSaving(true)
+      
+      // Calculate new achievements
+      const newAchievements = [...achievements]
+      if (amount >= dailyGoal && !achievements.includes('daily_goal')) {
+        newAchievements.push('daily_goal')
+      }
+      if (amount >= dailyGoal * 1.5 && !achievements.includes('overachiever')) {
+        newAchievements.push('overachiever')
+      }
+      
       const response = await fetch('/api/water', {
         method: 'POST',
         headers: {
@@ -302,31 +369,81 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
           userId: user.id,
           date: dateKey,
           amount_ml: amount,
-          daily_goal_ml: dailyGoal
+          daily_goal_ml: dailyGoal,
+          user_weight: userWeight,
+          activity_level: activityLevel,
+          achievements: newAchievements
         })
       })
 
       if (!response.ok) {
         throw new Error('Failed to save water intake')
       }
+      
+      setAchievements(newAchievements)
     } catch (error) {
       console.error('Error saving water intake:', error)
     } finally {
       setSaving(false)
     }
-  }, [user, dateKey, dailyGoal, saving])
+  }, [user, dateKey, dailyGoal, saving, achievements, userWeight, activityLevel])
 
   // Load data when component mounts or date changes
   useEffect(() => {
     loadWaterIntake()
   }, [loadWaterIntake])
+  
+  // Notification system
+  useEffect(() => {
+    if (!notificationsEnabled || !('Notification' in window)) return
+    
+    const checkHydrationReminder = () => {
+      const hoursSinceLastDrink = 2 // Simplified - in real app track actual time
+      const currentPercentage = Math.min((waterIntake / dailyGoal) * 100, 100)
+      
+      if (currentPercentage < 50 && hoursSinceLastDrink >= 2) {
+        if (Notification.permission === 'granted') {
+          new Notification('💧 Hydration Reminder', {
+            body: `Du hast erst ${waterIntake}ml getrunken. Zeit für etwas Wasser!`,
+            icon: '/water-icon.png',
+            badge: '/water-badge.png'
+          })
+        }
+      }
+    }
+    
+    const intervalId = setInterval(checkHydrationReminder, 60000 * 60) // Check every hour
+    return () => clearInterval(intervalId)
+  }, [notificationsEnabled, waterIntake, dailyGoal])
+  
+  // Request notification permission
+  const requestNotificationPermission = async () => {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission()
+      setNotificationsEnabled(permission === 'granted')
+    }
+  }
 
   const percentage = Math.min((waterIntake / dailyGoal) * 100, 100)
+  const hydrationLevel = percentage < 30 ? 'low' : percentage < 70 ? 'medium' : 'high'
   
-  const addWater = async (amount: number) => {
-    const newAmount = Math.min(waterIntake + amount, dailyGoal + 1000)
+  const addWater = async (amount: number, type: string = drinkType) => {
+    const effectiveAmount = amount * drinkMultipliers[type as keyof typeof drinkMultipliers]
+    const newAmount = Math.min(waterIntake + effectiveAmount, dailyGoal + 1000)
     setWaterIntake(newAmount)
     await saveWaterIntake(newAmount)
+  }
+  
+  const getHydrationMessage = () => {
+    if (percentage >= 100) return '🎉 Perfekt hydratisiert!'
+    if (percentage >= 75) return '💧 Fast geschafft!'
+    if (percentage >= 50) return '🥤 Auf dem richtigen Weg'
+    if (percentage >= 25) return '⚡ Mehr trinken!'
+    return '🚨 Dringend Wasser trinken!'
+  }
+  
+  const getBottleLevel = () => {
+    return Math.min(percentage, 100)
   }
 
   const removeWater = async () => {
@@ -339,16 +456,19 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
     setWaterIntake(0)
     await saveWaterIntake(0)
   }
+  
+  
+  const updateUserSettings = async (weight: number, activity: typeof activityLevel) => {
+    setUserWeight(weight)
+    setActivityLevel(activity)
+    const newGoal = calculateSmartGoal()
+    setDailyGoal(newGoal)
+    await saveWaterIntake(waterIntake)
+  }
 
   return (
-    <div className="mx-4 mt-4 mb-6">
-      <div className="relative rounded-3xl shadow-2xl p-6 border-0 overflow-hidden backdrop-blur-xl bg-gradient-to-br from-blue-400 via-blue-500 to-blue-700" style={{boxShadow:'0 8px 32px 0 rgba(31,38,135,0.25), 0 1.5px 8px 0 rgba(0,0,0,0.10)'}}>
-        {/* Hochglanz-Overlay */}
-        <div className="absolute inset-0 rounded-3xl pointer-events-none z-0">
-          <div className="absolute left-0 top-0 w-full h-1/2 rounded-t-3xl bg-white/30 blur-[2px] opacity-60" />
-          <div className="absolute right-0 bottom-0 w-2/3 h-1/3 rounded-br-3xl bg-white/10 blur-[2px] opacity-40" />
-          <div className="absolute left-0 top-0 w-full h-full rounded-3xl border border-white/30" />
-        </div>
+    <div className="mx-4 mt-4 mb-4">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
         <div className="relative z-10">
           {loading ? (
             <div className="flex items-center justify-center py-8">
@@ -357,135 +477,123 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
           ) : (
             <>
               {/* Header */}
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                    <span className="text-xl text-white">💧</span>
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                    <span className="text-xl">💧</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white">Wasser</h3>
-                    <p className="text-sm text-blue-100">{waterIntake}ml von {dailyGoal}ml</p>
-                    {selectedDate.toDateString() !== new Date().toDateString() && (
-                      <p className="text-xs text-blue-200">
-                        {selectedDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}
-                      </p>
-                    )}
+                    <h3 className="text-lg font-semibold text-gray-900">Wasser</h3>
+                    <p className="text-sm text-gray-600">{waterIntake}ml / {dailyGoal}ml</p>
                   </div>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setShowSettings(!showSettings)}
+                    className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={resetWater}
+                    disabled={saving}
+                    className="p-2 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">{Math.round(percentage)}%</span>
+                  <span className="text-sm text-gray-500">{dailyGoal - waterIntake}ml verbleibend</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500 ease-out"
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Quick Add Buttons */}
+              <div className="grid grid-cols-4 gap-2 mb-4">
+                {[250, 500, 750, 1000].map((amount) => (
+                  <button
+                    key={amount}
+                    onClick={() => addWater(amount)}
+                    className="p-2 bg-blue-50 hover:bg-blue-100 rounded-lg text-center transition-colors active:scale-95 text-blue-700 border border-blue-100"
+                  >
+                    <span className="text-lg block mb-1">💧</span>
+                    <div className="text-xs font-medium text-blue-700">{amount}ml</div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Control Buttons */}
+              <div className="flex space-x-2">
                 <button
-                  onClick={resetWater}
-                  disabled={saving}
-                  className="text-blue-200 hover:text-white transition-colors disabled:opacity-50"
+                  onClick={removeWater}
+                  disabled={waterIntake === 0 || saving}
+                  className="flex-1 p-2 bg-red-50 hover:bg-red-100 disabled:bg-gray-50 disabled:text-gray-400 text-red-600 rounded-lg font-medium transition-colors active:scale-95 text-sm"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
+                  - {glassSize}ml
+                </button>
+                <button
+                  onClick={() => addWater(glassSize)}
+                  disabled={saving}
+                  className="flex-1 p-2 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-400 text-white rounded-lg font-medium transition-colors active:scale-95 text-sm"
+                >
+                  + {glassSize}ml
                 </button>
               </div>
 
-          {/* Water Progress Visualization */}
-          <div className="mb-6">
-            {/* Water Bottle Visualization */}
-            <div className="flex justify-center mb-4">
-              <div className="relative w-16 h-32 bg-blue-50 rounded-full border-4 border-blue-200 overflow-hidden">
-                {/* Water level */}
-                <div 
-                  className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-400 to-blue-300 transition-all duration-700 ease-out"
-                  style={{ height: `${percentage}%` }}
-                >
-                  {/* Water animation bubbles */}
-                  <div className="absolute inset-0 opacity-30">
-                    <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-bounce"></div>
-                    <div className="absolute top-4 right-3 w-1 h-1 bg-white rounded-full animate-bounce" style={{animationDelay: '0.3s'}}></div>
-                    <div className="absolute top-6 left-3 w-1 h-1 bg-white rounded-full animate-bounce" style={{animationDelay: '0.6s'}}></div>
+              {/* Achievement */}
+              {waterIntake >= dailyGoal && (
+                <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm">🎉</span>
+                    <p className="text-sm font-medium text-green-800">Tagesziel erreicht!</p>
                   </div>
                 </div>
-                {/* Bottle cap */}
-                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-8 h-4 bg-gray-300 rounded-t-lg"></div>
-              </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="relative mb-3">
-              <div className="w-full bg-blue-100 rounded-full h-3 overflow-hidden">
-                <div
-                  className="h-3 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full transition-all duration-700 ease-out relative"
-                  style={{ width: `${percentage}%` }}
-                >
-                  <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+              )}
+              
+              {/* Settings Panel */}
+              {showSettings && (
+                <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <h4 className="text-gray-900 font-medium mb-3 text-sm">Einstellungen</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-gray-700 text-sm block mb-1">Tagesziel (ml)</label>
+                      <input
+                        type="number"
+                        value={dailyGoal}
+                        onChange={(e) => setDailyGoal(Number(e.target.value))}
+                        className="w-full px-3 py-2 bg-white text-gray-900 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        min="1000"
+                        max="5000"
+                        step="100"
+                      />
+                    </div>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => setShowSettings(false)}
+                        className="flex-1 px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm transition-colors"
+                      >
+                        Fertig
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex justify-between text-xs text-blue-100 mt-1">
-                <span>0ml</span>
-                <span className="font-medium text-white">{Math.round(percentage)}%</span>
-                <span>{dailyGoal}ml</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Add Buttons */}
-          <div className="grid grid-cols-4 gap-2 mb-4">
-            <button
-              onClick={() => addWater(100)}
-              className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95 text-blue-700"
-            >
-              <span className="text-2xl block mb-1">🥛</span>
-              <div className="text-xs font-medium">100ml</div>
-            </button>
-            <button
-              onClick={() => addWater(250)}
-              className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95 text-blue-700"
-            >
-              <span className="text-2xl block mb-1">🥛</span>
-              <div className="text-xs font-medium">250ml</div>
-            </button>
-            <button
-              onClick={() => addWater(500)}
-              className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95 text-blue-700"
-            >
-              <span className="text-2xl block mb-1">🥛</span>
-              <div className="text-xs font-medium">500ml</div>
-            </button>
-            <button
-              onClick={() => addWater(750)}
-              className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-colors active:scale-95 text-blue-700"
-            >
-              <span className="text-2xl block mb-1">🥛</span>
-              <div className="text-xs font-medium">750ml</div>
-            </button>
-          </div>
-
-          {/* Control Buttons */}
-          <div className="flex space-x-3">
-            <button
-              onClick={removeWater}
-              disabled={waterIntake === 0 || saving}
-              className="flex-1 p-3 bg-red-50 hover:bg-red-100 disabled:bg-gray-50 disabled:text-gray-400 text-red-600 rounded-xl font-medium transition-colors active:scale-95"
-            >
-              - {glassSize}ml
-            </button>
-            <button
-              onClick={() => addWater(glassSize)}
-              disabled={saving}
-              className="flex-1 p-3 bg-blue-700 hover:bg-blue-800 disabled:bg-blue-400 text-white rounded-xl font-medium transition-colors active:scale-95"
-            >
-              + {glassSize}ml
-            </button>
-          </div>
-
-          {/* Achievement */}
-          {waterIntake >= dailyGoal && (
-            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-xl">
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">🎉</span>
-                <div>
-                  <p className="text-sm font-medium text-green-800">Tagesziel erreicht!</p>
-                  <p className="text-xs text-green-600">Du hast dein Wasserziel geschafft</p>
-                </div>
-              </div>
-            </div>
-          )}
-          </>
+              )}
+            </>
           )}
         </div>
       </div>

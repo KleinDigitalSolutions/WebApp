@@ -50,13 +50,21 @@ export async function GET(request: NextRequest) {
     if (!data) {
       return NextResponse.json({
         amount_ml: 0,
-        daily_goal_ml: 2000
+        daily_goal_ml: 2000,
+        user_weight: 70,
+        activity_level: 'moderate',
+        achievements: [],
+        streak: 0
       })
     }
 
     return NextResponse.json({
       amount_ml: data.amount_ml,
-      daily_goal_ml: data.daily_goal_ml
+      daily_goal_ml: data.daily_goal_ml,
+      user_weight: data.user_weight || 70,
+      activity_level: data.activity_level || 'moderate',
+      achievements: data.achievements || [],
+      streak: data.streak || 0
     })
 
   } catch (error) {
@@ -72,7 +80,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const supabase = getSupabaseClient()
-    const { userId, date, amount_ml, daily_goal_ml } = await request.json()
+    const { userId, date, amount_ml, daily_goal_ml, user_weight, activity_level, achievements } = await request.json()
 
     if (!userId || !date || amount_ml === undefined) {
       return NextResponse.json(
@@ -80,6 +88,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+    
+    // Calculate streak (simplified - in production you'd query previous days)
+    const streak = amount_ml >= (daily_goal_ml || 2000) ? 1 : 0
 
     // Upsert (insert or update) water intake record
     const { data, error } = await supabase
@@ -89,6 +100,10 @@ export async function POST(request: NextRequest) {
         date: date,
         amount_ml: amount_ml,
         daily_goal_ml: daily_goal_ml || 2000,
+        user_weight: user_weight || 70,
+        activity_level: activity_level || 'moderate',
+        achievements: achievements || [],
+        streak: streak,
         updated_at: new Date().toISOString()
       }, {
         onConflict: 'user_id,date'
@@ -108,7 +123,11 @@ export async function POST(request: NextRequest) {
       message: 'Water intake saved successfully',
       data: {
         amount_ml: data.amount_ml,
-        daily_goal_ml: data.daily_goal_ml
+        daily_goal_ml: data.daily_goal_ml,
+        user_weight: data.user_weight,
+        activity_level: data.activity_level,
+        achievements: data.achievements,
+        streak: data.streak
       }
     })
 
