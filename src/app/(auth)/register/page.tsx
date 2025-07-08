@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
 import { Button, Input } from '@/components/ui'
-import { Heart, ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('')

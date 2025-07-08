@@ -9,11 +9,7 @@ import {
   Brain,
   ArrowRight,
   Target,
-  Salad,
-  Dumbbell,
-  Sparkles,
   Zap,
-  Heart,
   TrendingUp,
   Users,
   Check,
@@ -283,7 +279,7 @@ export default function LandingPage() {
               ))}
             </div>
             <p className="text-gray-600 mb-2">
-              "TrackFood hat meine Ernährung revolutioniert!"
+              &quot;TrackFood hat meine Ernährung revolutioniert!&quot;
             </p>
             <p className="text-sm text-gray-500 mb-6">
               Über 10.000 zufriedene Nutzer
