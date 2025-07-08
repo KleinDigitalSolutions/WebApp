@@ -53,6 +53,13 @@ export default function RegisterPage() {
 
       if (data.user) {
         setSuccess(true)
+        // Direkt nach Registrierung: Profil in Supabase anlegen
+        await supabase.from('profiles').insert({
+          id: data.user.id,
+          email: data.user.email,
+          onboarding_completed: false,
+          onboarding_step: 1
+        })
         // If user is immediately confirmed, redirect to onboarding
         if (data.user.email_confirmed_at) {
           setUser(data.user)

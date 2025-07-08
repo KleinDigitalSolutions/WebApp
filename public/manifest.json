@@ -1,13 +1,13 @@
 {
   "name": "TrackFood - Intelligente Ernährungsberatung",
   "short_name": "TrackFood",
-  "description": "Barcode scannen, KI fragen, gesund leben! TrackFood kombiniert intelligenten Barcode-Scanner mit personalisierter KI-Ernährungsberatung. 2500+ deutsche Produkte (EDEKA, REWE, ALDI). PWA-App mit Groq AI.",
+  "description": "Barcode scannen, KI fragen, gesund leben! TrackFood kombiniert intelligenten Barcode-Scanner mit personalisierter KI-Ernährungsberatung. 30.000 deutsche Produkte (EDEKA, REWE, ALDI). PWA-App mit Gemini AI.",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#A9E142",
-  "theme_color": "#A9E142",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "categories": ["health", "lifestyle", "nutrition"],
   "lang": "de-DE",
   "icons": [
