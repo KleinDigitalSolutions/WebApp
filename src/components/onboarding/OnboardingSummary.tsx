@@ -4,16 +4,15 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore, useOnboardingStore } from '@/store'
 import { supabase } from '@/lib/supabase'
-import { ArrowLeft } from 'lucide-react' // Nicht im Bild, aber nützlich für Back-Button, lasse ich erstmal drin
 import { getOnboardingData, clearOnboardingData } from '@/lib/onboarding-storage'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Apple, Activity, Flag, Calendar, Smile } from 'lucide-react' // Icons
+import { motion } from 'framer-motion'
+import { Apple, Flag, Calendar, Smile } from 'lucide-react' // Nur genutzte Icons
 import ConfettiExplosion from 'react-confetti-explosion'; // Import für Konfetti-Explosion
 
 export default function OnboardingSummary() {
   const router = useRouter()
   const { user, setProfile } = useAuthStore()
-  const { weight, targetWeight, setCurrentStep } = useOnboardingStore() // setCurrentStep hinzugefügt
+  const { weight, targetWeight } = useOnboardingStore() // setCurrentStep entfernt
   
   const [isLoading, setIsLoading] = useState(false)
   const [targetDateLabel, setTargetDateLabel] = useState('In 4 Wochen') // Label für das Diagramm
@@ -34,17 +33,9 @@ export default function OnboardingSummary() {
       // Realistische Annahme: 0.5-1kg Gewichtsverlust pro Woche ist gesund
       const lossPerWeek = Math.min(1, Math.max(0.5, weightToLose / 10)); // Min 0.5, Max 1kg pro Woche
       const weeksNeeded = Math.max(4, Math.ceil(weightToLose / lossPerWeek)); // Mindestens 4 Wochen wie im Bild
-      
       const targetDateObj = new Date();
       targetDateObj.setDate(targetDateObj.getDate() + (weeksNeeded * 7));
-      
-      const formattedDate = targetDateObj.toLocaleDateString('de-DE', {
-        day: '2-digit',
-        month: '2-digit',
-      });
       setTargetDateLabel(`In ${weeksNeeded} Wochen`);
-      // Optional: setze kcal und BMI basierend auf realistischen Werten oder Berechnungen
-      // Für diese Demo bleiben sie fix, aber hier könnte die Logik rein
     }
   }, [weight, targetWeight]);
 
@@ -98,8 +89,8 @@ export default function OnboardingSummary() {
 
     // Kcal-Berechnung (Mifflin-St.Jeor, grob, ohne Aktivitätsfaktor)
     let kcal = 0;
-    let age = local.age || store.age || 30;
-    let gender = local.gender || store.gender || 'male';
+    const age = local.age || store.age || 30;
+    const gender = local.gender || store.gender || 'male';
     if (height > 0 && weightValue > 0 && age > 0) {
       if (gender === 'female' || gender === 'w' || gender === 'f') {
         kcal = 10 * weightValue + 6.25 * height - 5 * age - 161;
@@ -111,12 +102,6 @@ export default function OnboardingSummary() {
       setKcalDaily(kcal);
     }
   }, [weight, targetWeight]);
-
-  // Back-Button Logik
-  const handleBack = () => {
-    setCurrentStep(4); // Geht zum Zielgewicht-Schritt zurück
-    router.push('/onboarding'); // Oder entsprechende Route, falls die Schritte separat sind
-  }
 
   // Onboarding abschließen Logik
   const handleComplete = async () => {
@@ -176,17 +161,6 @@ export default function OnboardingSummary() {
     }
   };
 
-  // Hilfsfunktion zur Skalierung von Werten für das SVG-Diagramm
-  const scaleWeightToSvgY = (
-    weightValue: number,
-    minWeight: number,
-    maxWeight: number,
-    svgHeight: number
-  ) => {
-    const normalizedWeight = (weightValue - minWeight) / (maxWeight - minWeight);
-    return svgHeight - (normalizedWeight * svgHeight);
-  };
-  
   // Da wir keine echten min/max Gewichte haben, nutzen wir relative Positionierung für die Demo
   // Die Kurve im Bild geht von einer hohen Startposition zu einer niedrigeren Endposition.
   // Nehmen wir an, die SVG-Höhe ist 200px.

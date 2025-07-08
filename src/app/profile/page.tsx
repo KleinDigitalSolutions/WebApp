@@ -8,7 +8,6 @@ import { Navigation } from '@/components/BottomNavBar'
 import { Button, Input, Select, LoadingSpinner } from '@/components/ui'
 import { calculateBMI, getBMICategory, calculateDailyCalorieGoal, calculateMacroTargets } from '@/lib/nutrition-utils'
 import { motion } from 'framer-motion'
-import { Apple } from 'lucide-react'
 
 export default function ProfilePage() {
   const router = useRouter()

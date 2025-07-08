@@ -150,7 +150,6 @@ export default function LandingPage() {
               size="lg"
               className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-4 px-8 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-200"
             >
-              <Play className="w-5 h-5 mr-2" />
               Jetzt kostenlos starten
             </Button>
             
