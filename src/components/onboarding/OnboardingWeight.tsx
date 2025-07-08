@@ -24,25 +24,30 @@ export default function OnboardingWeight() {
 
   // On mount: load from localStorage or Zustand
   useEffect(() => {
-    const local = getOnboardingData()
+    const local = getOnboardingData();
+    let initialWeight = 70;
     if (typeof local.weight === 'number' && !isNaN(local.weight)) {
-      setLocalWeight(local.weight)
-      setTimeout(() => {
-        if (scrollRef.current) {
-          const weightVal = local.weight;
-          if (typeof weightVal === 'number') {
-            const index = kgValues.indexOf(weightVal);
-            if (index !== -1) {
-              const itemHeight = scrollRef.current.scrollHeight / kgValues.length;
-              scrollRef.current.scrollTo({
-                top: index * itemHeight - scrollRef.current.clientHeight / 2 + itemHeight / 2,
-                behavior: 'instant',
-              });
-            }
-          }
-        }
-      }, 50)
+      initialWeight = local.weight;
+    } else {
+      // Prüfe Zustand als Fallback
+      const storeWeight = useOnboardingStore.getState().weight;
+      if (typeof storeWeight === 'number' && !isNaN(storeWeight)) {
+        initialWeight = storeWeight;
+      }
     }
+    setLocalWeight(initialWeight);
+    setTimeout(() => {
+      if (scrollRef.current) {
+        const index = kgValues.indexOf(initialWeight);
+        if (index !== -1) {
+          const itemHeight = scrollRef.current.scrollHeight / kgValues.length;
+          scrollRef.current.scrollTo({
+            top: index * itemHeight - scrollRef.current.clientHeight / 2 + itemHeight / 2,
+            behavior: 'instant',
+          });
+        }
+      }
+    }, 50);
   }, [])
 
   // Save to localStorage & validate on change
