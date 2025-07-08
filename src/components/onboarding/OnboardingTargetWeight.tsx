@@ -54,12 +54,29 @@ export default function OnboardingTargetWeight() {
     setCurrentStep(currentStep - 1)
   }
 
-  // Defensive: fallback for weight
-  const local = getOnboardingData();
-  const safeWeight = (typeof local.weight === 'number' && !isNaN(local.weight)) ? local.weight : (typeof weight === 'number' && !isNaN(weight) ? weight : 70);
-  const weightLossPercentage = safeWeight > 0 
-    ? Math.round((safeWeight - localTargetWeight) / safeWeight * 100 * 10) / 10
-    : 0
+  // Gewichtsverlust-Prozentsatz berechnen
+  const [weightLossPercentage, setWeightLossPercentage] = useState(0)
+  
+  useEffect(() => {
+    const local = getOnboardingData()
+    const safeWeight = (typeof local.weight === 'number' && !isNaN(local.weight)) ? local.weight : (typeof weight === 'number' && !isNaN(weight) ? weight : 0)
+    
+    console.log('=== TARGET WEIGHT DEBUG ===', {
+      localWeight: local.weight,
+      storeWeight: weight,
+      safeWeight,
+      targetWeight: localTargetWeight,
+      localStorage: local
+    })
+    
+    if (safeWeight > 0 && localTargetWeight > 0 && safeWeight > localTargetWeight) {
+      const percentage = Math.round((safeWeight - localTargetWeight) / safeWeight * 100 * 10) / 10
+      setWeightLossPercentage(percentage)
+      console.log('Calculated weight loss percentage:', percentage)
+    } else {
+      setWeightLossPercentage(0)
+    }
+  }, [weight, localTargetWeight])
 
   const handleNext = async () => {
     if (localTargetWeight < 30 || localTargetWeight > 300) {
@@ -111,15 +128,26 @@ export default function OnboardingTargetWeight() {
             tabIndex={0}
             aria-label="Zielgewicht auswählen"
             role="listbox"
+            onScroll={(e) => {
+              const container = e.currentTarget;
+              const scrollTop = container.scrollTop;
+              const itemHeight = container.scrollHeight / 151;
+              const index = Math.round(scrollTop / itemHeight);
+              const value = 40 + index;
+              if (value >= 40 && value <= 190) {
+                setLocalTargetWeight(value);
+              }
+            }}
           >
             {Array.from({ length: 151 }, (_, i) => 40 + i).map(value => (
               <div
                 key={value}
-                className={`snap-center h-16 flex items-center justify-center text-4xl font-bold transition-all duration-150 ease-in-out
+                className={`snap-center h-16 flex items-center justify-center text-4xl font-bold transition-all duration-150 ease-in-out cursor-pointer
                   ${localTargetWeight === value ? 'text-emerald-600' : 'text-gray-400 opacity-50'}`}
                 role="option"
                 aria-selected={localTargetWeight === value}
                 data-value={value}
+                onClick={() => setLocalTargetWeight(value)}
               >
                 {value} kg
               </div>

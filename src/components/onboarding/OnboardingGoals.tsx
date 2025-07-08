@@ -88,17 +88,7 @@ export default function OnboardingGoals() {
     }
   }
 
-  // Prozent aus lokalen Daten berechnen (z.B. für Summary oder Anzeige)
-  const local = getOnboardingData();
-  // Nutze immer die aktuellsten Werte aus localStorage ODER Zustand als Fallback
-  const w = typeof local.weight === 'number' ? local.weight : useOnboardingStore.getState().weight;
-  const tw = typeof local.targetWeight === 'number' ? local.targetWeight : useOnboardingStore.getState().targetWeight;
-  let percentLoss = 0;
-  if (
-    w && tw && w > tw
-  ) {
-    percentLoss = Math.round(((w - tw) / w) * 100);
-  }
+  // Prozentberechnung entfernt - wird erst in Summary benötigt
 
   useEffect(() => {
     // Beim Mounten: Ziele aus localStorage laden
@@ -136,11 +126,7 @@ export default function OnboardingGoals() {
 
       <div className="flex-1 flex flex-col px-4 pb-8">
         <h1 className="text-2xl font-bold text-center mb-8">Was sind deine Ziele?</h1>
-        <div className="text-center text-emerald-600 font-semibold mb-4">
-          {w && tw && w !== tw && percentLoss > 0 && (
-            <span>{percentLoss}% Ziel: Gewichtsverlust</span>
-          )}
-        </div>
+        {/* Entfernt: Prozentanzeige wird erst in Summary gezeigt */}
         
         <div className="space-y-3 mb-8">
           {goalOptions.map((goal) => (

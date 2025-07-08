@@ -30,7 +30,25 @@ export function getOnboardingData(): OnboardingData {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return {};
   try {
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    // Ensure numeric values are properly converted
+    if (parsed.weight !== undefined && parsed.weight !== null && parsed.weight !== '') {
+      const weightNum = Number(parsed.weight);
+      if (!isNaN(weightNum)) parsed.weight = weightNum;
+    }
+    if (parsed.targetWeight !== undefined && parsed.targetWeight !== null && parsed.targetWeight !== '') {
+      const targetWeightNum = Number(parsed.targetWeight);
+      if (!isNaN(targetWeightNum)) parsed.targetWeight = targetWeightNum;
+    }
+    if (parsed.height !== undefined && parsed.height !== null && parsed.height !== '') {
+      const heightNum = Number(parsed.height);
+      if (!isNaN(heightNum)) parsed.height = heightNum;
+    }
+    if (parsed.age !== undefined && parsed.age !== null && parsed.age !== '') {
+      const ageNum = Number(parsed.age);
+      if (!isNaN(ageNum)) parsed.age = ageNum;
+    }
+    return parsed;
   } catch {
     return {};
   }
