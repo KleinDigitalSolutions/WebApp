@@ -18,7 +18,6 @@ import {
 } from 'lucide-react'
 import DesktopNotice from '@/components/DesktopNotice'
 import GoogleLoginButton from '@/components/GoogleLoginButton'
-import OnboardingModal from '@/components/OnboardingModal'
 
 export default function LandingPage() {
   const router = useRouter()
@@ -118,7 +117,6 @@ export default function LandingPage() {
   }
   return (
     <>
-      {showOnboarding && <OnboardingModal onFinish={handleFinishOnboarding} />}
       {showDesktopNotice && <DesktopNotice />}
       
       <div className="min-h-screen bg-[#ffffff] overflow-hidden">
