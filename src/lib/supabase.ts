@@ -33,6 +33,13 @@ export interface Profile {
   updated_at?: string
   intolerances?: string[] // NEU: Unverträglichkeiten
   show_onboarding?: boolean // Onboarding-Modal nach Login anzeigen
+  
+  // Neue Onboarding-Felder
+  target_weight_kg?: number
+  birth_date?: string
+  goals?: string[]
+  onboarding_completed?: boolean
+  onboarding_step?: number
 }
 
 export interface DiaryEntry {

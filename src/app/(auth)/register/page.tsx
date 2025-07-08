@@ -42,7 +42,7 @@ export default function RegisterPage() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/profile`,
+          emailRedirectTo: `${window.location.origin}/onboarding`,
         },
       })
 
@@ -53,10 +53,10 @@ export default function RegisterPage() {
 
       if (data.user) {
         setSuccess(true)
-        // If user is immediately confirmed, redirect to profile setup
+        // If user is immediately confirmed, redirect to onboarding
         if (data.user.email_confirmed_at) {
           setUser(data.user)
-          router.push('/profile')
+          router.push('/onboarding')
         }
       }
     } catch {
@@ -71,7 +71,7 @@ export default function RegisterPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/profile`,
+          redirectTo: `${window.location.origin}/onboarding`,
         },
       })
 

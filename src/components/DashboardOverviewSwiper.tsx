@@ -124,7 +124,7 @@ export default function DashboardOverviewSwiper() {
   }
 
   if (!user) return null
-  if (loading || !activeStats) return <div className="rounded-3xl p-6 bg-white/30 text-white mb-4">Lade Übersicht...</div>
+  if (loading || !activeStats) return <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 mb-4 text-gray-600">Lade Übersicht...</div>
 
   // Wenn ein Modal offen ist, Swiper ausblenden (damit keine Karte "darunter" sichtbar ist)
   if (modal) {
@@ -163,42 +163,42 @@ export default function DashboardOverviewSwiper() {
   }
 
   return (
-    <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 mb-4 text-white select-none" style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31,38,135,0.18)'}} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+    <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 mb-4 text-gray-800 select-none" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-semibold">{PERIODS[periodIdx].label} Übersicht</h3>
+        <h3 className="text-lg font-semibold text-gray-800">{PERIODS[periodIdx].label} Übersicht</h3>
         <div className="flex gap-1">
           {PERIODS.map((p, i) => (
-            <button key={p.key} className={`w-2 h-2 rounded-full ${i===periodIdx?'bg-emerald-400':'bg-emerald-900/40'}`} onClick={()=>setPeriodIdx(i)} aria-label={p.label} />
+            <button key={p.key} className={`w-2 h-2 rounded-full ${i===periodIdx?'bg-emerald-500':'bg-gray-300'}`} onClick={()=>setPeriodIdx(i)} aria-label={p.label} />
           ))}
         </div>
       </div>
-      <div className="mb-3 text-emerald-900 text-xs flex items-center gap-2">
-        <FaInfoCircle className="text-emerald-700" /> Tippe oder wische für andere Zeiträume.
+      <div className="mb-3 text-gray-600 text-xs flex items-center gap-2">
+        <FaInfoCircle className="text-emerald-600" /> Tippe oder wische für andere Zeiträume.
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <button onClick={() => setModal('calories')} className="text-left">
-          <div className="text-2xl font-bold">{activeStats.totalCalories} kcal</div>
-          <div className="text-xs text-emerald-100">Aufgenommen</div>
+          <div className="text-2xl font-bold text-gray-800">{activeStats.totalCalories} kcal</div>
+          <div className="text-xs text-gray-600">Aufgenommen</div>
         </button>
         <button onClick={() => setModal('burned')} className="text-left">
-          <div className="text-2xl font-bold">{activeStats.totalBurned} kcal</div>
-          <div className="text-xs text-emerald-100">Verbrannt (Aktivitäten)</div>
+          <div className="text-2xl font-bold text-gray-800">{activeStats.totalBurned} kcal</div>
+          <div className="text-xs text-gray-600">Verbrannt (Aktivitäten)</div>
         </button>
         <button onClick={() => setModal('fasting')} className="text-left">
-          <div className="text-2xl font-bold">{activeStats.fastingCount}</div>
-          <div className="text-xs text-emerald-100">Fasten-Sessions</div>
+          <div className="text-2xl font-bold text-gray-800">{activeStats.fastingCount}</div>
+          <div className="text-xs text-gray-600">Fasten-Sessions</div>
         </button>
         <button onClick={() => setModal('fasting')} className="text-left">
-          <div className="text-2xl font-bold">{activeStats.fastingHours.toFixed(1)} h</div>
-          <div className="text-xs text-emerald-100">Gefastet</div>
+          <div className="text-2xl font-bold text-gray-800">{activeStats.fastingHours.toFixed(1)} h</div>
+          <div className="text-xs text-gray-600">Gefastet</div>
         </button>
         <button onClick={() => setModal('challenges')} className="text-left">
-          <div className="text-2xl font-bold">{activeStats.challengeCount}</div>
-          <div className="text-xs text-emerald-100">Challenges</div>
+          <div className="text-2xl font-bold text-gray-800">{activeStats.challengeCount}</div>
+          <div className="text-xs text-gray-600">Challenges</div>
         </button>
         <button onClick={() => setModal('challenges')} className="text-left">
-          <div className="text-2xl font-bold">{activeStats.challengeCompleted}</div>
-          <div className="text-xs text-emerald-100">Abgeschlossen</div>
+          <div className="text-2xl font-bold text-gray-800">{activeStats.challengeCompleted}</div>
+          <div className="text-xs text-gray-600">Abgeschlossen</div>
         </button>
       </div>
     </div>

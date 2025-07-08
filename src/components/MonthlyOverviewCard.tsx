@@ -87,43 +87,43 @@ export default function MonthlyOverviewCard() {
   }, [user])
 
   if (!user) return null
-  if (loading) return <div className="rounded-3xl p-6 bg-white/30 text-white mb-4">Lade Monatsübersicht...</div>
+  if (loading) return <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 mb-4 text-gray-600">Lade Monatsübersicht...</div>
 
   return (
     <>
-      <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 mb-4 text-white" style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31,38,135,0.18)'}}>
-        <h3 className="text-lg font-semibold mb-2">Monatsübersicht</h3>
-        <div className="mb-3 text-emerald-900 text-xs flex items-center gap-2">
-          <FaInfoCircle className="text-emerald-700" /> Tippe auf einen Bereich für mehr Details.
+      <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 mb-4 text-gray-800">
+        <h3 className="text-lg font-semibold mb-2 text-gray-800">Monatsübersicht</h3>
+        <div className="mb-3 text-gray-600 text-xs flex items-center gap-2">
+          <FaInfoCircle className="text-emerald-600" /> Tippe auf einen Bereich für mehr Details.
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <button onClick={() => setModal('calories')} className="text-left">
-            <div className="text-2xl font-bold">{stats?.totalCalories} kcal</div>
-            <div className="text-xs text-emerald-100">Aufgenommen</div>
+            <div className="text-2xl font-bold text-gray-800">{stats?.totalCalories} kcal</div>
+            <div className="text-xs text-gray-600">Aufgenommen</div>
           </button>
           <button onClick={() => setModal('burned')} className="text-left">
-            <div className="text-2xl font-bold">{stats?.totalBurned} kcal</div>
-            <div className="text-xs text-emerald-100">Verbrannt (Aktivitäten)</div>
+            <div className="text-2xl font-bold text-gray-800">{stats?.totalBurned} kcal</div>
+            <div className="text-xs text-gray-600">Verbrannt (Aktivitäten)</div>
           </button>
           <button onClick={() => setModal('fasting')} className="text-left">
-            <div className="text-2xl font-bold">{stats?.fastingCount}</div>
-            <div className="text-xs text-emerald-100">Fasten-Sessions</div>
+            <div className="text-2xl font-bold text-gray-800">{stats?.fastingCount}</div>
+            <div className="text-xs text-gray-600">Fasten-Sessions</div>
           </button>
           <button onClick={() => setModal('fasting')} className="text-left">
-            <div className="text-2xl font-bold">{stats?.fastingHours.toFixed(1)} h</div>
-            <div className="text-xs text-emerald-100">Gefastet</div>
+            <div className="text-2xl font-bold text-gray-800">{stats?.fastingHours.toFixed(1)} h</div>
+            <div className="text-xs text-gray-600">Gefastet</div>
           </button>
           <button onClick={() => setModal('challenges')} className="text-left">
-            <div className="text-2xl font-bold">{stats?.challengeCount}</div>
-            <div className="text-xs text-emerald-100">Challenges</div>
+            <div className="text-2xl font-bold text-gray-800">{stats?.challengeCount}</div>
+            <div className="text-xs text-gray-600">Challenges</div>
           </button>
           <button onClick={() => setModal('challenges')} className="text-left">
-            <div className="text-2xl font-bold">{stats?.challengeCompleted}</div>
-            <div className="text-xs text-emerald-100">Abgeschlossen</div>
+            <div className="text-2xl font-bold text-gray-800">{stats?.challengeCompleted}</div>
+            <div className="text-xs text-gray-600">Abgeschlossen</div>
           </button>
         </div>
         <div className="flex justify-end mt-2">
-          <a href="/dashboard/monthly-details" className="text-xs text-emerald-200 underline hover:text-emerald-100 transition">Alle Monatsdetails anzeigen →</a>
+          <a href="/dashboard/monthly-details" className="text-xs text-emerald-600 underline hover:text-emerald-700 transition">Alle Monatsdetails anzeigen →</a>
         </div>
       </div>
       {/* Modals */}

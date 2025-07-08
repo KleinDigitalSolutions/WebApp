@@ -135,7 +135,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#A9E142]">
+      <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#ffffff]">
         <div className="flex items-center justify-center py-12 flex-1 z-10">
           <LoadingSpinner size="lg" />
         </div>
@@ -145,7 +145,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#A9E142]">
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#ffffff]">
       <div className="w-full max-w-lg mx-auto px-2 pt-6 pb-32 flex flex-col gap-6 z-10">
         {/* Avatar & Name */}
         <motion.div
@@ -154,12 +154,12 @@ export default function ProfilePage() {
           transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
           className="flex flex-col items-center gap-2 mb-2"
         >
-          <div className="w-20 h-20 rounded-full bg-white/40 shadow-lg border-2 border-emerald-200 flex items-center justify-center text-4xl font-bold text-emerald-700 backdrop-blur-2xl mb-1" style={{boxShadow:'0 4px 32px #05966933'}}>
+          <div className="w-20 h-20 rounded-full bg-gray-100 shadow-lg border-2 border-gray-200 flex items-center justify-center text-4xl font-bold text-gray-700 mb-1" style={{boxShadow:'0 4px 32px rgba(0,0,0,0.1)'}}>
             {formData.first_name?.[0]?.toUpperCase() || 'U'}
           </div>
-          <div className="text-xl font-bold text-emerald-900 drop-shadow text-center">{formData.first_name} {formData.last_name}</div>
+          <div className="text-xl font-bold text-gray-800 text-center">{formData.first_name} {formData.last_name}</div>
           {formData.goal && (
-            <div className="text-xs px-3 py-1 rounded-full bg-[#7CB518] text-white shadow border border-emerald-200 mb-1">🎯 Ziel: {(() => {
+            <div className="text-xs px-3 py-1 rounded-full bg-emerald-500 text-white shadow border border-emerald-200 mb-1">🎯 Ziel: {(() => {
               switch(formData.goal) {
                 case 'lose_weight': return 'Abnehmen';
                 case 'maintain_weight': return 'Gewicht halten';
@@ -176,10 +176,9 @@ export default function ProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
-            className="bg-[#7CB518] rounded-3xl border border-white/30 shadow-2xl p-6"
-            style={{boxShadow:'0 8px 40px 0 #05966933'}}
+            className="bg-white rounded-3xl border border-gray-200 shadow-lg p-6"
           >
-            <h2 className="text-lg font-bold text-white mb-4 bg-gradient-to-r from-emerald-400 via-emerald-600 to-emerald-800 bg-clip-text drop-shadow">Persönliche Daten</h2>
+            <h2 className="text-lg font-bold text-gray-800 mb-4">Persönliche Daten</h2>
             
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -261,10 +260,9 @@ export default function ProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
-            className="bg-[#7CB518] rounded-3xl border border-white/30 shadow-2xl p-6"
-            style={{boxShadow:'0 8px 40px 0 #05966933'}}
+            className="bg-white rounded-3xl border border-gray-200 shadow-lg p-6"
           >
-            <h2 className="text-lg font-bold text-white mb-4 bg-gradient-to-r from-emerald-400 via-emerald-600 to-emerald-800 bg-clip-text drop-shadow">Aktivität & Ziele</h2>
+            <h2 className="text-lg font-bold text-gray-800 mb-4">Aktivität & Ziele</h2>
             
             <div className="space-y-4">
               <Select
@@ -302,10 +300,9 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
-              className="bg-[#7CB518] rounded-3xl border border-white/30 shadow-2xl p-6"
-              style={{boxShadow:'0 8px 40px 0 #05966933'}}
+              className="bg-white rounded-3xl border border-gray-200 shadow-lg p-6"
             >
-              <h2 className="text-lg font-bold text-white mb-4 bg-gradient-to-r from-emerald-400 via-emerald-600 to-emerald-800 bg-clip-text drop-shadow">Deine geschätzten Tagesziele</h2>
+              <h2 className="text-lg font-bold text-gray-800 mb-4">Deine geschätzten Tagesziele</h2>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-4 bg-green-50 rounded-xl">
@@ -334,19 +331,19 @@ export default function ProfilePage() {
           )}
 
           {/* Produktverwaltung */}
-          <div className="bg-[#7CB518] rounded-2xl border border-white/30 shadow-2xl p-6">
-            <h2 className="text-lg font-medium text-white mb-4">Community & Produkte</h2>
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
+            <h2 className="text-lg font-medium text-gray-800 mb-4">Community & Produkte</h2>
             <div className="space-y-3">
               <div 
                 onClick={() => router.push('/products/add')}
-                className="flex items-center justify-between p-4 bg-white/80 rounded-xl cursor-pointer hover:bg-white transition-colors"
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
                     <span className="text-white text-lg">➕</span>
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">Produkt hinzufügen</h3>
+                    <h3 className="font-medium text-gray-800">Produkt hinzufügen</h3>
                     <p className="text-sm text-gray-600">Hilf der Community mit neuen Produkten</p>
                   </div>
                 </div>
@@ -354,14 +351,14 @@ export default function ProfilePage() {
               </div>
               <div 
                 onClick={() => router.push('/products/my')}
-                className="flex items-center justify-between p-4 bg-white/80 rounded-xl cursor-pointer hover:bg-white transition-colors"
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
                     <span className="text-white text-lg">📦</span>
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">Meine Produkte</h3>
+                    <h3 className="font-medium text-gray-800">Meine Produkte</h3>
                     <p className="text-sm text-gray-600">Übersicht deiner hinzugefügten Produkte</p>
                   </div>
                 </div>
@@ -371,11 +368,11 @@ export default function ProfilePage() {
           </div>
 
           {/* Unverträglichkeiten */}
-          <div className="bg-[#7CB518] rounded-2xl border border-white/30 shadow-2xl p-6">
-            <h2 className="text-lg font-medium text-white mb-4">Unverträglichkeiten</h2>
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
+            <h2 className="text-lg font-medium text-gray-800 mb-4">Unverträglichkeiten</h2>
             <div className="flex flex-wrap gap-3">
               {intoleranceOptions.map((item) => (
-                <label key={item} className="flex items-center space-x-2 bg-white/80 px-3 py-2 rounded-xl cursor-pointer border border-white/30">
+                <label key={item} className="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-xl cursor-pointer border border-gray-200">
                   <input
                     type="checkbox"
                     checked={formData.intolerances?.includes(item) || false}
@@ -388,7 +385,7 @@ export default function ProfilePage() {
                       }))
                     }}
                   />
-                  <span className="text-gray-900 font-medium">{item}</span>
+                  <span className="text-gray-800 font-medium">{item}</span>
                 </label>
               ))}
             </div>

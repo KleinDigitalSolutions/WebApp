@@ -206,7 +206,7 @@ function AddFoodContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#A9E142] flex flex-col">
+    <div className="min-h-screen bg-[#ffffff] flex flex-col">
       {/* Mobile Header */}
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-gray-100">
         <div className="flex items-center justify-between px-4 py-4">
@@ -233,7 +233,7 @@ function AddFoodContent() {
             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-2">
               <Camera className="h-6 w-6 text-white" />
             </div>
-            <span className="text-sm font-medium text-white">Foto</span>
+            <span className="text-sm font-medium text-gray-800">Foto</span>
           </button>
           <button 
             onClick={() => setShowScanner(true)}
@@ -242,7 +242,7 @@ function AddFoodContent() {
             <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-2">
               <Barcode className="h-6 w-6 text-white" />
             </div>
-            <span className="text-sm font-medium text-white">Scannen</span>
+            <span className="text-sm font-medium text-gray-800">Scannen</span>
           </button>
         </div>
 
@@ -254,7 +254,7 @@ function AddFoodContent() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Lebensmittel suchen..."
-              className="w-full p-4 pr-12 bg-white/90 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+              className="w-full p-4 pr-12 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
             <button 
@@ -264,7 +264,7 @@ function AddFoodContent() {
               <Search className="h-5 w-5" />
             </button>
           </div>
-          <p className="text-xs text-white/80 mt-2 text-center">Scrollen für mehr Ergebnisse</p>
+          <p className="text-xs text-gray-600 mt-2 text-center">Scrollen für mehr Ergebnisse</p>
         </div>
 
         {/* Search Results */}
@@ -282,10 +282,10 @@ function AddFoodContent() {
         {!loading && searchQuery && searchResults.length === 0 && (
           <div className="text-center">
             <div className="text-gray-400 text-4xl mb-4">🔍</div>
-            <h3 className="text-lg font-semibold text-white mb-2">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
               Keine Ergebnisse für &quot;{searchQuery}&quot;
             </h3>
-            <p className="text-white/80 mb-4">
+            <p className="text-gray-600 mb-4">
               Das gesuchte Produkt ist noch nicht in unserer Datenbank verfügbar.
             </p>
             <button 
@@ -299,53 +299,53 @@ function AddFoodContent() {
 
         {/* Selected Food */}
         {selectedFood && (
-          <div className="bg-[#7CB518] backdrop-blur-xl rounded-2xl shadow-lg border border-white/30 p-6 mb-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Ausgewähltes Lebensmittel</h3>
+          <div className="bg-white backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200 p-6 mb-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Ausgewähltes Lebensmittel</h3>
             <div className="mb-4">
-              <h4 className="font-medium text-white">{selectedFood.product_name || 'Unbekanntes Produkt'}</h4>
-              <p className="text-sm text-white/80">
+              <h4 className="font-medium text-gray-800">{selectedFood.product_name || 'Unbekanntes Produkt'}</h4>
+              <p className="text-sm text-gray-600">
                 {selectedFood.nutriments['energy-kcal_100g'] || 0} kcal pro 100g
               </p>
             </div>
             {/* Quantity Selector */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-white mb-2">Menge (g)</label>
+              <label className="block text-sm font-medium text-gray-800 mb-2">Menge (g)</label>
               <div className="flex items-center space-x-3">
                 <button 
                   onClick={() => setQuantity(Math.max(10, quantity - 10))}
-                  className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center transition-colors active:scale-95"
+                  className="w-10 h-10 bg-gray-200 rounded-xl flex items-center justify-center transition-colors active:scale-95"
                 >
-                  <Minus className="h-4 w-4 text-white" />
+                  <Minus className="h-4 w-4 text-gray-600" />
                 </button>
                 <input
                   type="number"
                   value={quantity}
                   onChange={(e) => setQuantity(parseInt(e.target.value) || 100)}
-                  className="flex-1 text-center p-3 bg-white/80 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900"
+                  className="flex-1 text-center p-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   min="10"
                 />
                 <button 
                   onClick={() => setQuantity(quantity + 10)}
-                  className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center transition-colors active:scale-95"
+                  className="w-10 h-10 bg-gray-200 rounded-xl flex items-center justify-center transition-colors active:scale-95"
                 >
-                  <Plus className="h-4 w-4 text-white" />
+                  <Plus className="h-4 w-4 text-gray-600" />
                 </button>
               </div>
             </div>
             {/* Nutrition Info */}
-            <div className="bg-white/10 rounded-2xl p-4 mb-6">
-              <h5 className="font-medium text-white mb-2">Nährwerte für {quantity}g</h5>
-              <div className="grid grid-cols-2 gap-3 text-sm text-white/90">
-                <div>Kalorien: <span className="font-bold text-emerald-200">
+            <div className="bg-gray-100 rounded-2xl p-4 mb-6">
+              <h5 className="font-medium text-gray-800 mb-2">Nährwerte für {quantity}g</h5>
+              <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+                <div>Kalorien: <span className="font-bold text-green-600">
                   {Math.round(((selectedFood.nutriments['energy-kcal_100g'] || 0) * quantity) / 100)}
                 </span></div>
-                <div>Protein: <span className="font-bold text-blue-200">
+                <div>Protein: <span className="font-bold text-blue-600">
                   {((selectedFood.nutriments['proteins_100g'] || 0) * quantity / 100).toFixed(1)}g
                 </span></div>
-                <div>Kohlenhydrate: <span className="font-bold text-orange-200">
+                <div>Kohlenhydrate: <span className="font-bold text-orange-600">
                   {((selectedFood.nutriments['carbohydrates_100g'] || 0) * quantity / 100).toFixed(1)}g
                 </span></div>
-                <div>Fett: <span className="font-bold text-yellow-200">
+                <div>Fett: <span className="font-bold text-yellow-600">
                   {((selectedFood.nutriments['fat_100g'] || 0) * quantity / 100).toFixed(1)}g
                 </span></div>
               </div>
@@ -362,7 +362,7 @@ function AddFoodContent() {
               <button
                 onClick={() => handleAddFood('lunch')}
                 disabled={adding}
-                className="w-full p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full p-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl font-medium shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {adding ? 'Wird hinzugefügt...' : 'Mittagessen'}
               </button>

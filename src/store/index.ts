@@ -63,3 +63,46 @@ export const useUIStore = create<UIState>((set) => ({
   setLoading: (loading) => set({ isLoading: loading }),
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
 }))
+
+interface OnboardingState {
+  currentStep: number
+  totalSteps: number
+  userGoals: string[]
+  height: number
+  weight: number
+  targetWeight: number
+  birthDate: string | null
+  
+  setCurrentStep: (step: number) => void
+  setUserGoals: (goals: string[]) => void
+  setHeight: (height: number) => void
+  setWeight: (weight: number) => void
+  setTargetWeight: (weight: number) => void
+  setBirthDate: (date: string | null) => void
+  resetOnboarding: () => void
+}
+
+export const useOnboardingStore = create<OnboardingState>((set) => ({
+  currentStep: 1,
+  totalSteps: 5,
+  userGoals: [],
+  height: 170,
+  weight: 70,
+  targetWeight: 70,
+  birthDate: null,
+  
+  setCurrentStep: (step) => set({ currentStep: step }),
+  setUserGoals: (goals) => set({ userGoals: goals }),
+  setHeight: (height) => set({ height }),
+  setWeight: (weight) => set({ weight }),
+  setTargetWeight: (weight) => set({ targetWeight: weight }),
+  setBirthDate: (date) => set({ birthDate: date }),
+  resetOnboarding: () => set({ 
+    currentStep: 1,
+    userGoals: [],
+    height: 170,
+    weight: 70,
+    targetWeight: 70,
+    birthDate: null
+  }),
+}))

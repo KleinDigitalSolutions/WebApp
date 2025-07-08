@@ -230,7 +230,7 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
                 minWidth: '14rem',
                 maxWidth: '14rem',
                 boxShadow: '0 8px 32px 0 rgba(31,38,135,0.25), 0 1.5px 8px 0 rgba(0,0,0,0.10)',
-                background: `#7CB518 url('/wave-gradient-emerald.svg') repeat-x`,
+                background: `#ffffff`,
                 backgroundSize: '1568px 300px',
                 backgroundPositionX: bgPosX,
                 backgroundPositionY: '0px',
@@ -243,11 +243,11 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
                 {/* Unteres Glanz-Overlay entfernt, um Kante zu vermeiden */}
               </div>
               <div className="h-full flex flex-col items-center justify-center p-6 text-center relative z-10">
-                <div className={`mb-4 drop-shadow-lg text-white text-opacity-90`}>{card.icon}</div>
-                <h4 className="text-lg font-bold text-white drop-shadow-lg mb-2">{card.title}</h4>
-                <p className="text-sm text-white/90 drop-shadow mb-2">{card.description}</p>
+                <div className={`mb-4 drop-shadow-lg text-gray-700`}>{card.icon}</div>
+                <h4 className="text-lg font-bold text-gray-800 drop-shadow-lg mb-2">{card.title}</h4>
+                <p className="text-sm text-gray-600 drop-shadow mb-2">{card.description}</p>
                 {card.challenge && (
-                  <div className="mt-2 text-xs text-emerald-100/90 bg-emerald-700/60 px-2 py-1 rounded-full font-semibold shadow">Aktiv: {card.challenge.current_streak_days} Tage</div>
+                  <div className="mt-2 text-xs text-gray-700 bg-gray-200 px-2 py-1 rounded-full font-semibold shadow">Aktiv: {card.challenge.current_streak_days} Tage</div>
                 )}
               </div>
             </div>
@@ -271,7 +271,7 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
                 <div className="w-full mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Wie lange möchtest du verzichten?</label>
                   <select
-                    className="w-full rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                     value={challengeDuration}
                     onChange={e => setChallengeDuration(Number(e.target.value))}
                     disabled={isStarting}
@@ -285,9 +285,9 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
               {/* Fortschritt nur wenn Challenge aktiv */}
               {selectedCard.challenge && (
                 <div className="w-full text-center mt-2">
-                  <div className="text-emerald-600 font-semibold mb-1">Aktiv: {selectedCard.challenge.current_streak_days} / {selectedCard.challenge.target_days} Tage</div>
-                  <div className="w-full bg-emerald-100 rounded-full h-2 mb-2">
-                    <div className="bg-emerald-500 h-2 rounded-full" style={{width: `${Math.min(100, Math.round((selectedCard.challenge.current_streak_days/selectedCard.challenge.target_days)*100))}%`}}></div>
+                  <div className="text-blue-600 font-semibold mb-1">Aktiv: {selectedCard.challenge.current_streak_days} / {selectedCard.challenge.target_days} Tage</div>
+                  <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${Math.min(100, Math.round((selectedCard.challenge.current_streak_days/selectedCard.challenge.target_days)*100))}%`}}></div>
                   </div>
                   <div className="text-xs text-gray-500">Challenge läuft!</div>
                 </div>
@@ -297,7 +297,7 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
             {!selectedCard.challenge && (
               <div className="w-full px-6 pb-6 pt-2 bg-white sticky bottom-0 z-10 rounded-b-3xl">
                 <button
-                  className="w-full py-3 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors disabled:opacity-60"
+                  className="w-full py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-60"
                   onClick={handleStartChallenge}
                   disabled={isStarting}
                 >

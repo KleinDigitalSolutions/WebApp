@@ -60,14 +60,14 @@ function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
       {/* Pull to refresh indicator */}
       {(pullDistance > 0 || isRefreshing) && (
         <div 
-          className="absolute top-0 left-0 right-0 flex justify-center items-center bg-emerald-50 z-10"
+          className="absolute top-0 left-0 right-0 flex justify-center items-center bg-gray-50 z-10"
           style={{ 
             height: pullDistance || (isRefreshing ? 60 : 0),
             transition: isRefreshing ? 'height 0.3s ease' : 'none'
           }}
         >
           <RefreshCw 
-            className={`h-6 w-6 text-emerald-600 ${isRefreshing ? 'animate-spin' : ''}`}
+            className={`h-6 w-6 text-gray-600 ${isRefreshing ? 'animate-spin' : ''}`}
             style={{ 
               transform: `rotate(${pullDistance * 3.6}deg)`,
               transition: isRefreshing ? 'transform 0.3s ease' : 'none'
@@ -239,15 +239,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <>
-        <style jsx global>{`
-          html {
-            background: #A9E142 !important;
-          }
-          body {
-            background: #A9E142 !important;
-          }
-        `}</style>
-        <div className="min-h-screen flex items-center justify-center" style={{ background: '#A9E142' }}>
+        <div className="min-h-screen bg-[#ffffff] flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
         </div>
       </>
@@ -256,22 +248,14 @@ export default function Dashboard() {
 
   return (
     <>
-      <style jsx global>{`
-        html {
-          background: #A9E142 !important;
-        }
-        body {
-          background: #A9E142 !important;
-        }
-      `}</style>
       <PullToRefresh onRefresh={loadData}>
-        <div className="flex-1 flex flex-col min-h-0 overflow-x-hidden" style={{ background: '#A9E142', scrollBehavior: 'smooth' }}>
+        <div className="min-h-screen bg-[#ffffff] flex-1 flex flex-col min-h-0 overflow-x-hidden" style={{ scrollBehavior: 'smooth' }}>
           <div className="px-4 pt-6 flex items-start justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-white drop-shadow-sm">
+              <h1 className="text-2xl font-bold text-gray-800">
                 {getGreeting()}{getFirstName() && `, ${getFirstName()}`}!
               </h1>
-              <p className="text-sm text-emerald-50/90 drop-shadow-sm mt-1">
+              <p className="text-sm text-gray-600 mt-1">
                 {new Date().toLocaleDateString('de-DE', { 
                   weekday: 'long', 
                   day: 'numeric', 
@@ -295,11 +279,11 @@ export default function Dashboard() {
           <DashboardOverviewSwiper />
 
           {/* Quick Stats Card */}
-          <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6" style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Tagesübersicht</h2>
-              <div className="flex items-center text-sm text-white font-medium drop-shadow-sm">
-                <Calendar className="h-4 w-4 mr-1 text-white drop-shadow-sm" />
+              <div className="flex items-center text-sm text-gray-700 font-medium">
+                <Calendar className="h-4 w-4 mr-1 text-gray-700" />
                 Heute
               </div>
             </div>
@@ -339,12 +323,12 @@ export default function Dashboard() {
                     </defs>
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-lg font-bold text-white drop-shadow-sm">{Math.round(consumedCalories)}</span>
-                    <span className="text-xs font-semibold text-emerald-50/90 drop-shadow-sm">kcal</span>
+                    <span className="text-lg font-bold text-gray-800">{Math.round(consumedCalories)}</span>
+                    <span className="text-xs font-semibold text-gray-600">kcal</span>
                   </div>
                 </div>
                 <div className="text-center mt-2">
-                  <div className="text-xs font-semibold text-emerald-50/90 drop-shadow-sm">von {dailyGoals.calories}</div>
+                  <div className="text-xs font-semibold text-gray-600">von {dailyGoals.calories}</div>
                 </div>
               </div>
 
@@ -381,12 +365,12 @@ export default function Dashboard() {
                     </defs>
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-lg font-bold text-white drop-shadow-sm">{Math.round(waterIntake / 100) / 10}L</span>
-                    <span className="text-xs font-semibold text-emerald-50/90 drop-shadow-sm">Wasser</span>
+                    <span className="text-lg font-bold text-gray-800">{Math.round(waterIntake / 100) / 10}L</span>
+                    <span className="text-xs font-semibold text-gray-600">Wasser</span>
                   </div>
                 </div>
                 <div className="text-center mt-2">
-                  <div className="text-xs font-semibold text-emerald-50/90 drop-shadow-sm">von {waterGoal / 1000}L</div>
+                  <div className="text-xs font-semibold text-gray-600">von {waterGoal / 1000}L</div>
                 </div>
               </div>
             </div>
@@ -401,7 +385,7 @@ export default function Dashboard() {
                 { label: 'Zucker', value: Math.round(consumedSugar) + 'g', color: '#a78bfa' },
                 { label: 'Natrium', value: Math.round(consumedSodium) + 'mg', color: '#facc15' },
               ].map((macro) => (
-                <div key={macro.label} className="text-center p-3 bg-white/30 rounded-2xl border border-white/20 shadow-sm backdrop-blur-xl">
+                <div key={macro.label} className="text-center p-3 bg-gray-50 rounded-2xl border border-gray-200 shadow-sm">
                   <div className="flex items-center justify-center mb-2">
                     <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/0 shadow-none">
                       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style={{display:'block',margin:'auto'}}>
@@ -410,32 +394,32 @@ export default function Dashboard() {
                       </svg>
                     </span>
                   </div>
-                  <div className="text-sm font-semibold text-white drop-shadow-sm">{macro.value}</div>
-                  <div className="text-xs text-emerald-50/90 drop-shadow-sm">{macro.label}</div>
+                  <div className="text-sm font-semibold text-gray-800">{macro.value}</div>
+                  <div className="text-xs text-gray-600">{macro.label}</div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Aktivitäten des Tages */}
-          <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6" style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">Heutige Aktivitäten</h3>
+              <h3 className="text-lg font-semibold text-gray-800">Heutige Aktivitäten</h3>
             </div>
             {todayActivities.length === 0 ? (
-              <div className="text-center py-6 text-white/80 text-sm">Noch keine Aktivitäten eingetragen</div>
+              <div className="text-center py-6 text-gray-600 text-sm">Noch keine Aktivitäten eingetragen</div>
             ) : (
               <div className="space-y-3">
                 {todayActivities.slice(0, 3).map((act) => (
-                  <div key={act.id} className="flex items-center justify-between p-4 bg-white/20 rounded-2xl">
+                  <div key={act.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
                     <div className="flex items-center">
                       <span className="text-2xl mr-3">{act.emoji}</span>
                       <div>
-                        <div className="font-medium text-white">{act.activity_name}</div>
-                        <div className="text-xs text-white/80">{act.duration_min} min • {act.calories} kcal</div>
+                        <div className="font-medium text-gray-800">{act.activity_name}</div>
+                        <div className="text-xs text-gray-600">{act.duration_min} min • {act.calories} kcal</div>
                       </div>
                     </div>
-                    <div className="text-right text-xs text-white/60">
+                    <div className="text-right text-xs text-gray-500">
                       {act.note && <div className="italic">{act.note}</div>}
                       <div>{new Date(act.created_at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</div>
                     </div>
@@ -449,12 +433,12 @@ export default function Dashboard() {
           <ActivitiesCard />
 
           {/* Recent Meals */}
-          <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6" style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">Heutige Mahlzeiten</h3>
+              <h3 className="text-lg font-semibold text-gray-800">Heutige Mahlzeiten</h3>
               <button 
                 onClick={() => router.push('/diary')}
-                className="flex items-center text-emerald-200 font-medium text-sm"
+                className="flex items-center text-blue-600 font-medium text-sm"
               >
                 Alle anzeigen
                 <ChevronRight className="h-4 w-4 ml-1" />
@@ -463,13 +447,13 @@ export default function Dashboard() {
             
             {todayEntries.length === 0 ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <PlusCircle className="h-8 w-8 text-white/60" />
+                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <PlusCircle className="h-8 w-8 text-gray-400" />
                 </div>
-                <p className="text-white/80 text-sm">Noch keine Mahlzeiten eingetragen</p>
+                <p className="text-gray-600 text-sm">Noch keine Mahlzeiten eingetragen</p>
                 <button 
                   onClick={() => router.push('/diary/add')}
-                  className="mt-3 text-emerald-200 font-medium text-sm"
+                  className="mt-3 text-blue-600 font-medium text-sm"
                 >
                   Erste Mahlzeit hinzufügen
                 </button>
@@ -477,13 +461,13 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-3">
                 {todayEntries.slice(0, 3).map((entry) => (
-                  <div key={entry.id} className="flex items-center justify-between p-4 bg-white/20 rounded-2xl">
+                  <div key={entry.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
                     <div className="flex-1">
-                      <h4 className="font-medium text-white">{entry.food_name}</h4>
-                      <p className="text-sm text-white/80">{entry.calories} kcal</p>
+                      <h4 className="font-medium text-gray-800">{entry.food_name}</h4>
+                      <p className="text-sm text-gray-600">{entry.calories} kcal</p>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm text-white/60">
+                      <div className="text-sm text-gray-500">
                         {new Date(entry.created_at).toLocaleTimeString('de-DE', { 
                           hour: '2-digit', 
                           minute: '2-digit' 
@@ -503,12 +487,12 @@ export default function Dashboard() {
           <ChallengeSection />
 
           {/* Insights Card */}
-          <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 pb-2 text-white" style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 pb-2">
             <div className="flex items-center mb-3">
               <TrendingUp className="h-6 w-6 mr-2" />
               <h3 className="text-lg font-semibold">Deine Fortschritte</h3>
             </div>
-            <p className="text-emerald-100 text-sm mb-4">
+            <p className="text-gray-600 text-sm mb-4">
               {calorieProgress >= 80 && calorieProgress <= 120 && waterProgress >= 80
                 ? "Fantastisch! Du bist perfekt auf Kurs mit deinen Kalorien- und Wasserzielen."
                 : calorieProgress >= 80 && calorieProgress <= 120
@@ -522,7 +506,7 @@ export default function Dashboard() {
             </p>
             <button 
               onClick={() => router.push('/chat')}
-              className="flex items-center text-white font-medium"
+              className="flex items-center text-gray-800 font-medium"
             >
               Mehr Tipps erhalten
               <ChevronRight className="h-4 w-4 ml-1" />

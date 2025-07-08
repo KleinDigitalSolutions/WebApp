@@ -88,13 +88,13 @@ export default function DiaryPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#A9E142] relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#ffffff] relative overflow-x-hidden">
       {/* Hintergrund-Welle entfernt */}
       <div className="relative z-10">
         {/* Tagesübersicht und Navigation jetzt im Seitenfluss, nicht sticky */}
         <div className="px-4 pt-6 pb-2 space-y-4">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-lg font-semibold text-gray-900">Ernährungstagebuch</h1>
+            <h1 className="text-lg font-semibold text-gray-800">Ernährungstagebuch</h1>
           </div>
           {/* Date Navigation */}
           <div className="flex items-center justify-between">
@@ -106,7 +106,7 @@ export default function DiaryPage() {
             </button>
             <div className="flex items-center space-x-2">
               <Calendar className="h-5 w-5 text-emerald-600" />
-              <span className="font-medium text-gray-900">
+              <span className="font-medium text-gray-800">
                 {selectedDate.toLocaleDateString('de-DE', { 
                   weekday: 'long',
                   day: 'numeric', 
@@ -164,7 +164,7 @@ export default function DiaryPage() {
                             <span className="text-xl">{mealType.icon}</span>
                           </div>
                           <div>
-                            <h3 className="font-medium text-gray-900">{mealType.label}</h3>
+                            <h3 className="font-medium text-gray-800">{mealType.label}</h3>
                             <p className="text-sm text-gray-600">{mealCalories} kcal</p>
                           </div>
                         </div>
@@ -201,7 +201,7 @@ export default function DiaryPage() {
                                 className="group flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-xl transition-all duration-200 hover:bg-gray-100"
                               >
                                 <div className="flex-1">
-                                  <h4 className="font-medium text-gray-900 text-sm">{entry.food_name}</h4>
+                                  <h4 className="font-medium text-gray-800 text-sm">{entry.food_name}</h4>
                                   <div className="flex items-center space-x-3 text-xs text-gray-600 mt-1">
                                     <span>{entry.quantity}{entry.unit}</span>
                                     <span className="font-medium text-emerald-600">{entry.calories} kcal</span>

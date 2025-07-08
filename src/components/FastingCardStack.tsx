@@ -222,7 +222,7 @@ export default function FastingCardStack() {
 
   if (loading) {
     return (
-      <div className="bg-emerald-100/80 rounded-3xl p-6 shadow-lg border border-emerald-200/60">
+      <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-200">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
           <div className="h-64 bg-gray-200 rounded-2xl"></div>
@@ -236,17 +236,16 @@ export default function FastingCardStack() {
   const isActiveSession = currentSession && currentSession.target_duration_hours === currentType.duration
 
   return (
-    <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6"
-      style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+    <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 relative">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-white flex items-center">
+        <h3 className="text-lg font-semibold text-gray-800 flex items-center">
           <Timer className="h-5 w-5 mr-2" style={{color: color.progress}} />
           Fasten
         </h3>
         <div className="flex items-center space-x-2">
           <button
             onClick={prevCard}
-            className="p-2 rounded-full hover:bg-emerald-200/50 transition-colors"
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -260,7 +259,7 @@ export default function FastingCardStack() {
           </div>
           <button
             onClick={nextCard}
-            className="p-2 rounded-full hover:bg-emerald-200/50 transition-colors"
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -371,7 +370,7 @@ export default function FastingCardStack() {
       </div>
 
       <div className="mt-4 text-center">
-        <p className="text-xs text-white/70">
+        <p className="text-xs text-gray-500">
           Nutze die Pfeile oder Swipe um zwischen den Fasten-Arten zu wechseln
         </p>
       </div>

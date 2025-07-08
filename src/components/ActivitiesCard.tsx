@@ -109,21 +109,21 @@ export default function ActivitiesCard() {
   }
 
   return (
-    <div className="relative rounded-3xl border border-white/30 shadow-2xl p-6 text-white" style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
+    <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 text-gray-800 relative">
       <div className="flex items-center mb-3">
         <span className="text-2xl mr-2">🏃‍♂️</span>
-        <h3 className="text-lg font-semibold">Aktivität hinzufügen</h3>
+        <h3 className="text-lg font-semibold text-gray-800">Aktivität hinzufügen</h3>
       </div>
-      <p className="text-emerald-100 text-sm mb-4">Wähle eine Aktivität aus der Liste und füge sie deinem Tagebuch hinzu.</p>
+      <p className="text-gray-600 text-sm mb-4">Wähle eine Aktivität aus der Liste und füge sie deinem Tagebuch hinzu.</p>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-72 overflow-y-auto">
         {activitiesList.map((activity) => (
           <button
             key={activity.id}
             onClick={() => setSelected(activity.id)}
-            className={`flex items-center px-3 py-2 rounded-2xl border border-white/20 shadow-sm backdrop-blur-xl transition-all duration-200 focus:outline-none ${selected === activity.id ? 'bg-emerald-500/80 scale-105' : 'bg-white/10 hover:bg-emerald-400/30'}`}
+            className={`flex items-center px-3 py-2 rounded-2xl border shadow-sm transition-all duration-200 focus:outline-none ${selected === activity.id ? 'bg-emerald-500 text-white scale-105' : 'bg-gray-50 border-gray-200 hover:bg-emerald-50 text-gray-800'}`}
           >
             <span className="text-xl mr-2">{activity.emoji}</span>
-            <span className="text-sm font-medium text-white text-left">{activity.name}</span>
+            <span className="text-sm font-medium text-left">{activity.name}</span>
           </button>
         ))}
       </div>
@@ -131,8 +131,8 @@ export default function ActivitiesCard() {
         <div className="mt-6 flex flex-col items-center">
           <span className="text-3xl mb-2">{activitiesList.find(a => a.id === selected)?.emoji}</span>
           <div className="text-lg font-semibold mb-1">{activitiesList.find(a => a.id === selected)?.name}</div>
-          <div className="text-sm text-emerald-100 mb-2">MET: {activitiesList.find(a => a.id === selected)?.met}</div>
-          <label className="mt-2 text-sm text-white">Dauer (Minuten):
+          <div className="text-sm text-gray-600 mb-2">MET: {activitiesList.find(a => a.id === selected)?.met}</div>
+          <label className="mt-2 text-sm text-gray-700">Dauer (Minuten):
             <input
               type="number"
               min={5}
@@ -140,19 +140,19 @@ export default function ActivitiesCard() {
               step={5}
               value={duration}
               onChange={e => setDuration(Number(e.target.value))}
-              className="ml-2 px-2 py-1 rounded bg-white/20 text-white w-20 text-center border border-white/30"
+              className="ml-2 px-2 py-1 rounded bg-gray-100 text-gray-800 w-20 text-center border border-gray-300"
             />
           </label>
-          <label className="mt-2 text-sm text-white">Notiz (optional):
+          <label className="mt-2 text-sm text-gray-700">Notiz (optional):
             <input
               type="text"
               value={note}
               onChange={e => setNote(e.target.value)}
-              className="ml-2 px-2 py-1 rounded bg-white/20 text-white w-40 border border-white/30"
+              className="ml-2 px-2 py-1 rounded bg-gray-100 text-gray-800 w-40 border border-gray-300"
               placeholder="z.B. Strecke, Puls..."
             />
           </label>
-          <div className="mt-2 text-emerald-200 text-sm">Geschätzter Verbrauch: <b>{calcCalories(activitiesList.find(a => a.id === selected)?.met || 1, profile?.weight_kg || 70, duration)}</b> kcal</div>
+          <div className="mt-2 text-gray-600 text-sm">Geschätzter Verbrauch: <b>{calcCalories(activitiesList.find(a => a.id === selected)?.met || 1, profile?.weight_kg || 70, duration)}</b> kcal</div>
           <button
             className="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-full font-semibold shadow-lg hover:bg-emerald-700 transition disabled:opacity-60"
             onClick={handleSave}
@@ -170,7 +170,7 @@ export default function ActivitiesCard() {
         </div>
       )}
       {success && (
-        <div className="mt-4 text-emerald-200 font-semibold text-center">Aktivität gespeichert! 🎉</div>
+        <div className="mt-4 text-emerald-600 font-semibold text-center">Aktivität gespeichert! 🎉</div>
       )}
     </div>
   )

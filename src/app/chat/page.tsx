@@ -142,28 +142,28 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#A9E142]">
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#ffffff]">
       {/* Header */}
       <div className="w-full max-w-lg mx-auto px-4 pt-6 pb-2 flex items-center gap-2 z-10">
         <img src="/SVG/gesicht.svg" alt="KI Gesicht" className="w-16 h-16 object-contain m-0 p-0" style={{display:'block'}} />
         <div className="flex-1">
-          <h1 className="text-lg font-bold text-emerald-900 drop-shadow">KI Ernährungsberater</h1>
-          <p className="text-xs text-emerald-700/80">Stelle Fragen oder starte eine Analyse</p>
+          <h1 className="text-lg font-bold text-gray-800">KI Ernährungsberater</h1>
+          <p className="text-xs text-gray-600">Stelle Fragen oder starte eine Analyse</p>
         </div>
-        <button onClick={() => router.push('/dashboard')} className="p-2 rounded-full bg-white/60 hover:bg-white transition-colors">
-          <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        <button onClick={() => router.push('/dashboard')} className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </button>
       </div>
 
       {/* Chat-Container */}
       <div className="flex-1 w-full max-w-lg mx-auto flex flex-col px-2 pt-2 z-10">
         <div
-          className="flex-1 flex flex-col gap-2 overflow-y-auto rounded-3xl shadow-2xl border border-white/60 p-4 mb-3"
+          className="flex-1 flex flex-col gap-2 overflow-y-auto rounded-3xl shadow-lg border border-gray-200 p-4 mb-3"
           style={{
-            background: '#7CB518', // wie Servicekarten im Dashboard
+            background: '#ffffff',
             minHeight: '180px',
             maxHeight: 'calc(100dvh - 320px)',
-            boxShadow: '0 8px 40px 0 #05966933',
+            boxShadow: '0 8px 40px 0 rgba(0,0,0,0.1)',
           }}
         >
           <AnimatePresence initial={false}>
@@ -179,11 +179,11 @@ export default function ChatPage() {
                 {message.role === 'assistant' ? (
                   <div className="flex items-end gap-1">
                     <img src="/SVG/gesicht.svg" alt="KI Gesicht" className="w-16 h-16 object-contain m-0 p-0" style={{display:'block'}} />
-                    <div className="flex-1 max-w-[75%] px-4 py-3 rounded-2xl shadow-xl border relative bg-white text-emerald-900 border-emerald-100" style={{ boxShadow: '0 2px 16px 0 #05966922', border: '1.5px solid #a7f3d0' }}>
+                    <div className="flex-1 max-w-[75%] px-4 py-3 rounded-2xl shadow-xl border relative bg-white text-gray-800 border-gray-200" style={{ boxShadow: '0 2px 16px 0 rgba(0,0,0,0.1)', border: '1.5px solid #e5e7eb' }}>
                       <div className="whitespace-pre-wrap text-sm leading-relaxed relative z-10">
                         <ReactMarkdown
                           components={{
-                            strong: (props) => <strong className="text-emerald-700 font-semibold" {...props} />,
+                            strong: (props) => <strong className="text-emerald-600 font-semibold" {...props} />,
                             li: (props) => <li className="ml-4 list-disc" {...props} />,
                             ul: (props) => <ul className="mb-2 ml-2" {...props} />,
                             p: (props) => <p className="mb-2" {...props} />,
@@ -192,12 +192,12 @@ export default function ChatPage() {
                           {message.content}
                         </ReactMarkdown>
                       </div>
-                      <div className="text-xs mt-2 text-emerald-500">{message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</div>
+                      <div className="text-xs mt-2 text-gray-500">{message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</div>
                     </div>
                   </div>
                 ) : (
                   <div className="flex items-end gap-2 justify-end">
-                    <div className="max-w-[75%] px-4 py-3 rounded-2xl shadow-xl border relative bg-gradient-to-br from-emerald-500 to-emerald-600 text-white ml-auto border-emerald-100" style={{ boxShadow: '0 2px 16px 0 #05966955, 0 0 0 2px #05966933', border: '1.5px solid #05966933' }}>
+                    <div className="max-w-[75%] px-4 py-3 rounded-2xl shadow-xl border relative bg-gradient-to-br from-emerald-500 to-emerald-600 text-white ml-auto border-emerald-100" style={{ boxShadow: '0 2px 16px 0 rgba(16,185,129,0.3)', border: '1.5px solid rgba(16,185,129,0.2)' }}>
                       <div className="whitespace-pre-wrap text-sm leading-relaxed relative z-10">
                         {message.content}
                       </div>
