@@ -96,6 +96,15 @@ export default function OnboardingGoals() {
     },
   ]
 
+  // Standardwert für Gewicht (z.B. 70kg) setzen, falls relevant
+  useEffect(() => {
+    const local = getOnboardingData()
+    // Falls es ein Feld für Startgewicht gibt und es < 50 ist, auf 70 setzen
+    if (local && typeof local.weight === 'number' && local.weight < 50) {
+      saveOnboardingData({ ...local, weight: 70 })
+    }
+  }, [])
+
   const toggleGoal = (goalId: string) => {
     if (safeUserGoals.includes(goalId)) {
       setUserGoals(safeUserGoals.filter(id => id !== goalId))
