@@ -13,6 +13,7 @@ export type OnboardingData = {
   onboardingStep?: number;
   firstName?: string;
   lastName?: string;
+  dietType?: string;
 };
 
 const STORAGE_KEY = 'trackfood_onboarding';

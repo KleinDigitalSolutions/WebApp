@@ -76,6 +76,7 @@ interface OnboardingState {
   lastName: string | null
   age: number | null
   gender: string | null
+  dietType: string | null
   setCurrentStep: (step: number) => void
   setUserGoals: (goals: string[]) => void
   setHeight: (height: number) => void
@@ -86,6 +87,7 @@ interface OnboardingState {
   setLastName: (name: string) => void
   setAge: (age: number) => void
   setGender: (gender: string) => void
+  setDietType: (diet: string | null) => void
   resetOnboarding: () => void
 }
 
@@ -101,6 +103,7 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   lastName: '',
   age: null,
   gender: '',
+  dietType: null,
   setCurrentStep: (step) => set({ currentStep: step }),
   setUserGoals: (goals) => set({ userGoals: goals }),
   setHeight: (height) => set({ height }),
@@ -111,6 +114,7 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   setLastName: (name) => set({ lastName: name }),
   setAge: (age) => set({ age }),
   setGender: (gender) => set({ gender }),
+  setDietType: (diet) => set({ dietType: diet }),
   resetOnboarding: () => set({ 
     currentStep: 1,
     userGoals: [],
@@ -121,6 +125,7 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
     firstName: '',
     lastName: '',
     age: null,
-    gender: ''
+    gender: '',
+    dietType: null
   }),
 }))
