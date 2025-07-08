@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useOnboardingStore } from '@/store'
-import { ArrowLeft, Check, Scale } from 'lucide-react'
+import { ArrowLeft, Scale } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
 
