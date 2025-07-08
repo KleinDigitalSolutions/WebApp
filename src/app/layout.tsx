@@ -5,7 +5,6 @@ import "./fix-scroll.css";
 import { Navigation } from "@/components/BottomNavBar";
 import CookieConsent from '@/components/ui/CookieConsent';
 import GoogleTagManagerClient from '@/components/ui/GoogleTagManagerClient';
-import { OnboardingGate } from '@/components/OnboardingGate';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -157,7 +156,7 @@ export default function RootLayout({
         <div className="min-h-full">
           {/* Content area with bottom navigation spacing on mobile */}
           <main className="pb-20 md:pb-0">
-            <OnboardingGate>{children}</OnboardingGate>
+            {children}
           </main>
         </div>
         {/* Globale Bottom Navigation Bar für eingeloggte Nutzer */}
