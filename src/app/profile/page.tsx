@@ -418,7 +418,6 @@ export default function ProfilePage() {
             <Button
               type="submit"
               loading={saving}
-              disabled={!formData.first_name || !formData.last_name || !formData.age || !formData.gender || !formData.height_cm || !formData.weight_kg || !formData.activity_level || !formData.goal}
               className="flex-1"
             >
               Profil speichern

@@ -6,34 +6,48 @@ import { ArrowLeft } from 'lucide-react'
 import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
 
 export default function OnboardingWeight() {
-  const { currentStep, setCurrentStep, weight, setWeight } = useOnboardingStore()
+  const { currentStep, setCurrentStep, setWeight } = useOnboardingStore()
   const [unit, setUnit] = useState<'kg' | 'lbs' | 'st'>('kg')
   const [error, setError] = useState<string | null>(null)
+  const [localWeight, setLocalWeight] = useState<number>(70)
   const scrollRef = useRef<HTMLDivElement>(null)
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null)
 
   // Weight picker range
   const kgValues = Array.from({ length: 151 }, (_, i) => 40 + i) // 40kg to 190kg
-  
+
+  // On mount: load from localStorage or Zustand
+  useEffect(() => {
+    const local = getOnboardingData()
+    if (typeof local.weight === 'number' && !isNaN(local.weight)) {
+      setLocalWeight(local.weight)
+    }
+  }, [])
+
+  // Save to localStorage & validate on change
+  useEffect(() => {
+    saveOnboardingData({ weight: localWeight })
+    if (localWeight < 30 || localWeight > 300) {
+      setError('Bitte gib ein realistisches Gewicht zwischen 30 und 300 kg an.')
+    } else {
+      setError(null)
+    }
+  }, [localWeight])
+
   // Auto-Snap-Funktion nach dem Scrollen
   const snapToClosestValue = useCallback(() => {
     if (!scrollRef.current) return;
-    
     const container = scrollRef.current;
     const containerRect = container.getBoundingClientRect();
     const containerCenter = containerRect.top + containerRect.height / 2;
-    
-    let closestValue = weight;
+    let closestValue = localWeight;
     let minDistance = Infinity;
-    
-    // Alle Wert-Elemente durchgehen und das nächste zum Zentrum finden
     const elements = container.children;
     for (let i = 0; i < elements.length; i++) {
       const element = elements[i] as HTMLElement;
       const rect = element.getBoundingClientRect();
       const elementCenter = rect.top + rect.height / 2;
       const distance = Math.abs(elementCenter - containerCenter);
-      
       if (distance < minDistance) {
         minDistance = distance;
         const dataValue = element.dataset.value;
@@ -42,86 +56,55 @@ export default function OnboardingWeight() {
         }
       }
     }
-    
-    // Den nächsten Wert auswählen und dorthin scrollen
-    if (closestValue !== weight) {
-      setWeight(closestValue);
-      
-      // Zum ausgewählten Element scrollen
+    if (closestValue !== localWeight) {
+      setLocalWeight(closestValue);
       const selectedElement = container.querySelector(`[data-value="${closestValue}"]`);
       if (selectedElement) {
-        selectedElement.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        (selectedElement as HTMLElement).scrollIntoView({ block: 'center', behavior: 'smooth' });
       }
     }
-  }, [weight, setWeight]);
-  
+  }, [localWeight]);
+
   // Scroll-Handler mit Debounce
   const handleScroll = useCallback(() => {
     if (scrollTimeout.current) {
       clearTimeout(scrollTimeout.current);
     }
-    
     scrollTimeout.current = setTimeout(() => {
       snapToClosestValue();
     }, 150);
   }, [snapToClosestValue]);
 
   useEffect(() => {
-    // Beim Mounten: Wert aus localStorage laden
-    const local = getOnboardingData()
-    if (local.weight && local.weight !== weight) {
-      setWeight(local.weight)
-    } else if (!weight) {
-      setWeight(70)
-    }
-    
-    // Scrolle zum aktuellen Wert wenn die Komponente mounted
     if (scrollRef.current) {
-      const selectedElement = scrollRef.current.querySelector(`[data-value="${weight}"]`) as HTMLElement;
+      const selectedElement = scrollRef.current.querySelector(`[data-value="${localWeight}"]`) as HTMLElement;
       if (selectedElement) {
         selectedElement.scrollIntoView({ block: 'center', behavior: 'auto' });
       }
-      
-      // Event-Listener für Scroll hinzufügen
       scrollRef.current.addEventListener('scroll', handleScroll);
-      
-      // Touch-Events für bessere mobile Erfahrung
       scrollRef.current.addEventListener('touchend', snapToClosestValue);
-      
-      // Cleanup
-      return () => {
-        if (scrollRef.current) {
-          scrollRef.current.removeEventListener('scroll', handleScroll);
-          scrollRef.current.removeEventListener('touchend', snapToClosestValue);
-        }
-        if (scrollTimeout.current) {
-          clearTimeout(scrollTimeout.current);
-        }
-      };
     }
-  }, [weight, setWeight, handleScroll, snapToClosestValue])
-
-  // Bei Änderung speichern & validieren
-  useEffect(() => {
-    if (weight) {
-      saveOnboardingData({ weight })
-      if (weight < 30 || weight > 300) {
-        setError('Bitte gib ein realistisches Gewicht zwischen 30 und 300 kg an.')
-      } else {
-        setError(null)
+    return () => {
+      if (scrollRef.current) {
+        scrollRef.current.removeEventListener('scroll', handleScroll);
+        scrollRef.current.removeEventListener('touchend', snapToClosestValue);
       }
-    }
-  }, [weight])
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
+      }
+    };
+  }, [localWeight, handleScroll, snapToClosestValue])
 
   const handleBack = () => {
     setCurrentStep(currentStep - 1)
   }
 
   const handleNext = async () => {
-    if (weight < 30 || weight > 300) {
+    if (localWeight < 30 || localWeight > 300) {
       setError('Bitte gib ein realistisches Gewicht zwischen 30 und 300 kg an.')
       return
     }
+    setWeight(localWeight) // Only update global state here!
     setCurrentStep(currentStep + 1)
   }
 
@@ -141,7 +124,13 @@ export default function OnboardingWeight() {
     return 'Adipositas'
   }
 
-  const bmi = calculateBMI(weight, useOnboardingStore.getState().height)
+  // Defensive: fallback for height
+  const height = typeof useOnboardingStore.getState().height === 'number' && !isNaN(useOnboardingStore.getState().height)
+    ? useOnboardingStore.getState().height
+    : 175
+  // Defensive: fallback for localWeight
+  const safeWeight = typeof localWeight === 'number' && !isNaN(localWeight) ? localWeight : 70
+  const bmi = calculateBMI(safeWeight, height)
   const bmiCategory = getBMICategory(bmi)
 
   return (
@@ -170,7 +159,6 @@ export default function OnboardingWeight() {
               alt="Weight"
               className="w-full h-full object-contain"
               onError={(e) => {
-                // Fallback if image doesn't exist
                 const target = e.target as HTMLImageElement;
                 target.onerror = null;
                 target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTYgNkg4QzcuNDQ3NzIgNiA3IDYuNDQ3NzIgNyA3VjE3QzcgMTcuNTUyMyA3LjQ0NzcyIDE4IDggMThIMTZDMTYuNTUyMyAxOCAxNyAxNy41NTIzIDE3IDE3VjdDMTcgNi40NDc3MiAxNi41NTIzIDYgMTYgNloiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xNCA1VjNIMTBWNSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTEyIDEwVjE0IiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTAgMTJIMTQiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==";
@@ -179,18 +167,13 @@ export default function OnboardingWeight() {
           </div>
           <h1 className="text-2xl font-bold text-center">Wie viel wiegst du?</h1>
         </div>
-        
         {/* Weight Picker */}
         <div className="w-full max-w-xs mb-6">
           {/* Weight Scroller */}
           <div className="relative mx-auto w-40 h-48 bg-gray-50 rounded-xl">
             <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-gray-50 to-transparent z-10 pointer-events-none"></div>
             <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent z-10 pointer-events-none"></div>
-            
-            {/* Selection Indicator */}
             <div className="absolute top-1/2 left-0 right-0 h-12 -mt-6 border-y-2 border-emerald-400 bg-gray-100/50 z-0 pointer-events-none"></div>
-            
-            {/* Scrollable Values - jetzt mit voller Touchscreen-Unterstützung */}
             <div 
               ref={scrollRef}
               className="absolute inset-0 flex flex-col items-center overflow-y-auto scrollbar-hide py-16"
@@ -201,15 +184,14 @@ export default function OnboardingWeight() {
                   key={value}
                   data-value={value}
                   onClick={() => {
-                    setWeight(value)
-                    // Scrolle zum ausgewählten Element
+                    setLocalWeight(value)
                     const element = document.querySelector(`[data-value="${value}"]`) as HTMLElement
                     if (element) {
                       element.scrollIntoView({ block: 'center', behavior: 'smooth' })
                     }
                   }}
                   className={`py-2 text-2xl font-semibold transition-all touch-manipulation ${
-                    value === weight 
+                    value === localWeight 
                       ? 'text-gray-900 scale-110' 
                       : 'text-gray-400'
                   }`}
@@ -219,7 +201,6 @@ export default function OnboardingWeight() {
               ))}
             </div>
           </div>
-          
           {/* Unit Switcher */}
           <div className="flex justify-center space-x-2 mt-4">
             <button
@@ -256,7 +237,7 @@ export default function OnboardingWeight() {
         </div>
 
         {/* BMI Indicator */}
-        {bmi !== null && (
+        {bmi !== null && isFinite(bmi) && (
           <div className="mb-8 flex items-center bg-gray-50 px-4 py-3 rounded-full">
             <div className="flex items-center mr-2">
               <svg className="w-5 h-5 text-blue-500" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
@@ -274,9 +255,9 @@ export default function OnboardingWeight() {
         <div className="mt-auto w-full">
           <button
             onClick={handleNext}
-            disabled={!weight}
+            disabled={!localWeight}
             className={`w-full py-4 rounded-full font-semibold text-white transition-all ${
-              !weight
+              !localWeight
                 ? 'bg-gray-300'
                 : 'bg-emerald-500 hover:bg-emerald-600 active:scale-95'
             }`}

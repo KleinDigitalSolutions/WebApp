@@ -17,6 +17,9 @@ export default function OnboardingGoals() {
   const { currentStep, setCurrentStep, userGoals, setUserGoals } = useOnboardingStore()
   const router = useRouter()
 
+  // Fallback: userGoals immer als Array initialisieren
+  const safeUserGoals = Array.isArray(userGoals) ? userGoals : []
+
   const goalOptions: GoalOption[] = [
     {
       id: 'weight_loss',
@@ -78,24 +81,24 @@ export default function OnboardingGoals() {
   ]
 
   const toggleGoal = (goalId: string) => {
-    if (userGoals.includes(goalId)) {
-      setUserGoals(userGoals.filter(id => id !== goalId))
+    if (safeUserGoals.includes(goalId)) {
+      setUserGoals(safeUserGoals.filter(id => id !== goalId))
     } else {
-      setUserGoals([...userGoals, goalId])
+      setUserGoals([...safeUserGoals, goalId])
     }
   }
 
   useEffect(() => {
     // Beim Mounten: Ziele aus localStorage laden
     const local = getOnboardingData()
-    if (local.userGoals && local.userGoals.length > 0) {
+    if (local.userGoals && Array.isArray(local.userGoals) && local.userGoals.length > 0) {
       setUserGoals(local.userGoals)
     }
   }, [setUserGoals])
 
   // Bei Änderung speichern
   useEffect(() => {
-    if (userGoals) saveOnboardingData({ userGoals })
+    if (Array.isArray(userGoals)) saveOnboardingData({ userGoals })
   }, [userGoals])
 
   const handleNext = async () => {
@@ -122,7 +125,7 @@ export default function OnboardingGoals() {
               key={goal.id}
               onClick={() => toggleGoal(goal.id)}
               className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
-                userGoals.includes(goal.id) 
+                safeUserGoals.includes(goal.id) 
                   ? 'border-emerald-500 bg-emerald-50' 
                   : 'border-gray-200 bg-white'
               }`}
@@ -132,11 +135,11 @@ export default function OnboardingGoals() {
                 <span className="ml-3 font-medium">{goal.label}</span>
               </div>
               <div className={`w-6 h-6 flex items-center justify-center rounded-full ${
-                userGoals.includes(goal.id) 
+                safeUserGoals.includes(goal.id) 
                   ? 'bg-emerald-500 text-white' 
                   : 'border border-gray-300'
               }`}>
-                {userGoals.includes(goal.id) && (
+                {safeUserGoals.includes(goal.id) && (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                   </svg>
@@ -149,9 +152,9 @@ export default function OnboardingGoals() {
         <div className="mt-auto">
           <button
             onClick={handleNext}
-            disabled={userGoals.length === 0}
+            disabled={safeUserGoals.length === 0}
             className={`w-full py-4 rounded-full font-semibold text-white transition-all ${
-              userGoals.length === 0
+              safeUserGoals.length === 0
                 ? 'bg-gray-300'
                 : 'bg-emerald-500 hover:bg-emerald-600 active:scale-95'
             }`}

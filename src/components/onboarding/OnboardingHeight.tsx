@@ -6,34 +6,48 @@ import { ArrowLeft } from 'lucide-react'
 import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
 
 export default function OnboardingHeight() {
-  const { currentStep, setCurrentStep, height, setHeight } = useOnboardingStore()
+  const { currentStep, setCurrentStep, setHeight } = useOnboardingStore()
   const [unit, setUnit] = useState<'cm' | 'ft/in'>('cm')
   const [error, setError] = useState<string | null>(null)
+  const [localHeight, setLocalHeight] = useState<number>(175)
   const scrollRef = useRef<HTMLDivElement>(null)
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null)
 
   // Height picker range
   const cmValues = Array.from({ length: 51 }, (_, i) => 150 + i) // 150cm to 200cm
-  
+
+  // On mount: load from localStorage or Zustand
+  useEffect(() => {
+    const local = getOnboardingData()
+    if (typeof local.height === 'number' && !isNaN(local.height)) {
+      setLocalHeight(local.height)
+    }
+  }, [])
+
+  // Save to localStorage & validate on change
+  useEffect(() => {
+    saveOnboardingData({ height: localHeight })
+    if (localHeight < 100 || localHeight > 250) {
+      setError('Bitte gib eine realistische Größe zwischen 100 und 250 cm an.')
+    } else {
+      setError(null)
+    }
+  }, [localHeight])
+
   // Auto-Snap-Funktion nach dem Scrollen
   const snapToClosestValue = useCallback(() => {
     if (!scrollRef.current) return;
-    
     const container = scrollRef.current;
     const containerRect = container.getBoundingClientRect();
     const containerCenter = containerRect.top + containerRect.height / 2;
-    
-    let closestValue = height;
+    let closestValue = localHeight;
     let minDistance = Infinity;
-    
-    // Alle Wert-Elemente durchgehen und das nächste zum Zentrum finden
     const elements = container.children;
     for (let i = 0; i < elements.length; i++) {
       const element = elements[i] as HTMLElement;
       const rect = element.getBoundingClientRect();
       const elementCenter = rect.top + rect.height / 2;
       const distance = Math.abs(elementCenter - containerCenter);
-      
       if (distance < minDistance) {
         minDistance = distance;
         const dataValue = element.dataset.value;
@@ -42,86 +56,55 @@ export default function OnboardingHeight() {
         }
       }
     }
-    
-    // Den nächsten Wert auswählen und dorthin scrollen
-    if (closestValue !== height) {
-      setHeight(closestValue);
-      
-      // Zum ausgewählten Element scrollen
+    if (closestValue !== localHeight) {
+      setLocalHeight(closestValue);
       const selectedElement = container.querySelector(`[data-value="${closestValue}"]`);
       if (selectedElement) {
-        selectedElement.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        (selectedElement as HTMLElement).scrollIntoView({ block: 'center', behavior: 'smooth' });
       }
     }
-  }, [height, setHeight]);
-  
+  }, [localHeight]);
+
   // Scroll-Handler mit Debounce
   const handleScroll = useCallback(() => {
     if (scrollTimeout.current) {
       clearTimeout(scrollTimeout.current);
     }
-    
     scrollTimeout.current = setTimeout(() => {
       snapToClosestValue();
     }, 150);
   }, [snapToClosestValue]);
-  
+
   useEffect(() => {
-    // Beim Mounten: Wert aus localStorage laden
-    const local = getOnboardingData()
-    if (local.height && local.height !== height) {
-      setHeight(local.height)
-    } else if (!height) {
-      setHeight(175)
-    }
-    
-    // Scrolle zum aktuellen Wert wenn die Komponente mounted
     if (scrollRef.current) {
-      const selectedElement = scrollRef.current.querySelector(`[data-value="${height}"]`) as HTMLElement;
+      const selectedElement = scrollRef.current.querySelector(`[data-value="${localHeight}"]`) as HTMLElement;
       if (selectedElement) {
         selectedElement.scrollIntoView({ block: 'center', behavior: 'auto' });
       }
-      
-      // Event-Listener für Scroll hinzufügen
       scrollRef.current.addEventListener('scroll', handleScroll);
-      
-      // Touch-Events für bessere mobile Erfahrung
       scrollRef.current.addEventListener('touchend', snapToClosestValue);
-      
-      // Cleanup
-      return () => {
-        if (scrollRef.current) {
-          scrollRef.current.removeEventListener('scroll', handleScroll);
-          scrollRef.current.removeEventListener('touchend', snapToClosestValue);
-        }
-        if (scrollTimeout.current) {
-          clearTimeout(scrollTimeout.current);
-        }
-      };
     }
-  }, [height, setHeight, handleScroll, snapToClosestValue])
-
-  // Bei Änderung speichern & validieren
-  useEffect(() => {
-    if (height) {
-      saveOnboardingData({ height })
-      if (height < 100 || height > 250) {
-        setError('Bitte gib eine realistische Größe zwischen 100 und 250 cm an.')
-      } else {
-        setError(null)
+    return () => {
+      if (scrollRef.current) {
+        scrollRef.current.removeEventListener('scroll', handleScroll);
+        scrollRef.current.removeEventListener('touchend', snapToClosestValue);
       }
-    }
-  }, [height])
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
+      }
+    };
+  }, [localHeight, handleScroll, snapToClosestValue])
 
   const handleBack = () => {
     setCurrentStep(currentStep - 1)
   }
 
   const handleNext = async () => {
-    if (height < 100 || height > 250) {
+    if (localHeight < 100 || localHeight > 250) {
       setError('Bitte gib eine realistische Größe zwischen 100 und 250 cm an.')
       return
     }
+    setHeight(localHeight) // Only update global state here!
     setCurrentStep(currentStep + 1)
   }
 
@@ -151,7 +134,6 @@ export default function OnboardingHeight() {
               alt="Height"
               className="w-full h-full object-contain"
               onError={(e) => {
-                // Fallback if image doesn't exist
                 const target = e.target as HTMLImageElement;
                 target.onerror = null;
                 target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB4PSIxIiB5PSIxIiB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHJ4PSI0IiBmaWxsPSIjZGRkIi8+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjEiIGhlaWdodD0iMTQiIGZpbGw9IiM3N2UiLz48cmVjdCB4PSIxMiIgeT0iNSIgd2lkdGg9IjEiIGhlaWdodD0iMTQiIGZpbGw9IiM3N2UiLz48cmVjdCB4PSIxOSIgeT0iNSIgd2lkdGg9IjEiIGhlaWdodD0iMTQiIGZpbGw9IiM3N2UiLz48L3N2Zz4=";
@@ -167,11 +149,7 @@ export default function OnboardingHeight() {
           <div className="relative mx-auto w-40 h-48 bg-gray-50 rounded-xl">
             <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-gray-50 to-transparent z-10 pointer-events-none"></div>
             <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent z-10 pointer-events-none"></div>
-            
-            {/* Selection Indicator */}
             <div className="absolute top-1/2 left-0 right-0 h-12 -mt-6 border-y-2 border-emerald-400 bg-gray-100/50 z-0 pointer-events-none"></div>
-            
-            {/* Scrollable Values - jetzt mit automatischer Auswahl */}
             <div 
               ref={scrollRef}
               className="absolute inset-0 flex flex-col items-center overflow-y-auto scrollbar-hide py-16"
@@ -182,60 +160,47 @@ export default function OnboardingHeight() {
                   key={value}
                   data-value={value}
                   onClick={() => {
-                    setHeight(value)
+                    setLocalHeight(value)
                     const element = document.querySelector(`[data-value="${value}"]`) as HTMLElement
                     if (element) {
                       element.scrollIntoView({ block: 'center', behavior: 'smooth' })
                     }
                   }}
-                  className={`py-2 text-2xl font-semibold transition-all touch-manipulation ${
-                    value === height 
-                      ? 'text-gray-900 scale-110' 
-                      : 'text-gray-400'
-                  }`}
+                  className={`cursor-pointer text-center text-2xl font-semibold transition-all duration-200 ease-in-out ${localHeight === value ? 'text-emerald-600' : 'text-gray-800'}`}
+                  style={{ opacity: localHeight === value ? 1 : 0.6 }}
                 >
-                  {value}
+                  {value} {unit === 'cm' ? 'cm' : 'ft/in'}
                 </div>
               ))}
             </div>
           </div>
-          
-          {/* Unit Switcher */}
-          <div className="flex justify-center space-x-2 mt-4">
-            <button
-              onClick={() => setUnit('cm')}
-              className={`px-6 py-2 rounded-full text-sm font-medium ${
-                unit === 'cm' 
-                  ? 'bg-emerald-500 text-white' 
-                  : 'bg-gray-100 text-gray-700'
-              }`}
-            >
-              cm
-            </button>
-            <button
-              onClick={() => setUnit('ft/in')}
-              className={`px-6 py-2 rounded-full text-sm font-medium ${
-                unit === 'ft/in' 
-                  ? 'bg-emerald-500 text-white' 
-                  : 'bg-gray-100 text-gray-700'
-              }`}
-            >
-              ft/in
-            </button>
-          </div>
         </div>
 
-        <div className="mt-auto w-full">
-          <button
-            onClick={handleNext}
-            disabled={!height}
-            className={`w-full py-4 rounded-full font-semibold text-white transition-all ${
-              !height
-                ? 'bg-gray-300'
-                : 'bg-emerald-500 hover:bg-emerald-600 active:scale-95'
-            }`}
+        {/* Unit Toggle - cm / ft/in */}
+        <div className="flex space-x-2 mb-8">
+          <button 
+            onClick={() => setUnit('cm')}
+            className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all duration-200 ease-in-out ${unit === 'cm' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700'}`}
           >
-            {error ? error : "Weiter"}
+            cm
+          </button>
+          <button 
+            onClick={() => setUnit('ft/in')}
+            className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all duration-200 ease-in-out ${unit === 'ft/in' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700'}`}
+          >
+            ft/in
+          </button>
+        </div>
+
+        <div className="flex justify-center w-full max-w-xs">
+          <button 
+            onClick={handleNext}
+            className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold transition-all duration-200 ease-in-out flex items-center justify-center space-x-2"
+          >
+            <span>Weiter</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
           </button>
         </div>
       </div>

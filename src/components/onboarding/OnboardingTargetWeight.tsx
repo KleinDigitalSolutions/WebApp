@@ -6,20 +6,14 @@ import { ArrowLeft, Minus, Plus } from 'lucide-react'
 import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
 
 export default function OnboardingTargetWeight() {
-  const { 
-    currentStep, 
-    setCurrentStep, 
-    weight, 
-    height,
-    targetWeight, 
-    setTargetWeight 
-  } = useOnboardingStore()
+  const { currentStep, setCurrentStep, weight, height, setTargetWeight } = useOnboardingStore()
   const [recommendedRange, setRecommendedRange] = useState<[number, number]>([0, 0])
   const [error, setError] = useState<string | null>(null)
+  const [localTargetWeight, setLocalTargetWeight] = useState<number>(weight || 70)
 
   useEffect(() => {
     // Calculate healthy BMI range (18.5 - 24.9)
-    if (height) {
+    if (typeof height === 'number' && !isNaN(height)) {
       const heightInMeters = height / 100
       const minWeight = Math.round(18.5 * heightInMeters * heightInMeters)
       const maxWeight = Math.round(24.9 * heightInMeters * heightInMeters)
@@ -30,46 +24,47 @@ export default function OnboardingTargetWeight() {
   useEffect(() => {
     // Beim Mounten: Zielgewicht aus localStorage laden
     const local = getOnboardingData()
-    if (local.targetWeight && local.targetWeight !== targetWeight) {
-      setTargetWeight(local.targetWeight)
+    if (typeof local.targetWeight === 'number' && !isNaN(local.targetWeight)) {
+      setLocalTargetWeight(local.targetWeight)
     }
-  }, [setTargetWeight, targetWeight])
+  }, [])
 
   // Bei Änderung speichern & validieren
   useEffect(() => {
-    if (targetWeight) {
-      saveOnboardingData({ targetWeight })
-      if (targetWeight < 30 || targetWeight > 300) {
-        setError('Bitte gib ein realistisches Zielgewicht zwischen 30 und 300 kg an.')
-      } else {
-        setError(null)
-      }
+    saveOnboardingData({ targetWeight: localTargetWeight })
+    if (localTargetWeight < 30 || localTargetWeight > 300) {
+      setError('Bitte gib ein realistisches Zielgewicht zwischen 30 und 300 kg an.')
+    } else {
+      setError(null)
     }
-  }, [targetWeight])
+  }, [localTargetWeight])
 
   const handleBack = () => {
     setCurrentStep(currentStep - 1)
   }
 
   const increaseWeight = () => {
-    setTargetWeight(targetWeight + 1)
+    setLocalTargetWeight(localTargetWeight + 1)
   }
 
   const decreaseWeight = () => {
-    if (targetWeight > 40) {
-      setTargetWeight(targetWeight - 1)
+    if (localTargetWeight > 40) {
+      setLocalTargetWeight(localTargetWeight - 1)
     }
   }
 
-  const weightLossPercentage = weight > 0 
-    ? Math.round((weight - targetWeight) / weight * 100 * 10) / 10
+  // Defensive: fallback for weight
+  const safeWeight = typeof weight === 'number' && !isNaN(weight) ? weight : 70
+  const weightLossPercentage = safeWeight > 0 
+    ? Math.round((safeWeight - localTargetWeight) / safeWeight * 100 * 10) / 10
     : 0
 
   const handleNext = async () => {
-    if (targetWeight < 30 || targetWeight > 300) {
+    if (localTargetWeight < 30 || localTargetWeight > 300) {
       setError('Bitte gib ein realistisches Zielgewicht zwischen 30 und 300 kg an.')
       return
     }
+    setTargetWeight(localTargetWeight) // Only update global state here!
     setCurrentStep(currentStep + 1)
   }
 
@@ -111,7 +106,7 @@ export default function OnboardingTargetWeight() {
               <Minus className="w-8 h-8" />
             </button>
             
-            <div className="font-bold text-4xl">{targetWeight} kg</div>
+            <div className="font-bold text-4xl">{localTargetWeight} kg</div>
             
             <button 
               onClick={increaseWeight}
@@ -163,9 +158,9 @@ export default function OnboardingTargetWeight() {
         <div className="mt-auto w-full">
           <button
             onClick={handleNext}
-            disabled={!targetWeight}
+            disabled={!localTargetWeight}
             className={`w-full py-4 rounded-full font-semibold text-white transition-all ${
-              !targetWeight
+              !localTargetWeight
                 ? 'bg-gray-300'
                 : 'bg-emerald-500 hover:bg-emerald-600 active:scale-95'
             }`}
