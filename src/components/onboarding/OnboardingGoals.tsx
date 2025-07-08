@@ -141,7 +141,12 @@ export default function OnboardingGoals() {
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col px-4 pb-8">
+      <motion.div
+        className="flex-1 flex flex-col items-center justify-start px-6 pt-12 pb-12 sm:px-8"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         <h1 className="text-2xl font-bold text-center mb-8">Was sind deine Ziele?</h1>
         
         <motion.div
@@ -216,7 +221,7 @@ export default function OnboardingGoals() {
             Weiter
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

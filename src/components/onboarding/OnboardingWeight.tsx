@@ -150,7 +150,7 @@ export default function OnboardingWeight() {
         </motion.button>
       </div>
 
-      <div className="flex-1 flex flex-col items-center px-4 pb-8">
+      <div className="flex-1 flex flex-col items-center justify-start px-6 pt-12 pb-8">
         {/* Tooltip/Hinweis */}
         {error && (
           <div className="mb-4 text-red-600 text-sm text-center bg-red-50 rounded-lg px-3 py-2 border border-red-200">

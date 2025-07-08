@@ -36,7 +36,7 @@ export default function OnboardingGender() {
           <ArrowLeft className="w-6 h-6 text-gray-700" />
         </button>
       </div>
-      <div className="flex-1 flex flex-col items-center px-4 pb-8">
+      <div className="flex-1 flex flex-col items-center justify-start px-4 pt-12 pb-8">
         <h1 className="text-2xl font-bold text-center mb-6">Welches Geschlecht hast du?</h1>
         <div className="flex flex-col gap-4 w-full max-w-xs mb-8">
           <button

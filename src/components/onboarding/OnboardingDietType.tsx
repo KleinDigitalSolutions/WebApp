@@ -87,7 +87,7 @@ export default function OnboardingDietType() {
 
 			{/* Hauptinhalt mit Animationen */}
 			<motion.div
-				className="flex-1 flex flex-col items-center justify-start px-6 pb-12 sm:px-8"
+				className="flex-1 flex flex-col items-center justify-start px-6 pt-12 pb-12 sm:px-8"
 				variants={containerVariants}
 				initial="hidden"
 				animate="visible"
