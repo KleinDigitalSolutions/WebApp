@@ -146,7 +146,12 @@ export default function LandingPage() {
         {/* Hero Section */}
         <section className="px-6 py-8 text-center">
           <div className="relative mb-2 flex flex-col items-center justify-center">
-            <img src="/SVG/logo.webp" alt="TrackFood Logo" className="w-48 h-48 mx-auto object-contain" />
+            <img
+              src="/SVG/logo.webp"
+              alt="TrackFood Logo"
+              className="w-48 h-48 mx-auto object-contain animate-spin-slow"
+              style={{ animationDuration: '8s', animationTimingFunction: 'linear' }}
+            />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight mb-2">
             Deine intelligente<br />
