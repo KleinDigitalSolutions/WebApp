@@ -6,7 +6,7 @@ import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
 import { ArrowLeft } from 'lucide-react'
 
 export default function OnboardingAge() {
-  const { currentStep, setCurrentStep, age, setAge } = useOnboardingStore()
+  const { currentStep, setCurrentStep, setAge } = useOnboardingStore()
   const [localAge, setLocalAge] = useState<number | ''>('')
   const [error, setError] = useState<string | null>(null)
 

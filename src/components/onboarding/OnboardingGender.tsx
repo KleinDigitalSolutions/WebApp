@@ -6,7 +6,7 @@ import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
 import { ArrowLeft } from 'lucide-react'
 
 export default function OnboardingGender() {
-  const { currentStep, setCurrentStep, gender, setGender } = useOnboardingStore()
+  const { currentStep, setCurrentStep, setGender } = useOnboardingStore()
   const [localGender, setLocalGender] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
 
