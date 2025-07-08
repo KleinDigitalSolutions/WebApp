@@ -92,9 +92,6 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://api.spoonacular.com" />
-        <link rel="dns-prefetch" href="https://world.openfoodfacts.org" />
-        <link rel="dns-prefetch" href="https://api.groq.com" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -103,10 +100,14 @@ export default function RootLayout({
         <meta name="application-name" content="TrackFood" />
         <meta name="msapplication-TileColor" content="#10b981" />
         <meta name="msapplication-tap-highlight" content="no" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/icons8-organic-food-ios-17-outlined-32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/icons8-organic-food-ios-17-outlined-16.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/icons8-organic-food-100.png" />
-        <link rel="manifest" href="/manifest.json" />
+        {/* Favicons und Manifest: Nur die wichtigsten, keine Duplikate */}
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/web-app-manifest-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/web-app-manifest-512x512.png" />
+        <link rel="manifest" href="/site.webmanifest" />
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
