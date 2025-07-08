@@ -10,12 +10,7 @@ import { getOnboardingData, clearOnboardingData } from '@/lib/onboarding-storage
 export default function OnboardingSummary() {
   const router = useRouter()
   const { user, setProfile } = useAuthStore()
-  const { 
-    userGoals, 
-    height, 
-    weight, 
-    targetWeight
-  } = useOnboardingStore()
+  const { weight, targetWeight } = useOnboardingStore()
   
   const [isLoading, setIsLoading] = useState(false)
   const [targetDate, setTargetDate] = useState('')

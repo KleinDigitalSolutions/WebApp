@@ -1,12 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAuthStore, useOnboardingStore } from '@/store'
+import { useOnboardingStore } from '@/store'
 import { ArrowLeft, Minus, Plus } from 'lucide-react'
 import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
 
 export default function OnboardingTargetWeight() {
-  const { user } = useAuthStore()
   const { 
     currentStep, 
     setCurrentStep, 
@@ -15,8 +14,6 @@ export default function OnboardingTargetWeight() {
     targetWeight, 
     setTargetWeight 
   } = useOnboardingStore()
-  
-  const [isLoading, setIsLoading] = useState(false)
   const [recommendedRange, setRecommendedRange] = useState<[number, number]>([0, 0])
   const [error, setError] = useState<string | null>(null)
 
@@ -166,22 +163,14 @@ export default function OnboardingTargetWeight() {
         <div className="mt-auto w-full">
           <button
             onClick={handleNext}
-            disabled={isLoading || !targetWeight}
+            disabled={!targetWeight}
             className={`w-full py-4 rounded-full font-semibold text-white transition-all ${
-              isLoading || !targetWeight
+              !targetWeight
                 ? 'bg-gray-300'
                 : 'bg-emerald-500 hover:bg-emerald-600 active:scale-95'
             }`}
           >
-            {isLoading ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Speichern...
-              </span>
-            ) : "Weiter"}
+            Weiter
           </button>
         </div>
       </div>
