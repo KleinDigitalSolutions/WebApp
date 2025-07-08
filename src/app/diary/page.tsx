@@ -549,6 +549,18 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
                         step="100"
                       />
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        id="notifications-enabled"
+                        type="checkbox"
+                        checked={notificationsEnabled}
+                        onChange={e => setNotificationsEnabled(e.target.checked)}
+                        className="accent-blue-500 h-4 w-4 rounded border-gray-300 focus:ring-blue-500"
+                      />
+                      <label htmlFor="notifications-enabled" className="text-gray-700 text-sm select-none cursor-pointer">
+                        Trink-Erinnerungen aktivieren
+                      </label>
+                    </div>
                     <div className="flex space-x-2">
                       <button
                         onClick={() => setShowSettings(false)}
