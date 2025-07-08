@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { useAuthStore, useOnboardingStore } from '@/store'
+import { useOnboardingStore } from '@/store'
 import { ArrowLeft } from 'lucide-react'
 import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
 
@@ -154,7 +154,7 @@ export default function OnboardingHeight() {
                 // Fallback if image doesn't exist
                 const target = e.target as HTMLImageElement;
                 target.onerror = null;
-                target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgM0w5IDRINVY2SDE5VjRIMTVMMTIgM1oiIGZpbGw9ImN1cnJlbnRDb2xvciIvPjxwYXRoIGQ9Ik0xMiAyMUwxNSAyMEgxOVYxOEg1VjIwSDlMMTIgMjFaIiBmaWxsPSJjdXJyZW50Q29sb3IiLz48cGF0aCBkPSJNNyA3SDlWMTBIN1Y3WiIgZmlsbD0iY3VycmVudENvbG9yIi8+PHBhdGggZD0iTTcgMTFIOVYxNEg3VjExWiIgZmlsbD0iY3VycmVudENvbG9yIi8+PHBhdGggZD0iTTcgMTVIOVYxN0g3VjE1WiIgZmlsbD0iY3VycmVudENvbG9yIi8+PHBhdGggZD0iTTExIDdIMTNWMTBIMTFWN1oiIGZpbGw9ImN1cnJlbnRDb2xvciIvPjxwYXRoIGQ9Ik0xMSAxMUgxM1YxNEgxMVYxMVoiIGZpbGw9ImN1cnJlbnRDb2xvciIvPjxwYXRoIGQ9Ik0xMSAxNUgxM1YxN0gxMVYxNVoiIGZpbGw9ImN1cnJlbnRDb2xvciIvPjxwYXRoIGQ9Ik0xNSA3SDE3VjEwSDE1VjdaIiBmaWxsPSJjdXJyZW50Q29sb3IiLz48cGF0aCBkPSJNMTUgMTFIMTdWMTRIMTVWMTFaIiBmaWxsPSJjdXJyZW50Q29sb3IiLz48cGF0aCBkPSJNMTUgMTVIMTdWMTdIMTVWMTVaIiBmaWxsPSJjdXJyZW50Q29sb3IiLz48L3N2Zz4=";
+                target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB4PSIxIiB5PSIxIiB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHJ4PSI0IiBmaWxsPSIjZGRkIi8+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjEiIGhlaWdodD0iMTQiIGZpbGw9IiM3N2UiLz48cmVjdCB4PSIxMiIgeT0iNSIgd2lkdGg9IjEiIGhlaWdodD0iMTQiIGZpbGw9IiM3N2UiLz48cmVjdCB4PSIxOSIgeT0iNSIgd2lkdGg9IjEiIGhlaWdodD0iMTQiIGZpbGw9IiM3N2UiLz48L3N2Zz4=";
               }}
             />
           </div>

@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { useOnboardingStore } from '@/store'
+import { ArrowLeft, Check, Scale } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useAuthStore, useOnboardingStore } from '@/store'
-import { ArrowLeft, Scale } from 'lucide-react'
 import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
 
 interface GoalOption {
@@ -14,8 +14,8 @@ interface GoalOption {
 }
 
 export default function OnboardingGoals() {
-  const router = useRouter()
   const { currentStep, setCurrentStep, userGoals, setUserGoals } = useOnboardingStore()
+  const router = useRouter()
 
   const goalOptions: GoalOption[] = [
     {
