@@ -125,16 +125,13 @@ export default function LandingPage() {
       {showOnboarding && <OnboardingModal onFinish={handleFinishOnboarding} />}
       {showDesktopNotice && <DesktopNotice />}
       
-      <div className="min-h-screen bg-white overflow-hidden">
+      <div className="min-h-screen bg-[#ffffff] overflow-hidden">
         {/* Status Bar Simulation */}
-        <div className="h-6 bg-white"></div>
+        <div className="h-6 bg-transparent"></div>
         
         {/* Header */}
         <header className="px-6 py-4 flex items-center justify-between relative z-10">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
+          <div className="flex items-center">
             <span className="text-xl font-bold text-gray-800">TrackFood</span>
           </div>
           <Button
@@ -203,10 +200,10 @@ export default function LandingPage() {
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className={`absolute inset-0 transition-all duration-500 ${
+                  className={`absolute inset-0 transition-opacity duration-400 ${
                     index === activeFeature
-                      ? 'opacity-100 transform translate-y-0'
-                      : 'opacity-0 transform translate-y-4'
+                      ? 'opacity-100'
+                      : 'opacity-0 pointer-events-none'
                   }`}
                 >
                   <div className={`bg-gradient-to-br ${feature.color} rounded-3xl p-8 text-white shadow-2xl h-full flex flex-col justify-center`}>
