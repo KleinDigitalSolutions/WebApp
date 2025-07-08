@@ -120,8 +120,8 @@ export default function OnboardingSummary() {
     const calculatePercent = () => {
       // FORCE: Direkt aus localStorage lesen
       const rawData = typeof window !== 'undefined' ? localStorage.getItem('trackfood_onboarding') : null
-      let local = {}
-      
+      type LocalOnboarding = { weight?: number; targetWeight?: number }
+      let local: LocalOnboarding = {}
       if (rawData) {
         try {
           local = JSON.parse(rawData)
@@ -129,10 +129,9 @@ export default function OnboardingSummary() {
           console.error('localStorage parse error:', e)
         }
       }
-      
       // Mehrere Fallback-Strategien
-      const w = local.weight || weight || 80 // TEST: 80kg
-      const tw = local.targetWeight || targetWeight || 70 // TEST: 70kg
+      const w = (local && typeof local === 'object' && 'weight' in local ? local.weight : undefined) || weight || 80 // TEST: 80kg
+      const tw = (local && typeof local === 'object' && 'targetWeight' in local ? local.targetWeight : undefined) || targetWeight || 70 // TEST: 70kg
 
       console.log('=== SUMMARY DEBUG (FIXED) ===', {
         rawData,
