@@ -123,7 +123,7 @@ export default function OnboardingName() {
           disabled={!firstName || !lastName}
           className={`w-full max-w-sm py-4 rounded-2xl font-bold text-white text-lg transition-all transform duration-300 ease-in-out
             ${
-              typeof localName !== 'string' || localName.length < 2
+              !firstName || !lastName
                 ? 'bg-gray-300 cursor-not-allowed scale-[0.98]'
                 : 'bg-gradient-to-r from-emerald-500 to-green-600 active:scale-[0.97] shadow-lg'
             }

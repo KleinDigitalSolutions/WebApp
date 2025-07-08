@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useOnboardingStore } from '@/store'
-import { ArrowLeft, Minus, Plus } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
 import { motion } from 'framer-motion'
 
@@ -13,19 +13,8 @@ const itemVariants = {
 
 export default function OnboardingTargetWeight() {
   const { currentStep, setCurrentStep, weight, height, setTargetWeight } = useOnboardingStore()
-  const [recommendedRange, setRecommendedRange] = useState<[number, number]>([0, 0])
   const [error, setError] = useState<string | null>(null)
   const [localTargetWeight, setLocalTargetWeight] = useState<number>(weight || 70)
-
-  useEffect(() => {
-    // Calculate healthy BMI range (18.5 - 24.9)
-    if (typeof height === 'number' && !isNaN(height)) {
-      const heightInMeters = height / 100
-      const minWeight = Math.round(18.5 * heightInMeters * heightInMeters)
-      const maxWeight = Math.round(24.9 * heightInMeters * heightInMeters)
-      setRecommendedRange([minWeight, maxWeight])
-    }
-  }, [height])
 
   useEffect(() => {
     // Beim Mounten: Zielgewicht aus localStorage laden
@@ -47,16 +36,6 @@ export default function OnboardingTargetWeight() {
 
   const handleBack = () => {
     setCurrentStep(currentStep - 1)
-  }
-
-  const increaseWeight = () => {
-    setLocalTargetWeight(localTargetWeight + 1)
-  }
-
-  const decreaseWeight = () => {
-    if (localTargetWeight > 40) {
-      setLocalTargetWeight(localTargetWeight - 1)
-    }
   }
 
   // Defensive: fallback for weight

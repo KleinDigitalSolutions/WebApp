@@ -101,10 +101,6 @@ export default function OnboardingWeight() {
     };
   }, [localWeight, handleScroll, snapToClosestValue])
 
-  const handleBack = () => {
-    setCurrentStep(currentStep - 1)
-  }
-
   const handleNext = async () => {
     if (localWeight < 30 || localWeight > 300) {
       setError('Bitte gib ein realistisches Gewicht zwischen 30 und 300 kg an.')
@@ -177,6 +173,10 @@ export default function OnboardingWeight() {
           </div>
           <h1 className="text-2xl font-bold text-center">Wie viel wiegst du?</h1>
         </div>
+        {/* Weight Picker */}
+        <motion.div
+          className="relative w-full max-w-xs h-64 bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-200 flex items-center justify-center mb-8"
+          variants={itemVariants}
         {/* Weight Picker */}
         <motion.div
           className="relative w-full max-w-xs h-64 bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-200 flex items-center justify-center mb-8"
