@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore, useOnboardingStore } from '@/store'
-import { supabase } from '@/lib/supabase'
 import { ArrowLeft, Scale } from 'lucide-react'
+import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
 
 interface GoalOption {
   id: string
@@ -87,30 +87,21 @@ export default function OnboardingGoals() {
     }
   }
 
-  const handleNext = async () => {
-    if (!user) return
-    
-    setIsLoading(true)
-    
-    try {
-      // Save goals to Supabase
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          goals: userGoals,
-          onboarding_step: currentStep + 1
-        })
-        .eq('id', user.id)
-      
-      if (error) throw error
-      
-      // Proceed to next step
-      setCurrentStep(currentStep + 1)
-    } catch (error) {
-      console.error('Error saving goals:', error)
-    } finally {
-      setIsLoading(false)
+  useEffect(() => {
+    // Beim Mounten: Ziele aus localStorage laden
+    const local = getOnboardingData()
+    if (local.userGoals && local.userGoals.length > 0) {
+      setUserGoals(local.userGoals)
     }
+  }, [setUserGoals])
+
+  // Bei Änderung speichern
+  useEffect(() => {
+    if (userGoals) saveOnboardingData({ userGoals })
+  }, [userGoals])
+
+  const handleNext = async () => {
+    setCurrentStep(currentStep + 1)
   }
 
   return (

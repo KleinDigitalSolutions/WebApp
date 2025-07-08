@@ -262,6 +262,34 @@ export default function Dashboard() {
                   month: 'long' 
                 })}
               </p>
+              {/* Personalisierte Zielkarte nach Onboarding */}
+              {profile?.onboarding_completed && profile?.weight_kg && profile?.target_weight_kg && (
+                <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex flex-col items-start animate-fade-in">
+                  <div className="flex items-center mb-1">
+                    <Award className="h-5 w-5 text-emerald-500 mr-2" />
+                    <span className="font-semibold text-emerald-700">Dein Ziel:</span>
+                  </div>
+                  <div className="text-lg font-bold text-emerald-900">
+                    {profile.weight_kg > profile.target_weight_kg
+                      ? `- ${(profile.weight_kg - profile.target_weight_kg).toFixed(1)} kg bis ${(() => {
+                          // Ziel-Datum grob schätzen (0.5kg/Woche)
+                          const weeks = Math.max(1, Math.ceil((profile.weight_kg - profile.target_weight_kg) / 0.5))
+                          const targetDate = new Date()
+                          targetDate.setDate(targetDate.getDate() + weeks * 7)
+                          return targetDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })
+                        })()}`
+                      : profile.weight_kg < profile.target_weight_kg
+                        ? `+ ${(profile.target_weight_kg - profile.weight_kg).toFixed(1)} kg bis ${(() => {
+                            const weeks = Math.max(1, Math.ceil((profile.target_weight_kg - profile.weight_kg) / 0.5))
+                            const targetDate = new Date()
+                            targetDate.setDate(targetDate.getDate() + weeks * 7)
+                            return targetDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })
+                          })()}`
+                        : 'Gewicht halten!'}
+                  </div>
+                  <div className="text-xs text-emerald-700 mt-1">Bleib dran – du schaffst das! 💪</div>
+                </div>
+              )}
             </div>
             {/* Achievement Badges */}
             <div className="flex items-center space-x-2">
@@ -269,6 +297,13 @@ export default function Dashboard() {
                 <div className="flex items-center px-2 py-1 bg-emerald-500 rounded-full shadow-lg">
                   <Award className="h-3 w-3 text-white mr-1" />
                   <span className="text-xs font-medium text-white">Kalorien</span>
+                </div>
+              )}
+              {/* Weitere Badges (z.B. Wasser, Protein) */}
+              {waterProgress >= 100 && (
+                <div className="flex items-center px-2 py-1 bg-blue-500 rounded-full shadow-lg ml-2">
+                  <Award className="h-3 w-3 text-white mr-1" />
+                  <span className="text-xs font-medium text-white">Wasser</span>
                 </div>
               )}
             </div>

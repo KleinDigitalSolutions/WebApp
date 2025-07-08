@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore, useOnboardingStore } from '@/store'
 import { supabase } from '@/lib/supabase'
 import { ArrowLeft } from 'lucide-react'
+import { getOnboardingData, clearOnboardingData } from '@/lib/onboarding-storage'
 
 export default function OnboardingSummary() {
   const router = useRouter()
@@ -47,56 +48,49 @@ export default function OnboardingSummary() {
 
   const handleComplete = async () => {
     if (!user) return
-    
     setIsLoading(true)
-    
     try {
+      // Alle Daten aus localStorage holen
+      const local = getOnboardingData()
       // Calculate age if birth date is set
-      const birthDate = useOnboardingStore.getState().birthDate
+      const birthDate = local.birthDate || useOnboardingStore.getState().birthDate
       let age = null
       if (birthDate) {
         const birthYear = new Date(birthDate).getFullYear()
         const currentYear = new Date().getFullYear()
         age = currentYear - birthYear
       }
-      
       // Determine activity level and goal
-      const activityLevel = 'lightly_active'
-      let goal = 'lose_weight'
-      if (weight <= targetWeight) {
+      const activityLevel = local.activityLevel || 'lightly_active'
+      let goal = local.goal || 'lose_weight'
+      if (local.weight && local.targetWeight && local.weight <= local.targetWeight) {
         goal = 'maintain_weight'
       }
-      if (weight < targetWeight) {
+      if (local.weight && local.targetWeight && local.weight < local.targetWeight) {
         goal = 'gain_weight'
       }
-      
       // Save all user data and complete onboarding
       const profileData = {
-        height_cm: height,
-        weight_kg: weight,
-        target_weight_kg: targetWeight,
-        goals: userGoals,
+        height_cm: local.height,
+        weight_kg: local.weight,
+        target_weight_kg: local.targetWeight,
+        goals: local.userGoals,
         activity_level: activityLevel,
         goal: goal,
         age: age,
         onboarding_completed: true,
         onboarding_step: 5
       }
-      
       const { data, error } = await supabase
         .from('profiles')
         .update(profileData)
         .eq('id', user.id)
         .select()
-      
       if (error) throw error
-      
       if (data && data.length > 0) {
-        // Update local profile
         setProfile(data[0])
       }
-      
-      // Navigate to dashboard
+      clearOnboardingData()
       router.push('/dashboard')
     } catch (error) {
       console.error('Error completing onboarding:', error)

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useAuthStore, useOnboardingStore } from '@/store'
-import { supabase } from '@/lib/supabase'
 import { ArrowLeft, Minus, Plus } from 'lucide-react'
+import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
 
 export default function OnboardingTargetWeight() {
   const { user } = useAuthStore()
@@ -18,6 +18,7 @@ export default function OnboardingTargetWeight() {
   
   const [isLoading, setIsLoading] = useState(false)
   const [recommendedRange, setRecommendedRange] = useState<[number, number]>([0, 0])
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     // Calculate healthy BMI range (18.5 - 24.9)
@@ -28,6 +29,26 @@ export default function OnboardingTargetWeight() {
       setRecommendedRange([minWeight, maxWeight])
     }
   }, [height])
+
+  useEffect(() => {
+    // Beim Mounten: Zielgewicht aus localStorage laden
+    const local = getOnboardingData()
+    if (local.targetWeight && local.targetWeight !== targetWeight) {
+      setTargetWeight(local.targetWeight)
+    }
+  }, [setTargetWeight, targetWeight])
+
+  // Bei Änderung speichern & validieren
+  useEffect(() => {
+    if (targetWeight) {
+      saveOnboardingData({ targetWeight })
+      if (targetWeight < 30 || targetWeight > 300) {
+        setError('Bitte gib ein realistisches Zielgewicht zwischen 30 und 300 kg an.')
+      } else {
+        setError(null)
+      }
+    }
+  }, [targetWeight])
 
   const handleBack = () => {
     setCurrentStep(currentStep - 1)
@@ -48,29 +69,11 @@ export default function OnboardingTargetWeight() {
     : 0
 
   const handleNext = async () => {
-    if (!user) return
-    
-    setIsLoading(true)
-    
-    try {
-      // Save target weight to Supabase
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          target_weight_kg: targetWeight,
-          onboarding_step: currentStep + 1
-        })
-        .eq('id', user.id)
-      
-      if (error) throw error
-      
-      // Proceed to next step
-      setCurrentStep(currentStep + 1)
-    } catch (error) {
-      console.error('Error saving target weight:', error)
-    } finally {
-      setIsLoading(false)
+    if (targetWeight < 30 || targetWeight > 300) {
+      setError('Bitte gib ein realistisches Zielgewicht zwischen 30 und 300 kg an.')
+      return
     }
+    setCurrentStep(currentStep + 1)
   }
 
   return (
@@ -85,6 +88,13 @@ export default function OnboardingTargetWeight() {
       </div>
 
       <div className="flex-1 flex flex-col items-center px-4 pb-8">
+        {/* Tooltip/Hinweis */}
+        {error && (
+          <div className="mb-4 text-red-600 text-sm text-center bg-red-50 rounded-lg px-3 py-2 border border-red-200">
+            {error}
+          </div>
+        )}
+
         <div className="mb-12 flex flex-col items-center">
           <div className="w-24 h-24 mb-6">
             <svg className="w-full h-full text-amber-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

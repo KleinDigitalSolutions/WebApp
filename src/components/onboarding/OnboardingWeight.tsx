@@ -2,14 +2,15 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useAuthStore, useOnboardingStore } from '@/store'
-import { supabase } from '@/lib/supabase'
 import { ArrowLeft } from 'lucide-react'
+import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
 
 export default function OnboardingWeight() {
   const { user } = useAuthStore()
   const { currentStep, setCurrentStep, weight, setWeight } = useOnboardingStore()
   const [isLoading, setIsLoading] = useState(false)
   const [unit, setUnit] = useState<'kg' | 'lbs' | 'st'>('kg')
+  const [error, setError] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null)
 
@@ -68,9 +69,12 @@ export default function OnboardingWeight() {
   }, [snapToClosestValue]);
 
   useEffect(() => {
-    // Setze den Initialwert, falls nicht gesetzt
-    if (!weight) {
-      setWeight(70) // Standard-Gewicht
+    // Beim Mounten: Wert aus localStorage laden
+    const local = getOnboardingData()
+    if (local.weight && local.weight !== weight) {
+      setWeight(local.weight)
+    } else if (!weight) {
+      setWeight(70)
     }
     
     // Scrolle zum aktuellen Wert wenn die Komponente mounted
@@ -99,34 +103,28 @@ export default function OnboardingWeight() {
     }
   }, [weight, setWeight, handleScroll, snapToClosestValue])
 
+  // Bei Änderung speichern & validieren
+  useEffect(() => {
+    if (weight) {
+      saveOnboardingData({ weight })
+      if (weight < 30 || weight > 300) {
+        setError('Bitte gib ein realistisches Gewicht zwischen 30 und 300 kg an.')
+      } else {
+        setError(null)
+      }
+    }
+  }, [weight])
+
   const handleBack = () => {
     setCurrentStep(currentStep - 1)
   }
 
   const handleNext = async () => {
-    if (!user) return
-    
-    setIsLoading(true)
-    
-    try {
-      // Save weight to Supabase
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          weight_kg: weight,
-          onboarding_step: currentStep + 1
-        })
-        .eq('id', user.id)
-      
-      if (error) throw error
-      
-      // Proceed to next step
-      setCurrentStep(currentStep + 1)
-    } catch (error) {
-      console.error('Error saving weight:', error)
-    } finally {
-      setIsLoading(false)
+    if (weight < 30 || weight > 300) {
+      setError('Bitte gib ein realistisches Gewicht zwischen 30 und 300 kg an.')
+      return
     }
+    setCurrentStep(currentStep + 1)
   }
 
   // Calculate BMI
@@ -160,6 +158,13 @@ export default function OnboardingWeight() {
       </div>
 
       <div className="flex-1 flex flex-col items-center px-4 pb-8">
+        {/* Tooltip/Hinweis */}
+        {error && (
+          <div className="mb-4 text-red-600 text-sm text-center bg-red-50 rounded-lg px-3 py-2 border border-red-200">
+            {error}
+          </div>
+        )}
+
         <div className="mb-12 flex flex-col items-center">
           <div className="w-24 h-24 mb-6">
             <img 
