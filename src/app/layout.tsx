@@ -15,8 +15,8 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false, // Prevent zoom on mobile for app-like feel
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#A9E142" },
-    { media: "(prefers-color-scheme: dark)", color: "#A9E142" }
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" }
   ],
   viewportFit: "cover", // Support for iPhone notch
 };
@@ -150,7 +150,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} h-full bg-gradient-to-br from-emerald-50 via-white to-purple-50 antialiased`}>
+      <body className={`${inter.className} h-full bg-white antialiased`}>
         {/* GTM nur nach Consent laden (Client-Komponente) */}
         <GoogleTagManagerClient />
         {/* Main app container with proper mobile spacing */}

@@ -8,10 +8,17 @@ import {
   QrCode,
   Brain,
   ArrowRight,
-  ChevronDown,
   Target,
   Salad,
-  Dumbbell
+  Dumbbell,
+  Sparkles,
+  Zap,
+  Heart,
+  TrendingUp,
+  Users,
+  Check,
+  Star,
+  Play
 } from 'lucide-react'
 import DesktopNotice from '@/components/DesktopNotice'
 import GoogleLoginButton from '@/components/GoogleLoginButton'
@@ -20,78 +27,18 @@ import OnboardingModal from '@/components/OnboardingModal'
 export default function LandingPage() {
   const router = useRouter()
   const { user } = useAuthStore()
-  const targetName = "TrackFood"
-  const [showScrollHint, setShowScrollHint] = useState(false)
   const [showDesktopNotice, setShowDesktopNotice] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const [activeFeature, setActiveFeature] = useState(0)
 
   useEffect(() => {
     if (user) {
       router.push('/dashboard')
     }
   }, [user, router])
-  useEffect(() => {
-    if (user) {
-      router.push('/dashboard')
-    }
-  }, [user, router])
-
-  // Scroll-Hinweis und DesktopNotice erst nach Animation-Ende + Verzögerung anzeigen
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setShowScrollHint(true)
-      setShowDesktopNotice(true)
-    }, 1700) // 1.2s Animation + 0.5s extra
-    return () => clearTimeout(timeout)
-  }, [])
-
-  // SVG-Refs für direkte Manipulation
-  const svgRefs = useRef<(HTMLImageElement | null)[]>([])
 
   useEffect(() => {
-    const onScroll = () => {
-      const scrollY = window.scrollY
-      const svgProgress = Math.min(scrollY, 220) / 220
-      const svgOpacity = 1 - svgProgress * 0.9
-      // Ananas
-      if (svgRefs.current[0]) {
-        svgRefs.current[0].style.opacity = String(svgOpacity)
-        svgRefs.current[0].style.transform = `translate3d(${-120 * svgProgress}px, ${-80 * svgProgress}px, 0) rotate(-30deg)`
-      }
-      // Kirsche
-      if (svgRefs.current[1]) {
-        svgRefs.current[1].style.opacity = String(svgOpacity)
-        svgRefs.current[1].style.transform = `translate3d(${120 * svgProgress}px, ${-60 * svgProgress}px, 0) rotate(8deg)`
-      }
-      // Himbeere (scrollt mit, aber jetzt wieder weiter aus dem Bild)
-      if (svgRefs.current[2]) {
-        svgRefs.current[2].style.opacity = String(svgOpacity)
-        svgRefs.current[2].style.transform = `translate3d(${-180 * svgProgress}px, ${120 * svgProgress}px, 0) rotate(-10deg)`
-      }
-      // Limette
-      if (svgRefs.current[3]) {
-        svgRefs.current[3].style.opacity = String(svgOpacity)
-        svgRefs.current[3].style.transform = `translate3d(${-80 * svgProgress}px, ${120 * svgProgress}px, 0) rotate(-8deg)`
-      }
-      // Orange halb
-      if (svgRefs.current[4]) {
-        svgRefs.current[4].style.opacity = String(svgOpacity)
-        svgRefs.current[4].style.transform = `translate3d(${100 * svgProgress}px, ${120 * svgProgress}px, 0) rotate(160deg)`
-      }
-      // Melone (Animation nach rechts-unten, Debug garantiert entfernt)
-      if (svgRefs.current[5]) {
-        svgRefs.current[5].style.opacity = String(svgOpacity)
-        svgRefs.current[5].style.transform = `translate3d(${180 * svgProgress}px, ${120 * svgProgress}px, 0) rotate(90deg)`
-        svgRefs.current[5].style.border = 'none'
-        svgRefs.current[5].style.background = 'none'
-      } else {
-        console.log('Melone Ref ist null!')
-      }
-    }
-    window.addEventListener('scroll', onScroll)
-    // Initial-Call für korrekte Position beim Reload
-    onScroll()
-    return () => window.removeEventListener('scroll', onScroll)
+    setShowDesktopNotice(true)
   }, [])
 
   useEffect(() => {
@@ -101,9 +48,73 @@ export default function LandingPage() {
     }
   }, [])
 
+  useEffect(() => {
+    // Feature carousel auto-rotation
+    const interval = setInterval(() => {
+      setActiveFeature((prev) => (prev + 1) % 3)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [])
+
   const handleFinishOnboarding = () => {
     localStorage.setItem('trackfood_onboarded', '1')
     setShowOnboarding(false)
+  }
+
+  const features = [
+    {
+      icon: Brain,
+      title: 'KI-Ernährungsberatung',
+      description: 'Intelligente Analyse deiner Ernährung mit personalisierten Empfehlungen',
+      color: 'from-purple-500 to-pink-500'
+    },
+    {
+      icon: QrCode,
+      title: 'Barcode-Scanner',
+      description: 'Scanne Produkte und erhalte sofort alle Nährwerte',
+      color: 'from-blue-500 to-cyan-500'
+    },
+    {
+      icon: Target,
+      title: 'Ziel-Tracking',
+      description: 'Erreiche deine Ziele mit intelligentem Fortschritts-Tracking',
+      color: 'from-emerald-500 to-teal-500'
+    }
+  ]
+
+  // Touch/Swipe-Logik für das Feature-Carousel
+  const touchStart = useRef<{x: number, y: number} | null>(null)
+  const touchEnd = useRef<{x: number, y: number} | null>(null)
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStart.current = {
+      x: e.changedTouches[0].clientX,
+      y: e.changedTouches[0].clientY
+    }
+  }
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEnd.current = {
+      x: e.changedTouches[0].clientX,
+      y: e.changedTouches[0].clientY
+    }
+  }
+  const handleTouchEnd = () => {
+    if (touchStart.current && touchEnd.current) {
+      const dx = touchEnd.current.x - touchStart.current.x
+      const dy = touchEnd.current.y - touchStart.current.y
+      // Nur auslösen, wenn horizontale Bewegung deutlich größer als vertikale ist
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        if (dx < 0) {
+          // swipe left
+          setActiveFeature((prev) => (prev + 1) % features.length)
+        } else {
+          // swipe right
+          setActiveFeature((prev) => (prev - 1 + features.length) % features.length)
+        }
+      }
+    }
+    touchStart.current = null
+    touchEnd.current = null
   }
 
   if (user) {
@@ -113,320 +124,219 @@ export default function LandingPage() {
     <>
       {showOnboarding && <OnboardingModal onFinish={handleFinishOnboarding} />}
       {showDesktopNotice && <DesktopNotice />}
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=More+Sugar&display=swap" />
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
-      {/* Google Fonts Nunito einbinden */}
-      <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-      <style jsx global>{`
-        html {
-          scroll-behavior: smooth;
-          font-family: 'Nunito', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-        }
-        body, html {
-          background: #A9E142 !important;
-        }
-        .moresugar, .moresugar * {
-          font-family: 'Pacifico', cursive !important;
-          font-weight: 400 !important;
-          letter-spacing: 0.01em !important;
-        }
-        .hero-title-glow {
-          position: relative;
-        }
-        .hero-title-glow::before {
-          content: attr(data-text);
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          filter: blur(30px);
-          opacity: 0.1;
-          z-index: -1;
-          pointer-events: none;
-          font-size: inherit;
-          font-weight: inherit;
-          letter-spacing: inherit;
-          white-space: nowrap;
-          color: #10b981;
-        }
-        .trackfood-animate {
-          opacity: 0;
-          transform: translateY(32px) scale(0.98);
-          animation: trackfoodFadeUp 1.1s cubic-bezier(.33,1.02,.47,.98) 0.1s forwards;
-        }
-        @keyframes trackfoodFadeUp {
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-        .scroll-bounce {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-        .scroll-bounce-text, .scroll-bounce-chevron {
-          animation: scrollBounce 2.2s cubic-bezier(.45,0,.55,1) infinite;
-        }
-        @keyframes scrollBounce {
-          0%, 100% { transform: translateY(0); }
-          30% { transform: translateY(12px); }
-          60% { transform: translateY(0); }
-        }
-      `}</style>
-      <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: '#A9E142', scrollBehavior: 'smooth' }}>
-        {/* Dekorative Zitronen/Orangen/Limetten: Mobile-first, dominant und exakt an den Ecken/Rändern */}
-        {/* Oben links, groß */}
-        <img ref={el => { svgRefs.current[0] = el }} src="/SVG/ananas_1.svg" alt="Ananas"
-          className="fixed z-0 pointer-events-none select-none"
-          style={{ left: -50, top: -30, width: '52vw', minWidth: 200, maxWidth: 200, willChange: 'opacity, transform' }}
-        />
-        {/* Oben rechts, groß */}
-        <img ref={el => { svgRefs.current[1] = el }} src="/SVG/kirsche.svg" alt="Kirsche"
-          className="fixed z-0 pointer-events-none select-none"
-          style={{ right: -50, top: -50, width: '38vw', minWidth: 100, maxWidth: 180, willChange: 'opacity, transform' }}
-        />
-        {/* Himbeere, links mittig */}
-        <img ref={el => { svgRefs.current[2] = el }} src="/SVG/himbeere.svg" alt="Himbeere"
-          className="fixed z-0 pointer-events-none select-none"
-          style={{ left: 0, top: '48vh', width: '18vw', minWidth: 60, maxWidth: 100, willChange: 'opacity, transform' }}
-        />
-        {/* Unten links, groß */}
-        <img ref={el => { svgRefs.current[3] = el }} src="/SVG/limette_gruen_ganz.svg" alt="Limette"
-          className="fixed z-0 pointer-events-none select-none"
-          style={{ left: -90, bottom: -180, width: '32vw', minWidth: 280, maxWidth: 140, willChange: 'opacity, transform' }}
-        />
-        {/* Unten rechts, groß */}
-        <img ref={el => { svgRefs.current[4] = el }} src="/SVG/orange_halb.svg" alt="Orange halb"
-          className="fixed z-0 pointer-events-none select-none"
-          style={{ right: -100, bottom: -180, width: '38vw', minWidth: 280, maxWidth: 280, willChange: 'opacity, transform' }}
-        />
-        {/* Mitte rechts, vertikal, halb sichtbar */}
-        <img ref={el => { svgRefs.current[5] = el }} src="/SVG/melone.svg" alt="Melone"
-          className="fixed z-0 pointer-events-none select-none"
-          style={{ right: 0, top: '56vh', width: '28vw', minWidth: 80, maxWidth: 120, willChange: 'opacity, transform', border: 'none', background: 'none' }}
-        />
+      
+      <div className="min-h-screen bg-white overflow-hidden">
+        {/* Status Bar Simulation */}
+        <div className="h-6 bg-white"></div>
+        
+        {/* Header */}
+        <header className="px-6 py-4 flex items-center justify-between relative z-10">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xl font-bold text-gray-800">TrackFood</span>
+          </div>
+          <Button
+            onClick={() => router.push('/login')}
+            variant="ghost"
+            className="text-gray-600 hover:text-emerald-600 font-medium"
+          >
+            Anmelden
+          </Button>
+        </header>
+
         {/* Hero Section */}
-        <section className="min-h-screen bg-transparent flex flex-col items-center justify-center relative overflow-hidden">
-          <div className="text-center z-10">
-            <div className="mb-8">
-              <div className="relative flex justify-center items-center">
-                <h1
-                  className="text-6xl md:text-8xl font-bold text-white text-shadow-strong mb-4 hero-title-glow trackfood-animate flex items-center moresugar"
-                  data-text={targetName}
-                  style={{ perspective: '1000px' }}
+        <section className="px-6 py-8 text-center">
+          <div className="relative mb-2 flex flex-col items-center justify-center">
+            <img src="/SVG/logo.webp" alt="TrackFood Logo" className="w-48 h-48 mx-auto object-contain" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight mb-2">
+            Deine intelligente<br />
+            <span className="bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">
+              Ernährungs-App
+            </span>
+          </h1>
+          <p className="text-lg text-gray-600 mb-8 max-w-sm mx-auto leading-relaxed mt-2">
+            KI-gestützte Ernährungsberatung, Barcode-Scanner und personalisierte Empfehlungen – alles in einer App.
+          </p>
+
+          <div className="flex flex-col space-y-4 mb-8">
+            <Button
+              onClick={() => router.push('/register')}
+              size="lg"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-4 px-8 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-200"
+            >
+              <Play className="w-5 h-5 mr-2" />
+              Jetzt kostenlos starten
+            </Button>
+            
+            <GoogleLoginButton />
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="flex items-center justify-center space-x-4 text-sm text-gray-500 mb-8">
+            <div className="flex items-center space-x-1">
+              <Check className="w-4 h-4 text-emerald-500" />
+              <span>Kostenlos</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Check className="w-4 h-4 text-emerald-500" />
+              <span>KI-gestützt</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Check className="w-4 h-4 text-emerald-500" />
+              <span>Datenschutz</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Interactive Feature Carousel */}
+        <section className="px-6 py-8">
+          <div className="max-w-sm mx-auto">
+            <div
+              className="relative h-64 mb-6"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className={`absolute inset-0 transition-all duration-500 ${
+                    index === activeFeature
+                      ? 'opacity-100 transform translate-y-0'
+                      : 'opacity-0 transform translate-y-4'
+                  }`}
                 >
-                  <span className="relative inline-block">
-                    TrackFood
-                  </span>
-                </h1>
-              </div>
-              <div className="w-24 h-1 bg-white mx-auto rounded-full mb-2" />
+                  <div className={`bg-gradient-to-br ${feature.color} rounded-3xl p-8 text-white shadow-2xl h-full flex flex-col justify-center`}>
+                    <feature.icon className="w-12 h-12 mb-4 mx-auto" />
+                    <h3 className="text-xl font-bold mb-2 text-center">{feature.title}</h3>
+                    <p className="text-center text-white/90 leading-relaxed">{feature.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <p className="text-xl text-white text-shadow-strong mb-10 max-w-xs sm:max-w-sm md:max-w-md mx-auto font-semibold px-4 text-center">
-              Intelligente Ernährung<br />für deine Gesundheit
-            </p>
+            
+            {/* Carousel Dots */}
+            <div className="flex justify-center space-x-2 mb-8">
+              {features.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveFeature(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === activeFeature
+                      ? 'bg-emerald-500 w-8'
+                      : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
           </div>
-
-          {/* Scroll Indicator */}
-          {showScrollHint && (
-            <div className="absolute left-1/2 transform -translate-x-1/2" style={{ bottom: '4.5rem' }}>
-              <div className="scroll-bounce text-white">
-                <span className="text-sm mb-2 font-semibold scroll-bounce-text text-shadow-strong">Scroll für mehr</span>
-                <ChevronDown className="w-6 h-6 scroll-bounce-chevron text-white text-shadow-strong" />
-              </div>
-            </div>
-          )}
         </section>
 
-        {/* Features Section */}
-        <section className="py-10 md:py-16 bg-transparent relative z-10">
-          {/* Test-Muster-Hintergrund für gesamten Features-Bereich entfernt */}
-          <div className="max-w-5xl mx-auto px-2 sm:px-6 lg:px-8 relative" style={{zIndex:1}}>
-            <div className="text-center mb-12 md:mb-16">
-              <h2 className="text-4xl font-bold text-white mb-4 text-shadow-strong">
-                Alles was du für eine gesunde Ernährung brauchst
-              </h2>
-              <p className="text-xl text-white text-shadow-strong max-w-3xl mx-auto">
-                Von intelligentem Barcode-Scanning bis hin zu personalisierten KI-Empfehlungen – 
-                TrackFood macht gesunde Ernährung einfach und smart.
+        {/* Key Features Grid */}
+        <section className="px-6 py-8">
+          <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Brain className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-gray-800 mb-1">KI-Beratung</h3>
+              <p className="text-xs text-gray-600">Personalisierte Empfehlungen</p>
+            </div>
+            
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                <QrCode className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-gray-800 mb-1">Barcode-Scanner</h3>
+              <p className="text-xs text-gray-600">Sofort alle Nährwerte</p>
+            </div>
+            
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Target className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-gray-800 mb-1">Ziele erreichen</h3>
+              <p className="text-xs text-gray-600">Intelligentes Tracking</p>
+            </div>
+            
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-gray-800 mb-1">Fortschritte</h3>
+              <p className="text-xs text-gray-600">Visualisierte Erfolge</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Social Proof */}
+        <section className="px-6 py-8 text-center">
+          <div className="max-w-sm mx-auto">
+            <div className="flex justify-center items-center space-x-1 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+              ))}
+            </div>
+            <p className="text-gray-600 mb-2">
+              "TrackFood hat meine Ernährung revolutioniert!"
+            </p>
+            <p className="text-sm text-gray-500 mb-6">
+              Über 10.000 zufriedene Nutzer
+            </p>
+            
+            <div className="flex justify-center items-center space-x-2 mb-8">
+              <Users className="w-5 h-5 text-emerald-500" />
+              <span className="text-sm text-gray-600">
+                Schließe dich der Community an
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {/* Bottom CTA */}
+        <section className="px-6 py-8 pb-12">
+          <div className="max-w-sm mx-auto text-center">
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl p-8 text-white shadow-2xl">
+              <Zap className="w-12 h-12 mx-auto mb-4" />
+              <h3 className="text-xl font-bold mb-2">Bereit loszulegen?</h3>
+              <p className="text-white/90 mb-6 text-sm">
+                Starte deine Reise zu einer gesünderen Ernährung noch heute.
               </p>
-            </div>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 relative" style={{zIndex:1}}>
-              {/* Feature 1: KI-Ernährungsberatung */}
-              <div className="relative p-6 md:p-5 lg:p-6 rounded-3xl border border-white/30 shadow-2xl transition-all duration-200 flex flex-col overflow-hidden"
-                style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
-                <div className="relative z-10">
-                  <Brain className="w-14 h-14 text-white mb-6 relative z-10" />
-                  <h3 className="text-xl font-semibold text-white text-shadow-strong mb-3">KI-Ernährungsberatung</h3>
-                  <p className="text-white text-shadow-soft leading-relaxed">
-                    Chatte mit deinem persönlichen KI-Experten! Die KI analysiert automatisch deine letzten 7 Tage, erkennt Muster und kritische Ernährungsgewohnheiten und gibt dir sofort umsetzbare, individuelle Tipps – perfekt abgestimmt auf deine Ziele.
-                  </p>
-                  <div className="mt-4 text-sm text-white text-shadow-soft font-medium">
-                    Automatische Wochenanalyse • Kritische Hinweise & Empfehlungen
-                  </div>
-                </div>
-              </div>
-
-              {/* Feature 2: Persönlicher KI-Fitness-Coach */}
-              <div className="relative p-6 md:p-5 lg:p-6 rounded-3xl border border-white/30 shadow-2xl transition-all duration-200 flex flex-col overflow-hidden"
-                style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
-                <div className="relative z-10">
-                  <Dumbbell className="w-14 h-14 text-white mb-6 relative z-10" />
-                  <h3 className="text-xl font-semibold text-white text-shadow-strong mb-3">Persönlicher KI-Fitness-Coach</h3>
-                  <p className="text-white text-shadow-soft leading-relaxed">
-                    Deine KI erstellt individuelle Trainingspläne, gibt Tipps für mehr Bewegung und motiviert dich zu einem aktiven Lebensstil. Kombiniere Ernährung & Fitness für maximale Erfolge – egal ob Abnehmen, Muskelaufbau oder einfach gesünder leben.
-                  </p>
-                  <div className="mt-4 text-sm text-white text-shadow-soft font-medium">
-                    Trainingspläne • Motivation • Fortschritts-Feedback
-                  </div>
-                </div>
-              </div>
-
-              {/* Feature 3: Kalorien- & Ziel-Tracking */}
-              <div className="relative p-6 md:p-5 lg:p-6 rounded-3xl border border-white/30 shadow-2xl transition-all duration-200 flex flex-col overflow-hidden"
-                style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
-                <div className="relative z-10">
-                  <Target className="w-14 h-14 text-white mb-6 relative z-10" />
-                  <h3 className="text-xl font-semibold text-white text-shadow-strong mb-3">Kalorien- & Ziel-Tracking</h3>
-                  <p className="text-white text-shadow-soft leading-relaxed">
-                    Verfolge deine Kalorien, Makronährstoffe und Fortschritte – perfekt zum Abnehmen, Muskelaufbau oder Gewicht halten. Setze individuelle Ziele und erhalte smarte Auswertungen.
-                  </p>
-                  <div className="mt-4 text-sm text-white text-shadow-soft font-medium">
-                    Automatische Analyse • Zielorientierte Empfehlungen
-                  </div>
-                </div>
-              </div>
-
-              {/* Feature 4: Rezepte & Inspiration */}
-              <div className="relative p-6 md:p-5 lg:p-6 rounded-3xl border border-white/30 shadow-2xl transition-all duration-200 flex flex-col overflow-hidden"
-                style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
-                <div className="relative z-10">
-                  <Salad className="w-14 h-14 text-white mb-6 relative z-10" />
-                  <h3 className="text-xl font-semibold text-white text-shadow-strong mb-3">Rezepte & Inspiration</h3>
-                  <p className="text-white text-shadow-soft leading-relaxed">
-                    Entdecke gesunde Rezepte mit Nährwertangaben. Lass dich inspirieren und übernimm Rezepte direkt in dein Tagebuch – für mehr Abwechslung und Genuss beim Abnehmen oder Muskelaufbau.
-                  </p>
-                  <div className="mt-4 text-sm text-white text-shadow-soft font-medium">
-                    Gesunde Rezepte • Direkt ins Tagebuch übernehmen
-                  </div>
-                </div>
-              </div>
-
-              {/* Feature 5: Barcode-Scanner */}
-              <div className="relative p-6 md:p-5 lg:p-6 rounded-3xl border border-white/30 shadow-2xl transition-all duration-200 flex flex-col overflow-hidden"
-                style={{background:'#7CB518', boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.18)'}}>
-                <div className="relative z-10">
-                  <QrCode className="w-14 h-14 text-white mb-6 relative z-10" />
-                  <h3 className="text-xl font-semibold text-white text-shadow-strong mb-3">Barcode-Scanner</h3>
-                  <p className="text-white text-shadow-soft leading-relaxed">
-                    Scanne jeden Barcode und erhalte sofort Nährwerte! Mit deutschen Produkten in unserer Datenbank.
-                  </p>
-                  <div className="mt-4 text-sm text-white text-shadow-soft font-medium">
-                    Mobile & Safari optimiert • PWA-kompatibel
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-20 bg-transparent relative z-10">
-          <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 text-shadow-strong">
-              Bereit für eine gesündere Zukunft?
-            </h2>
-            <p className="text-xl text-white text-shadow-strong mb-8 max-w-2xl mx-auto">
-              Starte heute deine Reise zu einer besseren Ernährung. 
-              Kostenlos, ohne Verpflichtungen und mit sofortigen Ergebnissen.
-            </p>
-            <div className="flex flex-col gap-4 justify-center">
               <Button
                 onClick={() => router.push('/register')}
-                size="lg"
-                className="bg-white text-black active:bg-emerald-50 px-8 py-4 text-lg font-semibold shadow-xl active:scale-95"
+                className="bg-white text-emerald-600 hover:bg-gray-100 font-semibold py-3 px-8 rounded-xl shadow-lg w-full"
               >
-                Jetzt kostenlos starten
-                <ArrowRight className="w-5 h-5 ml-2" />
+                Jetzt kostenlos testen
+                <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
-              <Button
-                onClick={() => router.push('/login')}
-                variant="outline"
-                size="lg"
-                className="border-2 border-white text-white bg-white/10 backdrop-blur-sm active:bg-white active:text-emerald-800 px-8 py-4 text-lg active:scale-95"
-              >
-                Bereits registriert? Anmelden
-              </Button>
-              <div className="mt-2">
-                <GoogleLoginButton />
-              </div>
             </div>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="bg-gray-900 text-white py-8 mt-auto pb-[env(safe-area-inset-bottom)]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <div className="text-center text-white">
-                <p>&copy; 2025 TrackFood. Alle Rechte vorbehalten.</p>
-                <p className="text-sm mt-2 text-white text-shadow-soft">
-                  Powered by Groq AI, OpenFoodFacts & Supabase
-                </p>
-              </div>
-              {/* Rechtliche Links */}
-              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 mb-2 text-xs text-white text-shadow-soft">
-                <a href="/impressum" className="hover:text-emerald-400 underline transition-colors">Impressum</a>
-                <a href="/datenschutz" className="hover:text-emerald-400 underline transition-colors">Datenschutz</a>
-                <a href="/agb" className="hover:text-emerald-400 underline transition-colors">AGB</a>
-              </div>
-              {/* Trenner-Balken */}
-              <div className="w-full h-px bg-gray-800 my-6"></div>
-              {/* Klein Digital Solutions Sektion */}
-              <div className="text-center pb-0">
-                <p className="text-sm text-white text-shadow-soft mb-3">
-                  Ein Produkt von Klein Digital Solutions
-                </p>
-                <div className="flex flex-col sm:flex-row justify-center items-center gap-4 text-xs text-white text-shadow-soft">
-                  <a 
-                    href="https://www.kleindigitalsolutions.de" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="hover:text-emerald-400 transition-colors"
-                  >
-                    www.kleindigitalsolutions.de
-                  </a>
-                  <a 
-                    href="mailto:info@kleindigitalsolutions.de"
-                    className="hover:text-emerald-400 transition-colors"
-                  >
-                    info@kleindigitalsolutions.de
-                  </a>
-                  <a 
-                    href="tel:+4917641678256"
-                    className="hover:text-emerald-400 transition-colors"
-                  >
-                    +49 176 416 782 56
-                  </a>
-                </div>
-              </div>
+        <footer className="px-6 py-8 text-center text-gray-500 text-sm">
+          <div className="max-w-sm mx-auto">
+            <p className="mb-4">&copy; 2025 TrackFood. Alle Rechte vorbehalten.</p>
+            <div className="flex justify-center space-x-4 mb-4">
+              <a href="/impressum" className="hover:text-emerald-600 transition-colors">
+                Impressum
+              </a>
+              <a href="/datenschutz" className="hover:text-emerald-600 transition-colors">
+                Datenschutz
+              </a>
+              <a href="/agb" className="hover:text-emerald-600 transition-colors">
+                AGB
+              </a>
             </div>
+            <p className="text-xs">
+              Ein Produkt von Klein Digital Solutions
+            </p>
           </div>
         </footer>
       </div>
-      <style jsx>{`
-        @keyframes hat-drop-simple {
-          0% { opacity: 0; transform: translateY(-40px) scale(0.7); }
-          80% { opacity: 1; transform: translateY(4px) scale(1.1); }
-          100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .animate-hat-drop-simple {
-          animation: hat-drop-simple 1.1s cubic-bezier(.33,1.02,.47,.98) 0.3s both;
-        }
-      `}</style>
     </>
   )
 }
