@@ -23,7 +23,6 @@ export default function LandingPage() {
   const router = useRouter()
   const { user } = useAuthStore()
   const [showDesktopNotice, setShowDesktopNotice] = useState(false)
-  const [showOnboarding, setShowOnboarding] = useState(false)
   const [activeFeature, setActiveFeature] = useState(0)
 
   useEffect(() => {
@@ -37,24 +36,12 @@ export default function LandingPage() {
   }, [])
 
   useEffect(() => {
-    // Onboarding nur beim ersten Login anzeigen
-    if (typeof window !== 'undefined' && !localStorage.getItem('trackfood_onboarded')) {
-      setShowOnboarding(true)
-    }
-  }, [])
-
-  useEffect(() => {
     // Feature carousel auto-rotation
     const interval = setInterval(() => {
       setActiveFeature((prev) => (prev + 1) % 3)
     }, 4000)
     return () => clearInterval(interval)
   }, [])
-
-  const handleFinishOnboarding = () => {
-    localStorage.setItem('trackfood_onboarded', '1')
-    setShowOnboarding(false)
-  }
 
   const features = [
     {
