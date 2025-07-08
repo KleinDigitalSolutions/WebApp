@@ -36,8 +36,6 @@ export default function OnboardingWeight() {
       }
     }
     setLocalWeight(initialWeight);
-    // Fix: Speichere initialen Wert direkt
-    saveOnboardingData({ weight: initialWeight });
     setTimeout(() => {
       if (scrollRef.current) {
         const index = kgValues.indexOf(initialWeight);

@@ -21,8 +21,6 @@ export default function OnboardingTargetWeight() {
     const local = getOnboardingData()
     if (typeof local.targetWeight === 'number' && !isNaN(local.targetWeight)) {
       setLocalTargetWeight(local.targetWeight)
-      // Fix: Speichere initialen Wert direkt
-      saveOnboardingData({ targetWeight: local.targetWeight });
       setTimeout(() => {
         const scroll = document.querySelector('[aria-label="Zielgewicht auswählen"]') as HTMLDivElement;
         if (scroll) {
