@@ -6,7 +6,7 @@ import { useAuthStore, useOnboardingStore } from '@/store'
 import { supabase } from '@/lib/supabase'
 import { getOnboardingData, clearOnboardingData } from '@/lib/onboarding-storage'
 import { motion } from 'framer-motion'
-import { Apple, Flag, Calendar, Smile } from 'lucide-react' // Nur genutzte Icons
+import { Apple, Flag, Calendar } from 'lucide-react' // Nur genutzte Icons
 import ConfettiExplosion from 'react-confetti-explosion'; // Import für Konfetti-Explosion
 
 export default function OnboardingSummary() {
@@ -216,14 +216,6 @@ export default function OnboardingSummary() {
         )}
 
         {/* Konfetti-Grafik (statt des simplen SVG) - dies ist ein Platzhalter, idealerweise ein komplexeres, animiertes Lottie-File oder GIF */}
-        <motion.div
-          initial={{ scale: 0.7, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="mb-6 mt-4 flex items-center justify-center"
-        >
-          <Smile className="w-20 h-20 text-emerald-400 drop-shadow-lg" strokeWidth={2.5} />
-        </motion.div>
 
         <h1 className="text-3xl font-extrabold text-center mb-2 leading-tight">Dein Plan ist fertig!</h1>
         <p className="text-gray-500 text-center mb-8 text-base tracking-wide">
