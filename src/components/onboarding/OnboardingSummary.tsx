@@ -103,6 +103,24 @@ export default function OnboardingSummary() {
     }
   }, [weight, targetWeight]);
 
+  // Synchronisiere Zustand mit localStorage und berechne Prozentverlust IMMER aktuell
+  useEffect(() => {
+    const local = getOnboardingData();
+    if (local.weight && local.targetWeight) {
+      if (weight !== local.weight) useOnboardingStore.setState({ weight: local.weight });
+      if (targetWeight !== local.targetWeight) useOnboardingStore.setState({ targetWeight: local.targetWeight });
+    }
+  }, []);
+
+  // Prozentualer Gewichtsverlust immer aus localStorage berechnen
+  let percentLoss = 0;
+  const local = getOnboardingData();
+  const w = typeof local.weight === 'number' ? local.weight : weight;
+  const tw = typeof local.targetWeight === 'number' ? local.targetWeight : targetWeight;
+  if (w && tw && w > tw) {
+    percentLoss = Math.round(((w - tw) / w) * 100);
+  }
+
   // Onboarding abschließen Logik
   const handleComplete = async () => {
     if (!user) {
@@ -355,7 +373,7 @@ export default function OnboardingSummary() {
             className="flex items-center gap-2"
           >
             <Flag size={20} className="text-gray-500" />
-            <span>Gewichtsverlust</span>
+            <span>Gewichtsverlust: <span className="font-bold text-emerald-600">{percentLoss}%</span></span>
           </motion.div>
         </div>
 

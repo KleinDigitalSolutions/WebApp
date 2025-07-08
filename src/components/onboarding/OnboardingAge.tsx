@@ -108,22 +108,14 @@ export default function OnboardingAge() {
         )}
 
         {/* Weiter-Button */}
-        <motion.button
+        <button
           onClick={handleNext}
           disabled={typeof localAge !== 'number' || localAge < 13 || localAge > 120}
-          className={`w-full max-w-sm py-4 rounded-2xl font-bold text-white text-lg transition-all transform duration-300 ease-in-out
-            ${
-              typeof localAge !== 'number' || localAge < 13 || localAge > 120
-                ? 'bg-gray-300 cursor-not-allowed scale-[0.98]'
-                : 'bg-gradient-to-r from-emerald-500 to-green-600 active:scale-[0.97] shadow-lg'
-            }
-            flex items-center justify-center space-x-2`}
-          variants={itemVariants}
-          whileTap={{ scale: 0.97 }}
+          className={`w-full py-4 rounded-full font-semibold text-white bg-emerald-500 ${typeof localAge !== 'number' || localAge < 13 || localAge > 120 ? 'opacity-60 cursor-not-allowed' : ''}`}
           aria-disabled={typeof localAge !== 'number' || localAge < 13 || localAge > 120}
         >
-          <span>Weiter</span>
-        </motion.button>
+          Weiter
+        </button>
       </motion.div>
     </div>
   )

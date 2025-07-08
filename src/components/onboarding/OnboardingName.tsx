@@ -118,20 +118,13 @@ export default function OnboardingName() {
         )}
 
         {/* Weiter-Button */}
-        <motion.button
+        <button
           onClick={handleNext}
           disabled={!firstName || !lastName}
-          className={`w-full max-w-sm py-4 rounded-2xl font-bold text-white text-lg transition-all transform duration-300 ease-in-out
-            ${
-              !firstName || !lastName
-                ? 'bg-gray-300 cursor-not-allowed scale-[0.98]'
-                : 'bg-gradient-to-r from-emerald-500 to-green-600 active:scale-[0.97] shadow-lg'
-            }
-            flex items-center justify-center space-x-2`}
-          variants={itemVariants}
+          className={`w-full py-4 rounded-full font-semibold text-white bg-emerald-500 ${!firstName || !lastName ? 'opacity-60 cursor-not-allowed' : ''}`}
         >
-          <span>Weiter</span>
-        </motion.button>
+          Weiter
+        </button>
       </motion.div>
     </div>
   )

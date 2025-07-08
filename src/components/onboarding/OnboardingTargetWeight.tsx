@@ -165,11 +165,7 @@ export default function OnboardingTargetWeight() {
           <button
             onClick={handleNext}
             disabled={!localTargetWeight}
-            className={`w-full py-4 rounded-full font-semibold text-white transition-all ${
-              !localTargetWeight
-                ? 'bg-gray-300'
-                : 'bg-emerald-500 active:scale-95'
-            }`}
+            className={`w-full py-4 rounded-full font-semibold text-white bg-emerald-500 ${!localTargetWeight ? 'opacity-60 cursor-not-allowed' : ''}`}
           >
             Weiter
           </button>
