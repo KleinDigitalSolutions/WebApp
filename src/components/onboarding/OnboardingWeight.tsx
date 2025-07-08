@@ -142,12 +142,16 @@ export default function OnboardingWeight() {
   return (
     <div className="flex flex-col h-full">
       <div className="px-4 py-4">
-        <button 
-          onClick={handleBack}
-          className="p-2"
+        <motion.button
+          onClick={() => setCurrentStep(currentStep - 1)}
+          className="p-2 rounded-full transition-colors duration-200"
+          whileTap={{ scale: 0.95 }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
         >
-          <ArrowLeft className="w-6 h-6 text-gray-700" />
-        </button>
+          <ArrowLeft className="w-6 h-6 text-gray-600" />
+        </motion.button>
       </div>
 
       <div className="flex-1 flex flex-col items-center px-4 pb-8">
@@ -167,7 +171,7 @@ export default function OnboardingWeight() {
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.onerror = null;
-                target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTYgNkg4QzcuNDQ3NzIgNiA3IDYuNDQ3NzIgNyA3VjE3QzcgMTcuNTUyMyA3LjQ0NzcyIDE4IDggMThIMTZDMTYuNTUyMyAxOCAxNyAxNy41NTIzIDE3IDE3VjdDMTcgNi40NDc3MiAxNi41NTIzIDYgMTYgNloiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xNCA1VjNIMTBWNSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTEyIDEwVjE0IiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTAgMTJIMTQiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==";
+                target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTYgNkg4QzcuNDQ3NzIgNiA3IDYuNDQ3NzIgNyA3VjE3QzcgMTcuNTUyMyA3LjQ0NzcyIDE4IDggMThIMTZDMTYuNTUyMyAxOCAxNyAxNy41NTIzIDE3IDE3VjdDMTcgNi40NDc3MiAxNi41NTIzIDYgMTYgNloiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xNCA1VjNIMTBWNSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTEyIDEwVjE0IiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpa2d0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTEwIDEySDE0IiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpa2d0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+";
               }}
             />
           </div>
@@ -209,7 +213,7 @@ export default function OnboardingWeight() {
           <motion.button
             onClick={() => setUnit('kg')}
             className={`flex-1 px-5 py-2 rounded-full font-semibold transition-all duration-200 ease-in-out text-base
-              ${unit === 'kg' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-300'}`}
+              ${unit === 'kg' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700'}`}
             whileTap={{ scale: 0.95 }}
             aria-pressed={unit === 'kg'}
           >
@@ -218,7 +222,7 @@ export default function OnboardingWeight() {
           <motion.button
             onClick={() => setUnit('lbs')}
             className={`flex-1 px-5 py-2 rounded-full font-semibold transition-all duration-200 ease-in-out text-base
-              ${unit === 'lbs' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-300'}`}
+              ${unit === 'lbs' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700'}`}
             whileTap={{ scale: 0.95 }}
             aria-pressed={unit === 'lbs'}
           >
@@ -227,7 +231,7 @@ export default function OnboardingWeight() {
           <motion.button
             onClick={() => setUnit('st')}
             className={`flex-1 px-5 py-2 rounded-full font-semibold transition-all duration-200 ease-in-out text-base
-              ${unit === 'st' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-300'}`}
+              ${unit === 'st' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700'}`}
             whileTap={{ scale: 0.95 }}
             aria-pressed={unit === 'st'}
           >
@@ -255,11 +259,13 @@ export default function OnboardingWeight() {
           <button
             onClick={handleNext}
             disabled={!localWeight}
-            className={`w-full py-4 rounded-full font-semibold text-white transition-all ${
-              !localWeight
-                ? 'bg-gray-300'
-                : 'bg-emerald-500 hover:bg-emerald-600 active:scale-95'
-            }`}
+            className={`w-full max-w-sm py-4 rounded-2xl font-bold text-white text-lg transition-all transform duration-300 ease-in-out
+              ${
+                typeof localWeight !== 'number' || localWeight < 30 || localWeight > 300 || !!error
+                  ? 'bg-gray-300 cursor-not-allowed scale-[0.98]'
+                  : 'bg-gradient-to-r from-emerald-500 to-green-600 active:scale-[0.97] shadow-lg'
+              }
+              flex items-center justify-center space-x-2`}
           >
             Weiter
           </button>

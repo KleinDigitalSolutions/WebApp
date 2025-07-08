@@ -53,7 +53,7 @@ export default function OnboardingAge() {
       <div className="px-6 py-6 sm:px-8 sm:py-8">
         <motion.button
           onClick={() => setCurrentStep(currentStep - 1)}
-          className="p-2 rounded-full hover:bg-gray-200 transition-colors duration-200"
+          className="p-2 rounded-full transition-colors duration-200"
           whileTap={{ scale: 0.95 }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -115,7 +115,7 @@ export default function OnboardingAge() {
             ${
               typeof localAge !== 'number' || localAge < 13 || localAge > 120
                 ? 'bg-gray-300 cursor-not-allowed scale-[0.98]'
-                : 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 active:scale-[0.97] shadow-lg hover:shadow-xl'
+                : 'bg-gradient-to-r from-emerald-500 to-green-600 active:scale-[0.97] shadow-lg'
             }
             flex items-center justify-center space-x-2`}
           variants={itemVariants}

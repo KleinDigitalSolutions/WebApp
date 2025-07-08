@@ -134,9 +134,9 @@ export default function OnboardingHeight() {
       <div className="px-4 py-4">
         <button 
           onClick={handleBack}
-          className="p-2"
+          className="p-2 rounded-full transition-colors duration-200"
         >
-          <ArrowLeft className="w-6 h-6 text-gray-700" />
+          <ArrowLeft className="w-6 h-6 text-gray-600" />
         </button>
       </div>
 
@@ -200,7 +200,7 @@ export default function OnboardingHeight() {
           <motion.button
             onClick={() => { setUnit('cm'); }}
             className={`flex-1 px-5 py-2 rounded-full font-semibold transition-all duration-200 ease-in-out text-base
-              ${unit === 'cm' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-300'}`}
+              ${unit === 'cm' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700'}`}
             whileTap={{ scale: 0.95 }}
             aria-pressed={unit === 'cm'}
           >
@@ -209,7 +209,7 @@ export default function OnboardingHeight() {
           <motion.button
             onClick={() => { setUnit('ft/in'); }}
             className={`flex-1 px-5 py-2 rounded-full font-semibold transition-all duration-200 ease-in-out text-base
-              ${unit === 'ft/in' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-300'}`}
+              ${unit === 'ft/in' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700'}`}
             whileTap={{ scale: 0.95 }}
             aria-pressed={unit === 'ft/in'}
           >

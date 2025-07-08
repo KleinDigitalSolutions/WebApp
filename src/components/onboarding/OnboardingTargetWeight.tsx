@@ -172,7 +172,7 @@ export default function OnboardingTargetWeight() {
             className={`w-full py-4 rounded-full font-semibold text-white transition-all ${
               !localTargetWeight
                 ? 'bg-gray-300'
-                : 'bg-emerald-500 hover:bg-emerald-600 active:scale-95'
+                : 'bg-emerald-500 active:scale-95'
             }`}
           >
             Weiter

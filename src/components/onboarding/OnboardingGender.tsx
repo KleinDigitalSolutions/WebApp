@@ -62,7 +62,7 @@ export default function OnboardingGender() {
         <button
           onClick={handleNext}
           disabled={!localGender}
-          className="w-full py-4 rounded-full font-semibold text-white bg-emerald-500 hover:bg-emerald-600"
+          className="w-full py-4 rounded-full font-semibold text-white bg-emerald-500"
         >
           Weiter
         </button>

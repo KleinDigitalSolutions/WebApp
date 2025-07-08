@@ -148,7 +148,7 @@ export default function OnboardingGoals() {
               className={`flex items-center justify-between p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 shadow-sm
                 ${safeUserGoals.includes(goal.id)
                   ? 'border-emerald-500 bg-emerald-50'
-                  : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-100'
+                  : 'border-gray-200 bg-white'
                 }`}
               whileTap={{ scale: 0.98 }}
               variants={itemVariants}
@@ -201,7 +201,7 @@ export default function OnboardingGoals() {
             className={`w-full py-4 rounded-full font-semibold text-white transition-all ${
               safeUserGoals.length === 0
                 ? 'bg-gray-300'
-                : 'bg-emerald-500 hover:bg-emerald-600 active:scale-95'
+                : 'bg-emerald-500 active:scale-95'
             }`}
           >
             Weiter

@@ -113,7 +113,7 @@ export default function OnboardingDietType() {
 							className={`flex flex-col items-center justify-center rounded-2xl border-2 transition-all p-6 h-36 text-lg font-semibold cursor-pointer
                 ${selected === opt.key
 									? 'border-emerald-500 bg-emerald-50 text-emerald-800'
-									: 'border-gray-200 bg-white text-gray-800 hover:border-gray-300 hover:bg-gray-100'
+									: 'border-gray-200 bg-white text-gray-800'
 								}`}
 							aria-checked={selected === opt.key}
 							role="radio"

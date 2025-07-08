@@ -382,7 +382,7 @@ export default function OnboardingSummary() {
             onClick={handleComplete}
             disabled={isLoading}
             className={`w-full py-4 rounded-full font-semibold text-white text-lg transition-all duration-300 ease-in-out transform
-              ${isLoading ? 'bg-gray-300 cursor-not-allowed' : 'bg-emerald-500 hover:bg-emerald-600 active:scale-95'}
+              ${isLoading ? 'bg-gray-300 cursor-not-allowed' : 'bg-emerald-500 active:scale-95'}
               flex items-center justify-center`}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
