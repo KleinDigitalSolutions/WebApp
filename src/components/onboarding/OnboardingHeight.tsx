@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useAuthStore, useOnboardingStore } from '@/store'
 import { supabase } from '@/lib/supabase'
 import { ArrowLeft } from 'lucide-react'
@@ -10,13 +10,25 @@ export default function OnboardingHeight() {
   const { currentStep, setCurrentStep, height, setHeight } = useOnboardingStore()
   const [isLoading, setIsLoading] = useState(false)
   const [unit, setUnit] = useState<'cm' | 'ft/in'>('cm')
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   // Height picker range
   const cmValues = Array.from({ length: 51 }, (_, i) => 150 + i) // 150cm to 200cm
-  const visibleCmValues = cmValues.slice(
-    Math.max(0, cmValues.indexOf(height) - 3),
-    Math.min(cmValues.length, cmValues.indexOf(height) + 4)
-  )
+  
+  useEffect(() => {
+    // Setze den Initialwert, falls nicht gesetzt
+    if (!height) {
+      setHeight(175) // Standard-Größe
+    }
+    
+    // Scrolle zum aktuellen Wert wenn die Komponente mounted
+    if (scrollRef.current) {
+      const selectedElement = scrollRef.current.querySelector(`[data-value="${height}"]`)
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'center', behavior: 'auto' })
+      }
+    }
+  }, [height, setHeight])
 
   const handleBack = () => {
     setCurrentStep(currentStep - 1)
@@ -80,24 +92,36 @@ export default function OnboardingHeight() {
         {/* Height Picker */}
         <div className="w-full max-w-xs mb-8">
           {/* Height Scroller */}
-          <div className="relative mx-auto w-40 h-48 overflow-hidden bg-gray-50 rounded-xl">
-            <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-gray-50 to-transparent z-10"></div>
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent z-10"></div>
+          <div className="relative mx-auto w-40 h-48 bg-gray-50 rounded-xl">
+            <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-gray-50 to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent z-10 pointer-events-none"></div>
             
             {/* Selection Indicator */}
-            <div className="absolute top-1/2 left-0 right-0 h-12 -mt-6 border-y-2 border-emerald-400 bg-gray-100/50 z-0"></div>
+            <div className="absolute top-1/2 left-0 right-0 h-12 -mt-6 border-y-2 border-emerald-400 bg-gray-100/50 z-0 pointer-events-none"></div>
             
-            {/* Scrollable Values */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
+            {/* Scrollable Values - jetzt mit voller Touchscreen-Unterstützung */}
+            <div 
+              ref={scrollRef}
+              className="absolute inset-0 flex flex-col items-center overflow-y-auto scrollbar-hide py-16"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
               {cmValues.map((value) => (
                 <div 
                   key={value}
-                  onClick={() => setHeight(value)}
-                  className={`py-2 text-2xl font-semibold transition-all ${
+                  data-value={value}
+                  onClick={() => {
+                    setHeight(value)
+                    // Scrolle zum ausgewählten Element
+                    const element = document.querySelector(`[data-value="${value}"]`)
+                    if (element) {
+                      element.scrollIntoView({ block: 'center', behavior: 'smooth' })
+                    }
+                  }}
+                  className={`py-2 text-2xl font-semibold transition-all touch-manipulation ${
                     value === height 
                       ? 'text-gray-900 scale-110' 
                       : 'text-gray-400'
-                  } ${!visibleCmValues.includes(value) ? 'hidden' : ''}`}
+                  }`}
                 >
                   {value}
                 </div>
