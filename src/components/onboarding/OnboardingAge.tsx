@@ -123,15 +123,6 @@ export default function OnboardingAge() {
           aria-disabled={typeof localAge !== 'number' || localAge < 13 || localAge > 120}
         >
           <span>Weiter</span>
-          {!(typeof localAge !== 'number' || localAge < 13 || localAge > 120) && (
-            <motion.div
-              animate={{ x: [0, 5, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-              aria-hidden="true"
-            >
-              →
-            </motion.div>
-          )}
         </motion.button>
       </motion.div>
     </div>

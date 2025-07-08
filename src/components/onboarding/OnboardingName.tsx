@@ -131,14 +131,6 @@ export default function OnboardingName() {
           variants={itemVariants}
         >
           <span>Weiter</span>
-          {!(!firstName || !lastName) && (
-            <motion.div
-              animate={{ x: [0, 5, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-            >
-              →
-            </motion.div>
-          )}
         </motion.button>
       </motion.div>
     </div>

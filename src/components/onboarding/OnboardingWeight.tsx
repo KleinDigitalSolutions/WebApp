@@ -27,6 +27,21 @@ export default function OnboardingWeight() {
     const local = getOnboardingData()
     if (typeof local.weight === 'number' && !isNaN(local.weight)) {
       setLocalWeight(local.weight)
+      setTimeout(() => {
+        if (scrollRef.current) {
+          const weightVal = local.weight;
+          if (typeof weightVal === 'number') {
+            const index = kgValues.indexOf(weightVal);
+            if (index !== -1) {
+              const itemHeight = scrollRef.current.scrollHeight / kgValues.length;
+              scrollRef.current.scrollTo({
+                top: index * itemHeight - scrollRef.current.clientHeight / 2 + itemHeight / 2,
+                behavior: 'instant',
+              });
+            }
+          }
+        }
+      }, 50)
     }
   }, [])
 

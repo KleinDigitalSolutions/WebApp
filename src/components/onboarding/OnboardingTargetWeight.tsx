@@ -17,10 +17,26 @@ export default function OnboardingTargetWeight() {
   const [localTargetWeight, setLocalTargetWeight] = useState<number>(weight || 70)
 
   useEffect(() => {
-    // Beim Mounten: Zielgewicht aus localStorage laden
+    // Beim Mounten: Zielgewicht und Startgewicht aus localStorage laden
     const local = getOnboardingData()
     if (typeof local.targetWeight === 'number' && !isNaN(local.targetWeight)) {
       setLocalTargetWeight(local.targetWeight)
+      setTimeout(() => {
+        const scroll = document.querySelector('[aria-label="Zielgewicht auswählen"]') as HTMLDivElement;
+        if (scroll) {
+          const targetVal = local.targetWeight;
+          if (typeof targetVal === 'number') {
+            const index = Array.from({ length: 151 }, (_, i) => 40 + i).indexOf(targetVal);
+            if (index !== -1) {
+              const itemHeight = scroll.scrollHeight / 151;
+              scroll.scrollTo({
+                top: index * itemHeight - scroll.clientHeight / 2 + itemHeight / 2,
+                behavior: 'instant',
+              });
+            }
+          }
+        }
+      }, 50)
     }
   }, [])
 
@@ -39,7 +55,8 @@ export default function OnboardingTargetWeight() {
   }
 
   // Defensive: fallback for weight
-  const safeWeight = typeof weight === 'number' && !isNaN(weight) ? weight : 70
+  const local = getOnboardingData();
+  const safeWeight = (typeof local.weight === 'number' && !isNaN(local.weight)) ? local.weight : (typeof weight === 'number' && !isNaN(weight) ? weight : 70);
   const weightLossPercentage = safeWeight > 0 
     ? Math.round((safeWeight - localTargetWeight) / safeWeight * 100 * 10) / 10
     : 0

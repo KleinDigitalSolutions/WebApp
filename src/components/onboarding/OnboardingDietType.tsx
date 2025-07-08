@@ -118,83 +118,20 @@ export default function OnboardingDietType() {
 							aria-checked={selected === opt.key}
 							role="radio"
 							type="button"
-							variants={buttonVariants}
-							initial="initial"
-							animate={selected === opt.key ? "selected" : "unselected"}
-							whileHover="hover"
-							whileTap="tap"
-							tabIndex={0}
-							onKeyDown={e => {
-								if (e.key === ' ' || e.key === 'Enter') {
-									e.preventDefault();
-									setSelected(opt.key);
-								}
-							}}
-							aria-label={opt.label}
-						>
-							<span className="text-4xl sm:text-5xl mb-2 leading-none">{opt.emoji}</span>
-							<span className="text-base sm:text-lg font-medium text-center">{opt.label}</span>
-						</motion.button>
+						/>
 					))}
 				</motion.div>
-				{/* Glutenfrei Checkbox */}
-				<motion.div
-            className="flex items-center w-full max-w-lg mb-8 p-5 bg-white rounded-2xl shadow-sm border border-gray-200 cursor-pointer hover:border-gray-300 hover:bg-gray-100 transition-all duration-200"
-            onClick={() => setIsGlutenfree(!isGlutenfree)}
-            variants={itemVariants}
-            whileTap={{ scale: 0.98 }}
-            role="checkbox"
-            aria-checked={isGlutenfree}
-            tabIndex={0}
-            onKeyDown={e => {
-              if (e.key === ' ' || e.key === 'Enter') {
-                e.preventDefault();
-                setIsGlutenfree(!isGlutenfree);
-              }
-            }}
-        >
-            <input
-                id="glutenfree"
-                type="checkbox"
-                checked={isGlutenfree}
-                onChange={e => setIsGlutenfree(e.target.checked)}
-                className="w-6 h-6 text-emerald-600 border-gray-300 rounded-lg focus:ring-emerald-500 flex-shrink-0"
-                style={{ transform: 'scale(1.2)' }}
-                tabIndex={-1}
-                aria-hidden="true"
-            />
-            <label htmlFor="glutenfree" className="ml-4 text-xl font-medium text-gray-800 flex items-center gap-3 flex-grow cursor-pointer">
-                <span className="text-3xl leading-none">🌾</span> Glutenfrei
-            </label>
-        </motion.div>
 
 				{/* Weiter-Button */}
 				<motion.button
 					onClick={handleNext}
 					disabled={!selected}
 					className={`w-full max-w-sm py-4 rounded-2xl font-bold text-white text-lg transition-all transform duration-300 ease-in-out
-            ${!selected
-							? 'bg-gray-300 cursor-not-allowed scale-[0.98]'
-							: 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 active:scale-[0.97] shadow-lg hover:shadow-xl'
-						}
-            flex items-center justify-center space-x-2`}
+					  ${!selected ? 'bg-gray-300 cursor-not-allowed scale-[0.98]' : 'bg-gradient-to-r from-emerald-500 to-green-600 active:scale-[0.97] shadow-lg'}
+					  flex items-center justify-center space-x-2`}
 					variants={itemVariants}
-					aria-label="Weiter"
 				>
 					<span>Weiter</span>
-					{selected && (
-						<motion.div
-							animate={{ x: [0, 5, 0] }}
-							transition={{
-								repeat: Infinity,
-								duration: 1.5,
-								ease: 'easeInOut',
-							}}
-							aria-hidden
-						>
-							→
-						</motion.div>
-					)}
 				</motion.button>
 			</motion.div>
 		</div>
