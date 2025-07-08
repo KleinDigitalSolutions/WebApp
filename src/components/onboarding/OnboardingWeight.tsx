@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useAuthStore, useOnboardingStore } from '@/store'
 import { supabase } from '@/lib/supabase'
 import { ArrowLeft } from 'lucide-react'
@@ -11,9 +11,61 @@ export default function OnboardingWeight() {
   const [isLoading, setIsLoading] = useState(false)
   const [unit, setUnit] = useState<'kg' | 'lbs' | 'st'>('kg')
   const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollTimeout = useRef<NodeJS.Timeout | null>(null)
 
   // Weight picker range
   const kgValues = Array.from({ length: 151 }, (_, i) => 40 + i) // 40kg to 190kg
+  
+  // Auto-Snap-Funktion nach dem Scrollen
+  const snapToClosestValue = useCallback(() => {
+    if (!scrollRef.current) return;
+    
+    const container = scrollRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const containerCenter = containerRect.top + containerRect.height / 2;
+    
+    let closestValue = weight;
+    let minDistance = Infinity;
+    
+    // Alle Wert-Elemente durchgehen und das nächste zum Zentrum finden
+    const elements = container.children;
+    for (let i = 0; i < elements.length; i++) {
+      const element = elements[i] as HTMLElement;
+      const rect = element.getBoundingClientRect();
+      const elementCenter = rect.top + rect.height / 2;
+      const distance = Math.abs(elementCenter - containerCenter);
+      
+      if (distance < minDistance) {
+        minDistance = distance;
+        const dataValue = element.dataset.value;
+        if (dataValue) {
+          closestValue = parseInt(dataValue, 10);
+        }
+      }
+    }
+    
+    // Den nächsten Wert auswählen und dorthin scrollen
+    if (closestValue !== weight) {
+      setWeight(closestValue);
+      
+      // Zum ausgewählten Element scrollen
+      const selectedElement = container.querySelector(`[data-value="${closestValue}"]`);
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+    }
+  }, [weight, setWeight]);
+  
+  // Scroll-Handler mit Debounce
+  const handleScroll = useCallback(() => {
+    if (scrollTimeout.current) {
+      clearTimeout(scrollTimeout.current);
+    }
+    
+    scrollTimeout.current = setTimeout(() => {
+      snapToClosestValue();
+    }, 150);
+  }, [snapToClosestValue]);
 
   useEffect(() => {
     // Setze den Initialwert, falls nicht gesetzt
@@ -23,12 +75,29 @@ export default function OnboardingWeight() {
     
     // Scrolle zum aktuellen Wert wenn die Komponente mounted
     if (scrollRef.current) {
-      const selectedElement = scrollRef.current.querySelector(`[data-value="${weight}"]`)
+      const selectedElement = scrollRef.current.querySelector(`[data-value="${weight}"]`) as HTMLElement;
       if (selectedElement) {
-        selectedElement.scrollIntoView({ block: 'center', behavior: 'auto' })
+        selectedElement.scrollIntoView({ block: 'center', behavior: 'auto' });
       }
+      
+      // Event-Listener für Scroll hinzufügen
+      scrollRef.current.addEventListener('scroll', handleScroll);
+      
+      // Touch-Events für bessere mobile Erfahrung
+      scrollRef.current.addEventListener('touchend', snapToClosestValue);
+      
+      // Cleanup
+      return () => {
+        if (scrollRef.current) {
+          scrollRef.current.removeEventListener('scroll', handleScroll);
+          scrollRef.current.removeEventListener('touchend', snapToClosestValue);
+        }
+        if (scrollTimeout.current) {
+          clearTimeout(scrollTimeout.current);
+        }
+      };
     }
-  }, [weight, setWeight])
+  }, [weight, setWeight, handleScroll, snapToClosestValue])
 
   const handleBack = () => {
     setCurrentStep(currentStep - 1)
@@ -131,7 +200,7 @@ export default function OnboardingWeight() {
                   onClick={() => {
                     setWeight(value)
                     // Scrolle zum ausgewählten Element
-                    const element = document.querySelector(`[data-value="${value}"]`)
+                    const element = document.querySelector(`[data-value="${value}"]`) as HTMLElement
                     if (element) {
                       element.scrollIntoView({ block: 'center', behavior: 'smooth' })
                     }

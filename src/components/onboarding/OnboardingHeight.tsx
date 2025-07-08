@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useAuthStore, useOnboardingStore } from '@/store'
 import { supabase } from '@/lib/supabase'
 import { ArrowLeft } from 'lucide-react'
@@ -11,9 +11,61 @@ export default function OnboardingHeight() {
   const [isLoading, setIsLoading] = useState(false)
   const [unit, setUnit] = useState<'cm' | 'ft/in'>('cm')
   const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollTimeout = useRef<NodeJS.Timeout | null>(null)
 
   // Height picker range
   const cmValues = Array.from({ length: 51 }, (_, i) => 150 + i) // 150cm to 200cm
+  
+  // Auto-Snap-Funktion nach dem Scrollen
+  const snapToClosestValue = useCallback(() => {
+    if (!scrollRef.current) return;
+    
+    const container = scrollRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const containerCenter = containerRect.top + containerRect.height / 2;
+    
+    let closestValue = height;
+    let minDistance = Infinity;
+    
+    // Alle Wert-Elemente durchgehen und das nächste zum Zentrum finden
+    const elements = container.children;
+    for (let i = 0; i < elements.length; i++) {
+      const element = elements[i] as HTMLElement;
+      const rect = element.getBoundingClientRect();
+      const elementCenter = rect.top + rect.height / 2;
+      const distance = Math.abs(elementCenter - containerCenter);
+      
+      if (distance < minDistance) {
+        minDistance = distance;
+        const dataValue = element.dataset.value;
+        if (dataValue) {
+          closestValue = parseInt(dataValue, 10);
+        }
+      }
+    }
+    
+    // Den nächsten Wert auswählen und dorthin scrollen
+    if (closestValue !== height) {
+      setHeight(closestValue);
+      
+      // Zum ausgewählten Element scrollen
+      const selectedElement = container.querySelector(`[data-value="${closestValue}"]`);
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+    }
+  }, [height, setHeight]);
+  
+  // Scroll-Handler mit Debounce
+  const handleScroll = useCallback(() => {
+    if (scrollTimeout.current) {
+      clearTimeout(scrollTimeout.current);
+    }
+    
+    scrollTimeout.current = setTimeout(() => {
+      snapToClosestValue();
+    }, 150);
+  }, [snapToClosestValue]);
   
   useEffect(() => {
     // Setze den Initialwert, falls nicht gesetzt
@@ -23,12 +75,29 @@ export default function OnboardingHeight() {
     
     // Scrolle zum aktuellen Wert wenn die Komponente mounted
     if (scrollRef.current) {
-      const selectedElement = scrollRef.current.querySelector(`[data-value="${height}"]`)
+      const selectedElement = scrollRef.current.querySelector(`[data-value="${height}"]`) as HTMLElement;
       if (selectedElement) {
-        selectedElement.scrollIntoView({ block: 'center', behavior: 'auto' })
+        selectedElement.scrollIntoView({ block: 'center', behavior: 'auto' });
       }
+      
+      // Event-Listener für Scroll hinzufügen
+      scrollRef.current.addEventListener('scroll', handleScroll);
+      
+      // Touch-Events für bessere mobile Erfahrung
+      scrollRef.current.addEventListener('touchend', snapToClosestValue);
+      
+      // Cleanup
+      return () => {
+        if (scrollRef.current) {
+          scrollRef.current.removeEventListener('scroll', handleScroll);
+          scrollRef.current.removeEventListener('touchend', snapToClosestValue);
+        }
+        if (scrollTimeout.current) {
+          clearTimeout(scrollTimeout.current);
+        }
+      };
     }
-  }, [height, setHeight])
+  }, [height, setHeight, handleScroll, snapToClosestValue]);
 
   const handleBack = () => {
     setCurrentStep(currentStep - 1)
@@ -99,7 +168,7 @@ export default function OnboardingHeight() {
             {/* Selection Indicator */}
             <div className="absolute top-1/2 left-0 right-0 h-12 -mt-6 border-y-2 border-emerald-400 bg-gray-100/50 z-0 pointer-events-none"></div>
             
-            {/* Scrollable Values - jetzt mit voller Touchscreen-Unterstützung */}
+            {/* Scrollable Values - jetzt mit automatischer Auswahl */}
             <div 
               ref={scrollRef}
               className="absolute inset-0 flex flex-col items-center overflow-y-auto scrollbar-hide py-16"
@@ -111,8 +180,7 @@ export default function OnboardingHeight() {
                   data-value={value}
                   onClick={() => {
                     setHeight(value)
-                    // Scrolle zum ausgewählten Element
-                    const element = document.querySelector(`[data-value="${value}"]`)
+                    const element = document.querySelector(`[data-value="${value}"]`) as HTMLElement
                     if (element) {
                       element.scrollIntoView({ block: 'center', behavior: 'smooth' })
                     }
