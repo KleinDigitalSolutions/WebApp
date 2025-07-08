@@ -12,6 +12,7 @@ import OnboardingSummary from '@/components/onboarding/OnboardingSummary'
 import OnboardingName from '@/components/onboarding/OnboardingName'
 import OnboardingAge from '@/components/onboarding/OnboardingAge'
 import OnboardingGender from '@/components/onboarding/OnboardingGender'
+import OnboardingDietType from '@/components/onboarding/OnboardingDietType'
 
 export default function OnboardingPage() {
   const { user, setProfile } = useAuthStore()
@@ -98,12 +99,14 @@ export default function OnboardingPage() {
       case 4:
         return <OnboardingGoals />
       case 5:
-        return <OnboardingHeight />
+        return <OnboardingDietType />
       case 6:
-        return <OnboardingWeight />
+        return <OnboardingHeight />
       case 7:
-        return <OnboardingTargetWeight />
+        return <OnboardingWeight />
       case 8:
+        return <OnboardingTargetWeight />
+      case 9:
         return <OnboardingSummary />
       default:
         return <OnboardingName />
@@ -124,7 +127,7 @@ export default function OnboardingPage() {
       <div className="w-full bg-gray-100 h-1">
         <div 
           className="bg-emerald-500 h-1 transition-all duration-300"
-          style={{ width: `${(currentStep / 8) * 100}%` }}
+          style={{ width: `${(currentStep / 9) * 100}%` }}
         ></div>
       </div>
       

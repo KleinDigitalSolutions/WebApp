@@ -8,6 +8,7 @@ import { Navigation } from '@/components/BottomNavBar'
 import { Button, Input, Select, LoadingSpinner } from '@/components/ui'
 import { calculateBMI, getBMICategory, calculateDailyCalorieGoal, calculateMacroTargets } from '@/lib/nutrition-utils'
 import { motion } from 'framer-motion'
+import { Apple } from 'lucide-react'
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -81,7 +82,7 @@ export default function ProfilePage() {
     loadProfile()
   }, [user, router, setProfile])
 
-  const handleInputChange = (field: keyof Profile, value: string | number | undefined) => {
+  const handleInputChange = (field: keyof Profile, value: string | number | boolean | undefined) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -146,6 +147,15 @@ export default function ProfilePage() {
     'Lupine',
     'Fruktose',
     'Histamin',
+  ]
+
+  const dietOptions = [
+    { value: 'standard', label: 'Standard', emoji: '🥩' },
+    { value: 'vegan', label: 'Vegan', emoji: '🥑' },
+    { value: 'vegetarian', label: 'Vegetarisch', emoji: '🥦' },
+    { value: 'glutenfree', label: 'Glutenfrei', emoji: '🌾' },
+    { value: 'keto', label: 'Keto', emoji: '🍣' },
+    { value: 'other', label: 'Andere', emoji: '🍽️' },
   ]
 
   if (loading) {
@@ -278,7 +288,6 @@ export default function ProfilePage() {
             className="bg-white rounded-3xl border border-gray-200 shadow-lg p-6"
           >
             <h2 className="text-lg font-bold text-gray-800 mb-4">Aktivität & Ziele</h2>
-            
             <div className="space-y-4">
               <Select
                 label="Aktivitätslevel"
@@ -306,6 +315,36 @@ export default function ProfilePage() {
                   { value: 'build_muscle', label: 'Muskeln aufbauen' },
                 ]}
               />
+
+              {/* Ernährungspräferenz Auswahl */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Ernährungspräferenz</label>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  {dietOptions.map(opt => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => handleInputChange('diet_type', opt.value)}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all font-semibold text-base
+                        ${(formData.diet_type === opt.value) ? 'border-emerald-500 bg-emerald-50 text-emerald-800 scale-105' : 'border-gray-200 bg-white text-gray-800 hover:border-gray-300 hover:bg-gray-100'}`}
+                      aria-pressed={formData.diet_type === opt.value}
+                    >
+                      <span className="text-2xl">{opt.emoji}</span>
+                      <span>{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={!!formData.is_glutenfree}
+                    onChange={e => handleInputChange('is_glutenfree', Boolean(e.target.checked))}
+                    className="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                  />
+                  <span className="text-2xl">🌾</span>
+                  <span className="text-base font-medium text-gray-800">Glutenfrei</span>
+                </label>
+              </div>
             </div>
           </motion.div>
 

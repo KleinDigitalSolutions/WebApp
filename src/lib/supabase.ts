@@ -40,6 +40,8 @@ export interface Profile {
   goals?: string[]
   onboarding_completed?: boolean
   onboarding_step?: number
+  diet_type?: string // Ernährungspräferenz
+  is_glutenfree?: boolean // Glutenfrei als Zusatzpräferenz
 }
 
 export interface DiaryEntry {

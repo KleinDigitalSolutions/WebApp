@@ -14,6 +14,7 @@ export type OnboardingData = {
   firstName?: string;
   lastName?: string;
   dietType?: string;
+  isGlutenfree?: boolean;
 };
 
 const STORAGE_KEY = 'trackfood_onboarding';

@@ -10,7 +10,6 @@ const DIET_OPTIONS = [
 	{ key: 'standard', label: 'Standard', emoji: '🥩' },
 	{ key: 'vegan', label: 'Vegan', emoji: '🥑' },
 	{ key: 'vegetarian', label: 'Vegetarisch', emoji: '🥦' },
-	{ key: 'glutenfree', label: 'Glutenfrei', emoji: '🌾' },
 	{ key: 'keto', label: 'Keto', emoji: '🍣' },
 	{ key: 'other', label: 'Andere', emoji: '🍽️' },
 ]
@@ -18,16 +17,18 @@ const DIET_OPTIONS = [
 export default function OnboardingDietType() {
 	const { currentStep, setCurrentStep, dietType, setDietType } = useOnboardingStore()
 	const [selected, setSelected] = useState<string | null>(dietType || null)
+	const [isGlutenfree, setIsGlutenfree] = useState<boolean>(false)
 
 	useEffect(() => {
 		const local = getOnboardingData()
 		if (local.dietType) setSelected(local.dietType)
+		if (typeof local.isGlutenfree === 'boolean') setIsGlutenfree(local.isGlutenfree)
 	}, [])
 
 	useEffect(() => {
 		setDietType(selected)
-		saveOnboardingData({ dietType: selected ?? undefined })
-	}, [selected, setDietType])
+		saveOnboardingData({ dietType: selected ?? undefined, isGlutenfree })
+	}, [selected, setDietType, isGlutenfree])
 
 	const handleNext = () => {
 		if (!selected) return
@@ -100,7 +101,7 @@ export default function OnboardingDietType() {
 
 				{/* Grid für die Ernährungsoptionen */}
 				<motion.div
-					className="grid grid-cols-2 gap-4 w-full max-w-lg mb-12"
+					className="grid grid-cols-2 gap-4 w-full max-w-lg mb-8"
 					variants={containerVariants}
 				>
 					{DIET_OPTIONS.map(opt => (
@@ -116,23 +117,29 @@ export default function OnboardingDietType() {
 							type="button"
 							variants={buttonVariants}
 							initial="initial"
-							animate={selected === opt.key ? 'selected' : 'unselected'}
+							animate={selected === opt.key ? "selected" : "unselected"}
 							whileHover="hover"
 							whileTap="tap"
 							aria-label={opt.label}
 						>
-							<span
-								className="text-4xl sm:text-5xl mb-2 leading-none"
-								aria-hidden
-							>
-								{opt.emoji}
-							</span>
-							<span className="text-base sm:text-lg font-medium text-center">
-								{opt.label}
-							</span>
+							<span className="text-4xl sm:text-5xl mb-2 leading-none" aria-hidden>{opt.emoji}</span>
+							<span className="text-base sm:text-lg font-medium text-center">{opt.label}</span>
 						</motion.button>
 					))}
 				</motion.div>
+				{/* Glutenfrei Checkbox */}
+				<div className="flex items-center mb-8">
+					<input
+						id="glutenfree"
+						type="checkbox"
+						checked={isGlutenfree}
+						onChange={e => setIsGlutenfree(e.target.checked)}
+						className="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+					/>
+					<label htmlFor="glutenfree" className="ml-3 text-lg font-medium text-gray-800 flex items-center gap-2">
+						<span className="text-2xl">🌾</span> Glutenfrei
+					</label>
+				</div>
 
 				{/* Weiter-Button */}
 				<motion.button

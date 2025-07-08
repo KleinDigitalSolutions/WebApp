@@ -50,10 +50,14 @@ export default function OnboardingSummary() {
 
   // Animationen starten
   useEffect(() => {
+    // Animationen immer sauber zurücksetzen, damit sie bei jedem Betreten neu starten
+    setAnimateDiagram(false);
+    setIsExploding(false);
+
     // Startet die Konfetti-Explosion nach kurzer Verzögerung
-    setTimeout(() => setIsExploding(true), 300);
+    const confettiTimeout = setTimeout(() => setIsExploding(true), 300);
     // Startet die Diagramm-Animation nach Konfetti
-    setTimeout(() => setAnimateDiagram(true), 800);
+    const diagramTimeout = setTimeout(() => setAnimateDiagram(true), 800);
 
     // SVG Container Breite ermitteln für responsive Pfade
     const handleResize = () => {
@@ -63,7 +67,11 @@ export default function OnboardingSummary() {
     };
     handleResize(); // Initial setzen
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(confettiTimeout);
+      clearTimeout(diagramTimeout);
+    };
   }, []);
 
   // Dynamische Berechnung von kcal, BMI und BMI-Text
@@ -391,7 +399,7 @@ export default function OnboardingSummary() {
           transition={{ delay: 0.6, duration: 0.5 }}
           className="text-lg text-gray-600 text-center mb-10 leading-relaxed"
         >
-          Viele unserer Nutzer sehen bereits nach {targetDateLabel.split(' ')[1].toLowerCase()} sichtbare Ergebnisse.
+          Viele unserer Nutzer sehen bereits nach {targetDateLabel.replace('In ', '').toLowerCase()} sichtbare Ergebnisse.
         </motion.p>
 
         {/* Weiter-Button */}
