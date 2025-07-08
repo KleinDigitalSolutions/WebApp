@@ -276,12 +276,9 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
   const [glassSize] = useState(250) // Standard glass size in ml
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [streak] = useState(0)
   const [userWeight, setUserWeight] = useState(70) // kg
   const [activityLevel, setActivityLevel] = useState<'sedentary' | 'light' | 'moderate' | 'active'>('moderate')
   const [showSettings, setShowSettings] = useState(false)
-  const [drinkType, setDrinkType] = useState<'water' | 'tea' | 'coffee' | 'juice'>('water')
-  const [customAmounts] = useState([100, 200, 250, 300, 500, 750, 1000])
   const [achievements, setAchievements] = useState<string[]>([])
   const [notificationsEnabled, setNotificationsEnabled] = useState(false)
 
@@ -416,36 +413,15 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
     return () => clearInterval(intervalId)
   }, [notificationsEnabled, waterIntake, dailyGoal])
   
-  // Request notification permission
-  const requestNotificationPermission = async () => {
-    if ('Notification' in window) {
-      const permission = await Notification.requestPermission()
-      setNotificationsEnabled(permission === 'granted')
-    }
-  }
-
   const percentage = Math.min((waterIntake / dailyGoal) * 100, 100)
-  const hydrationLevel = percentage < 30 ? 'low' : percentage < 70 ? 'medium' : 'high'
   
-  const addWater = async (amount: number, type: string = drinkType) => {
+  const addWater = async (amount: number, type: string = 'water') => {
     const effectiveAmount = amount * drinkMultipliers[type as keyof typeof drinkMultipliers]
     const newAmount = Math.min(waterIntake + effectiveAmount, dailyGoal + 1000)
     setWaterIntake(newAmount)
     await saveWaterIntake(newAmount)
   }
   
-  const getHydrationMessage = () => {
-    if (percentage >= 100) return '🎉 Perfekt hydratisiert!'
-    if (percentage >= 75) return '💧 Fast geschafft!'
-    if (percentage >= 50) return '🥤 Auf dem richtigen Weg'
-    if (percentage >= 25) return '⚡ Mehr trinken!'
-    return '🚨 Dringend Wasser trinken!'
-  }
-  
-  const getBottleLevel = () => {
-    return Math.min(percentage, 100)
-  }
-
   const removeWater = async () => {
     const newAmount = Math.max(waterIntake - glassSize, 0)
     setWaterIntake(newAmount)
@@ -457,15 +433,6 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
     await saveWaterIntake(0)
   }
   
-  
-  const updateUserSettings = async (weight: number, activity: typeof activityLevel) => {
-    setUserWeight(weight)
-    setActivityLevel(activity)
-    const newGoal = calculateSmartGoal()
-    setDailyGoal(newGoal)
-    await saveWaterIntake(waterIntake)
-  }
-
   return (
     <div className="mx-4 mt-4 mb-4">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
