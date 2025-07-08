@@ -115,11 +115,36 @@ export default function OnboardingSummary() {
   // Prozentualer Gewichtsverlust immer aus localStorage berechnen
   let percentLoss = 0;
   const local = getOnboardingData();
-  const w = typeof local.weight === 'number' ? local.weight : weight;
-  const tw = typeof local.targetWeight === 'number' ? local.targetWeight : targetWeight;
-  if (w && tw && w > tw) {
+
+  // Debug-Ausgabe zur Ursachenanalyse
+  console.log('DEBUG percentLoss', {
+    localWeight: local.weight,
+    localTargetWeight: local.targetWeight,
+    storeWeight: weight,
+    storeTargetWeight: targetWeight,
+    typeofLocalWeight: typeof local.weight,
+    typeofLocalTargetWeight: typeof local.targetWeight,
+  });
+
+  // Werte IMMER als Zahl casten, auch wenn sie als String gespeichert sind
+  const w = Number(
+    local.weight !== undefined && local.weight !== null
+      ? local.weight
+      : weight
+  );
+  const tw = Number(
+    local.targetWeight !== undefined && local.targetWeight !== null
+      ? local.targetWeight
+      : targetWeight
+  );
+
+  console.log('DEBUG percentLoss numbers', { w, tw });
+
+  if (!isNaN(w) && !isNaN(tw) && w > tw) {
     percentLoss = Math.round(((w - tw) / w) * 100);
   }
+
+  console.log('DEBUG percentLoss result', percentLoss);
 
   // Onboarding abschließen Logik
   const handleComplete = async () => {
