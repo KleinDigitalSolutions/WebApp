@@ -177,10 +177,6 @@ export default function OnboardingWeight() {
         <motion.div
           className="relative w-full max-w-xs h-64 bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-200 flex items-center justify-center mb-8"
           variants={itemVariants}
-        {/* Weight Picker */}
-        <motion.div
-          className="relative w-full max-w-xs h-64 bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-200 flex items-center justify-center mb-8"
-          variants={itemVariants}
         >
           <Scale className="absolute top-4 left-4 w-6 h-6 text-gray-400" />
           <div className="absolute inset-y-0 w-full flex items-center justify-center pointer-events-none">

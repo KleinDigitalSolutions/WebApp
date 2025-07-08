@@ -12,7 +12,7 @@ const itemVariants = {
 }
 
 export default function OnboardingTargetWeight() {
-  const { currentStep, setCurrentStep, weight, height, setTargetWeight } = useOnboardingStore()
+  const { currentStep, setCurrentStep, weight, setTargetWeight } = useOnboardingStore()
   const [error, setError] = useState<string | null>(null)
   const [localTargetWeight, setLocalTargetWeight] = useState<number>(weight || 70)
 
