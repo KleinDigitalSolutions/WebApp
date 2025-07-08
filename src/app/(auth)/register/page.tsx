@@ -112,11 +112,11 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#ffffff] flex items-center justify-center py-8 px-2">
+    <div className="min-h-screen bg-[#ffffff] flex flex-col items-center justify-center py-4 px-2">
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 z-10">
         <div className="w-full px-4">
-          <div className="flex justify-between items-center py-6">
+          <div className="flex justify-between items-center py-4">
             <Link href="/" className="flex items-center">
               <ArrowLeft className="w-7 h-7 text-emerald-500" />
               <span className="sr-only">Zurück zur Startseite</span>
@@ -125,8 +125,17 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      <div className="max-w-sm w-full space-y-8 backdrop-blur-md bg-white/90 rounded-3xl shadow-2xl p-8 border-none mx-auto mt-20">
+      {/* Inhalt ohne Karte */}
+      <div className="w-full max-w-sm mx-auto mt-10 space-y-8">
         <div className="text-center">
+          {/* Logo mittig zentriert über Überschrift */}
+          <img
+            src="/SVG/logo1.svg"
+            alt="TrackFood Logo"
+            className="mx-auto mb-4 w-32 h-32 select-none"
+            draggable="false"
+            style={{ userSelect: 'none' }}
+          />
           <h2 className="text-3xl font-bold text-gray-800 mb-2">Kostenlos registrieren</h2>
           <p className="text-gray-600 mb-6">Starte heute deine Ernährungsreise</p>
         </div>
