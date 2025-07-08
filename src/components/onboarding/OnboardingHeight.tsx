@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useOnboardingStore } from '@/store'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Ruler } from 'lucide-react'
 import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
+import { motion } from 'framer-motion'
 
 export default function OnboardingHeight() {
   const { currentStep, setCurrentStep, setHeight } = useOnboardingStore()
@@ -14,7 +15,7 @@ export default function OnboardingHeight() {
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null)
 
   // Height picker range
-  const cmValues = Array.from({ length: 51 }, (_, i) => 150 + i) // 150cm to 200cm
+  const cmValues = Array.from({ length: 151 }, (_, i) => 100 + i) // 100cm to 250cm
 
   // On mount: load from localStorage or Zustand
   useEffect(() => {
@@ -75,6 +76,20 @@ export default function OnboardingHeight() {
     }, 150);
   }, [snapToClosestValue]);
 
+  // Initial scroll to current height
+  useEffect(() => {
+    if (scrollRef.current && localHeight) {
+      const index = cmValues.indexOf(localHeight);
+      if (index !== -1) {
+        const itemHeight = scrollRef.current.scrollHeight / cmValues.length;
+        scrollRef.current.scrollTo({
+          top: index * itemHeight - scrollRef.current.clientHeight / 2 + itemHeight / 2,
+          behavior: 'instant', // instant for initial load
+        });
+      }
+    }
+  }, [cmValues, localHeight]); // Ensure this effect runs when cmValues or localHeight changes
+
   useEffect(() => {
     if (scrollRef.current) {
       const selectedElement = scrollRef.current.querySelector(`[data-value="${localHeight}"]`) as HTMLElement;
@@ -107,6 +122,12 @@ export default function OnboardingHeight() {
     setHeight(localHeight) // Only update global state here!
     setCurrentStep(currentStep + 1)
   }
+
+  // Framer Motion Animation Variants
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 },
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -144,53 +165,57 @@ export default function OnboardingHeight() {
         </div>
         
         {/* Height Picker */}
-        <div className="w-full max-w-xs mb-8">
-          {/* Height Scroller */}
-          <div className="relative mx-auto w-40 h-48 bg-gray-50 rounded-xl">
-            <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-gray-50 to-transparent z-10 pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent z-10 pointer-events-none"></div>
-            <div className="absolute top-1/2 left-0 right-0 h-12 -mt-6 border-y-2 border-emerald-400 bg-gray-100/50 z-0 pointer-events-none"></div>
-            <div 
-              ref={scrollRef}
-              className="absolute inset-0 flex flex-col items-center overflow-y-auto scrollbar-hide py-16"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {cmValues.map((value) => (
-                <div 
-                  key={value}
-                  data-value={value}
-                  onClick={() => {
-                    setLocalHeight(value)
-                    const element = document.querySelector(`[data-value="${value}"]`) as HTMLElement
-                    if (element) {
-                      element.scrollIntoView({ block: 'center', behavior: 'smooth' })
-                    }
-                  }}
-                  className={`cursor-pointer text-center text-2xl font-semibold transition-all duration-200 ease-in-out ${localHeight === value ? 'text-emerald-600' : 'text-gray-800'}`}
-                  style={{ opacity: localHeight === value ? 1 : 0.6 }}
-                >
-                  {value} {unit === 'cm' ? 'cm' : 'ft/in'}
-                </div>
-              ))}
-            </div>
+        <motion.div
+          className="relative w-full max-w-xs h-64 bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-200 flex items-center justify-center mb-8"
+          variants={itemVariants}
+        >
+          <Ruler className="absolute top-4 left-4 w-6 h-6 text-gray-400" />
+          <div className="absolute inset-y-0 w-full flex items-center justify-center pointer-events-none">
+            <div className="h-10 border-y-2 border-emerald-500 w-full bg-emerald-50 opacity-70"></div>
           </div>
-        </div>
+          <div
+            ref={scrollRef}
+            className="w-full h-full overflow-y-scroll snap-y snap-mandatory hide-scrollbar py-24"
+            onScroll={handleScroll}
+            tabIndex={0}
+            aria-label="Größe auswählen"
+            role="listbox"
+          >
+            {cmValues.map(value => (
+              <div
+                key={value}
+                className={`snap-center h-16 flex items-center justify-center text-4xl font-bold transition-all duration-150 ease-in-out
+                  ${localHeight === value ? 'text-emerald-600' : 'text-gray-400 opacity-50'}`}
+                role="option"
+                aria-selected={localHeight === value}
+              >
+                {value} {unit === 'cm' ? 'cm' : 'ft/in'}
+              </div>
+            ))}
+          </div>
+        </motion.div>
 
         {/* Unit Toggle - cm / ft/in */}
-        <div className="flex space-x-2 mb-8">
-          <button 
-            onClick={() => setUnit('cm')}
-            className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all duration-200 ease-in-out ${unit === 'cm' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700'}`}
+        <motion.div className="flex space-x-3 bg-gray-200 p-1 rounded-full mb-8 shadow-sm" variants={itemVariants}>
+          <motion.button
+            onClick={() => { setUnit('cm'); }}
+            className={`flex-1 px-5 py-2 rounded-full font-semibold transition-all duration-200 ease-in-out text-base
+              ${unit === 'cm' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-300'}`}
+            whileTap={{ scale: 0.95 }}
+            aria-pressed={unit === 'cm'}
           >
             cm
-          </button>
-          <button 
-            onClick={() => setUnit('ft/in')}
-            className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all duration-200 ease-in-out ${unit === 'ft/in' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700'}`}
+          </motion.button>
+          <motion.button
+            onClick={() => { setUnit('ft/in'); }}
+            className={`flex-1 px-5 py-2 rounded-full font-semibold transition-all duration-200 ease-in-out text-base
+              ${unit === 'ft/in' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-300'}`}
+            whileTap={{ scale: 0.95 }}
+            aria-pressed={unit === 'ft/in'}
           >
             ft/in
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         <div className="flex justify-center w-full max-w-xs">
           <button 

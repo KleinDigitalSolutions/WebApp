@@ -4,6 +4,12 @@ import { useState, useEffect } from 'react'
 import { useOnboardingStore } from '@/store'
 import { ArrowLeft, Minus, Plus } from 'lucide-react'
 import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
+import { motion } from 'framer-motion'
+
+const itemVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+}
 
 export default function OnboardingTargetWeight() {
   const { currentStep, setCurrentStep, weight, height, setTargetWeight } = useOnboardingStore()
@@ -97,29 +103,33 @@ export default function OnboardingTargetWeight() {
         </div>
         
         {/* Target Weight Selector */}
-        <div className="w-full max-w-xs mb-6">
-          <div className="flex items-center justify-between">
-            <button 
-              onClick={decreaseWeight}
-              className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg active:scale-95 transition-all"
-            >
-              <Minus className="w-8 h-8" />
-            </button>
-            
-            <div className="font-bold text-4xl">{localTargetWeight} kg</div>
-            
-            <button 
-              onClick={increaseWeight}
-              className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg active:scale-95 transition-all"
-            >
-              <Plus className="w-8 h-8" />
-            </button>
+        <motion.div
+          className="relative w-full max-w-xs h-64 bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-200 flex items-center justify-center mb-8"
+          variants={itemVariants}
+        >
+          <div className="absolute inset-y-0 w-full flex items-center justify-center pointer-events-none">
+            <div className="h-10 border-y-2 border-emerald-500 w-full bg-emerald-50 opacity-70"></div>
           </div>
-          
-          <div className="mt-4 text-sm text-center text-gray-500">
-            Empfohlen: {recommendedRange[0]} kg - {recommendedRange[1]} kg
+          <div
+            className="w-full h-full overflow-y-scroll snap-y snap-mandatory hide-scrollbar py-24"
+            tabIndex={0}
+            aria-label="Zielgewicht auswählen"
+            role="listbox"
+          >
+            {Array.from({ length: 151 }, (_, i) => 40 + i).map(value => (
+              <div
+                key={value}
+                className={`snap-center h-16 flex items-center justify-center text-4xl font-bold transition-all duration-150 ease-in-out
+                  ${localTargetWeight === value ? 'text-emerald-600' : 'text-gray-400 opacity-50'}`}
+                role="option"
+                aria-selected={localTargetWeight === value}
+                data-value={value}
+              >
+                {value} kg
+              </div>
+            ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Info Box */}
         <div className="w-full mb-8">

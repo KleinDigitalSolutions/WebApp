@@ -103,6 +103,8 @@ export default function OnboardingDietType() {
 				<motion.div
 					className="grid grid-cols-2 gap-4 w-full max-w-lg mb-8"
 					variants={containerVariants}
+					role="radiogroup"
+					aria-label="Ernährungspräferenz auswählen"
 				>
 					{DIET_OPTIONS.map(opt => (
 						<motion.button
@@ -113,33 +115,58 @@ export default function OnboardingDietType() {
 									? 'border-emerald-500 bg-emerald-50 text-emerald-800'
 									: 'border-gray-200 bg-white text-gray-800 hover:border-gray-300 hover:bg-gray-100'
 								}`}
-							aria-pressed={selected === opt.key}
+							aria-checked={selected === opt.key}
+							role="radio"
 							type="button"
 							variants={buttonVariants}
 							initial="initial"
 							animate={selected === opt.key ? "selected" : "unselected"}
 							whileHover="hover"
 							whileTap="tap"
+							tabIndex={0}
+							onKeyDown={e => {
+								if (e.key === ' ' || e.key === 'Enter') {
+									e.preventDefault();
+									setSelected(opt.key);
+								}
+							}}
 							aria-label={opt.label}
 						>
-							<span className="text-4xl sm:text-5xl mb-2 leading-none" aria-hidden>{opt.emoji}</span>
+							<span className="text-4xl sm:text-5xl mb-2 leading-none">{opt.emoji}</span>
 							<span className="text-base sm:text-lg font-medium text-center">{opt.label}</span>
 						</motion.button>
 					))}
 				</motion.div>
 				{/* Glutenfrei Checkbox */}
-				<div className="flex items-center mb-8">
-					<input
-						id="glutenfree"
-						type="checkbox"
-						checked={isGlutenfree}
-						onChange={e => setIsGlutenfree(e.target.checked)}
-						className="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
-					/>
-					<label htmlFor="glutenfree" className="ml-3 text-lg font-medium text-gray-800 flex items-center gap-2">
-						<span className="text-2xl">🌾</span> Glutenfrei
-					</label>
-				</div>
+				<motion.div
+            className="flex items-center w-full max-w-lg mb-8 p-5 bg-white rounded-2xl shadow-sm border border-gray-200 cursor-pointer hover:border-gray-300 hover:bg-gray-100 transition-all duration-200"
+            onClick={() => setIsGlutenfree(!isGlutenfree)}
+            variants={itemVariants}
+            whileTap={{ scale: 0.98 }}
+            role="checkbox"
+            aria-checked={isGlutenfree}
+            tabIndex={0}
+            onKeyDown={e => {
+              if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                setIsGlutenfree(!isGlutenfree);
+              }
+            }}
+        >
+            <input
+                id="glutenfree"
+                type="checkbox"
+                checked={isGlutenfree}
+                onChange={e => setIsGlutenfree(e.target.checked)}
+                className="w-6 h-6 text-emerald-600 border-gray-300 rounded-lg focus:ring-emerald-500 flex-shrink-0"
+                style={{ transform: 'scale(1.2)' }}
+                tabIndex={-1}
+                aria-hidden="true"
+            />
+            <label htmlFor="glutenfree" className="ml-4 text-xl font-medium text-gray-800 flex items-center gap-3 flex-grow cursor-pointer">
+                <span className="text-3xl leading-none">🌾</span> Glutenfrei
+            </label>
+        </motion.div>
 
 				{/* Weiter-Button */}
 				<motion.button

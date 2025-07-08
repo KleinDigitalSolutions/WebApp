@@ -13,8 +13,7 @@ import {
   TrendingUp,
   Users,
   Check,
-  Star,
-  Play
+  Star
 } from 'lucide-react'
 import DesktopNotice from '@/components/DesktopNotice'
 import GoogleLoginButton from '@/components/GoogleLoginButton'

@@ -2,8 +2,14 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useOnboardingStore } from '@/store'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Scale } from 'lucide-react'
 import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
+import { motion } from 'framer-motion'
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0 },
+}
 
 export default function OnboardingWeight() {
   const { currentStep, setCurrentStep, setWeight } = useOnboardingStore()
@@ -168,73 +174,66 @@ export default function OnboardingWeight() {
           <h1 className="text-2xl font-bold text-center">Wie viel wiegst du?</h1>
         </div>
         {/* Weight Picker */}
-        <div className="w-full max-w-xs mb-6">
-          {/* Weight Scroller */}
-          <div className="relative mx-auto w-40 h-48 bg-gray-50 rounded-xl">
-            <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-gray-50 to-transparent z-10 pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent z-10 pointer-events-none"></div>
-            <div className="absolute top-1/2 left-0 right-0 h-12 -mt-6 border-y-2 border-emerald-400 bg-gray-100/50 z-0 pointer-events-none"></div>
-            <div 
-              ref={scrollRef}
-              className="absolute inset-0 flex flex-col items-center overflow-y-auto scrollbar-hide py-16"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {kgValues.map((value) => (
-                <div 
-                  key={value}
-                  data-value={value}
-                  onClick={() => {
-                    setLocalWeight(value)
-                    const element = document.querySelector(`[data-value="${value}"]`) as HTMLElement
-                    if (element) {
-                      element.scrollIntoView({ block: 'center', behavior: 'smooth' })
-                    }
-                  }}
-                  className={`py-2 text-2xl font-semibold transition-all touch-manipulation ${
-                    value === localWeight 
-                      ? 'text-gray-900 scale-110' 
-                      : 'text-gray-400'
-                  }`}
-                >
-                  {value}
-                </div>
-              ))}
-            </div>
+        <motion.div
+          className="relative w-full max-w-xs h-64 bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-200 flex items-center justify-center mb-8"
+          variants={itemVariants}
+        >
+          <Scale className="absolute top-4 left-4 w-6 h-6 text-gray-400" />
+          <div className="absolute inset-y-0 w-full flex items-center justify-center pointer-events-none">
+            <div className="h-10 border-y-2 border-emerald-500 w-full bg-emerald-50 opacity-70"></div>
           </div>
-          {/* Unit Switcher */}
-          <div className="flex justify-center space-x-2 mt-4">
-            <button
-              onClick={() => setUnit('kg')}
-              className={`px-6 py-2 rounded-full text-sm font-medium ${
-                unit === 'kg' 
-                  ? 'bg-emerald-500 text-white' 
-                  : 'bg-gray-100 text-gray-700'
-              }`}
-            >
-              kg
-            </button>
-            <button
-              onClick={() => setUnit('lbs')}
-              className={`px-6 py-2 rounded-full text-sm font-medium ${
-                unit === 'lbs' 
-                  ? 'bg-emerald-500 text-white' 
-                  : 'bg-gray-100 text-gray-700'
-              }`}
-            >
-              lbs
-            </button>
-            <button
-              onClick={() => setUnit('st')}
-              className={`px-6 py-2 rounded-full text-sm font-medium ${
-                unit === 'st' 
-                  ? 'bg-emerald-500 text-white' 
-                  : 'bg-gray-100 text-gray-700'
-              }`}
-            >
-              st
-            </button>
+          <div
+            ref={scrollRef}
+            className="w-full h-full overflow-y-scroll snap-y snap-mandatory hide-scrollbar py-24"
+            onScroll={handleScroll}
+            tabIndex={0}
+            aria-label="Gewicht auswählen"
+            role="listbox"
+          >
+            {kgValues.map(value => (
+              <div
+                key={value}
+                className={`snap-center h-16 flex items-center justify-center text-4xl font-bold transition-all duration-150 ease-in-out
+                  ${localWeight === value ? 'text-emerald-600' : 'text-gray-400 opacity-50'}`}
+                role="option"
+                aria-selected={localWeight === value}
+                data-value={value}
+              >
+                {value} {unit === 'kg' ? 'kg' : unit === 'lbs' ? 'lbs' : 'st'}
+              </div>
+            ))}
           </div>
-        </div>
+        </motion.div>
+        {/* Unit Switcher */}
+        <motion.div className="flex space-x-3 bg-gray-200 p-1 rounded-full mb-8 shadow-sm" variants={itemVariants}>
+          <motion.button
+            onClick={() => setUnit('kg')}
+            className={`flex-1 px-5 py-2 rounded-full font-semibold transition-all duration-200 ease-in-out text-base
+              ${unit === 'kg' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-300'}`}
+            whileTap={{ scale: 0.95 }}
+            aria-pressed={unit === 'kg'}
+          >
+            kg
+          </motion.button>
+          <motion.button
+            onClick={() => setUnit('lbs')}
+            className={`flex-1 px-5 py-2 rounded-full font-semibold transition-all duration-200 ease-in-out text-base
+              ${unit === 'lbs' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-300'}`}
+            whileTap={{ scale: 0.95 }}
+            aria-pressed={unit === 'lbs'}
+          >
+            lbs
+          </motion.button>
+          <motion.button
+            onClick={() => setUnit('st')}
+            className={`flex-1 px-5 py-2 rounded-full font-semibold transition-all duration-200 ease-in-out text-base
+              ${unit === 'st' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-300'}`}
+            whileTap={{ scale: 0.95 }}
+            aria-pressed={unit === 'st'}
+          >
+            st
+          </motion.button>
+        </motion.div>
 
         {/* BMI Indicator */}
         {bmi !== null && isFinite(bmi) && (

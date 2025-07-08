@@ -5,12 +5,28 @@ import { useOnboardingStore } from '@/store'
 import { ArrowLeft, Scale } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getOnboardingData, saveOnboardingData } from '@/lib/onboarding-storage'
+import { motion } from 'framer-motion'
 
 interface GoalOption {
   id: string
   label: string
   icon: React.ReactNode
   description?: string
+}
+
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+}
+
+const checkboxVariants = {
+  checked: { opacity: 1, pathLength: 1 },
+  unchecked: { opacity: 0, pathLength: 0 },
 }
 
 export default function OnboardingGoals() {
@@ -119,35 +135,64 @@ export default function OnboardingGoals() {
       <div className="flex-1 flex flex-col px-4 pb-8">
         <h1 className="text-2xl font-bold text-center mb-8">Was sind deine Ziele?</h1>
         
-        <div className="space-y-3 mb-8">
-          {goalOptions.map((goal) => (
-            <div 
+        <motion.div
+          className="flex flex-col gap-4 w-full max-w-md mb-8"
+          variants={containerVariants}
+          role="group"
+          aria-label="Ziele auswählen"
+        >
+          {goalOptions.map(goal => (
+            <motion.div
               key={goal.id}
               onClick={() => toggleGoal(goal.id)}
-              className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
-                safeUserGoals.includes(goal.id) 
-                  ? 'border-emerald-500 bg-emerald-50' 
-                  : 'border-gray-200 bg-white'
-              }`}
+              className={`flex items-center justify-between p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 shadow-sm
+                ${safeUserGoals.includes(goal.id)
+                  ? 'border-emerald-500 bg-emerald-50'
+                  : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-100'
+                }`}
+              whileTap={{ scale: 0.98 }}
+              variants={itemVariants}
+              role="checkbox"
+              aria-checked={safeUserGoals.includes(goal.id)}
+              tabIndex={0}
+              onKeyDown={e => {
+                if (e.key === ' ' || e.key === 'Enter') {
+                  e.preventDefault();
+                  toggleGoal(goal.id);
+                }
+              }}
             >
               <div className="flex items-center">
-                {goal.icon}
-                <span className="ml-3 font-medium">{goal.label}</span>
+                <div className={`p-3 rounded-xl flex-shrink-0
+                  ${safeUserGoals.includes(goal.id) ? 'bg-emerald-100' : 'bg-gray-100'}
+                `}>
+                  {goal.icon}
+                </div>
+                <span className="ml-4 text-lg font-semibold text-gray-800">{goal.label}</span>
               </div>
-              <div className={`w-6 h-6 flex items-center justify-center rounded-full ${
-                safeUserGoals.includes(goal.id) 
-                  ? 'bg-emerald-500 text-white' 
-                  : 'border border-gray-300'
-              }`}>
+              <motion.div
+                className={`w-7 h-7 flex items-center justify-center rounded-full border-2 transition-all duration-200`}
+                variants={checkboxVariants}
+                animate={safeUserGoals.includes(goal.id) ? "checked" : "unchecked"}
+                aria-hidden="true"
+              >
                 {safeUserGoals.includes(goal.id) && (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                    <motion.path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                      initial={{ pathLength: 0, opacity: 0 }}
+                      animate={{ pathLength: 1, opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
                   </svg>
                 )}
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         <div className="mt-auto">
           <button
