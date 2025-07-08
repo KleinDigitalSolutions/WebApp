@@ -130,7 +130,7 @@ export default function RegisterPage() {
         <div className="text-center">
           {/* Logo mittig zentriert über Überschrift */}
           <img
-            src="/SVG/logo1.svg"
+            src="/SVG/logo1.webp"
             alt="TrackFood Logo"
             className="mx-auto mb-4 w-32 h-32 select-none"
             draggable="false"
