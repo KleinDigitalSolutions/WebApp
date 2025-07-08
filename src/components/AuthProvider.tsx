@@ -9,9 +9,11 @@ import { supabase } from '@/lib/supabase'
 const publicPaths = ['/', '/login', '/register', '/datenschutz', '/impressum', '/agb']
 // Paths that are part of the auth flow but don't need onboarding checks
 const authPaths = ['/auth/callback', '/auth/confirm']
+// Paths that explicitly need onboarding checks - will force redirect to onboarding if not completed
+const requireOnboardingPaths = ['/profile', '/profil']
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const { user, setUser, setProfile } = useAuthStore()
+  const { setUser, setProfile } = useAuthStore()
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
@@ -31,13 +33,21 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           setUser(session.user)
           
           // Fetch profile
-          const { data: profile, error } = await supabase
+          const { data: profile } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', session.user.id)
             .single()
             
           console.log('AuthProvider: Profile data', profile)
+          
+          // Besondere Behandlung für Seiten, die explizit Onboarding benötigen
+          if (profile && !profile.onboarding_completed && requireOnboardingPaths.includes(pathname)) {
+            console.log('AuthProvider: On profile page but onboarding not completed, redirecting to onboarding')
+            router.push('/onboarding')
+            setIsLoading(false)
+            return
+          }
           
           if (profile) {
             setProfile(profile)
@@ -107,6 +117,13 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
             .select('*')
             .eq('id', session.user.id)
             .single()
+            
+          // Besondere Behandlung für Seiten, die explizit Onboarding benötigen
+          if (profile && !profile.onboarding_completed && requireOnboardingPaths.includes(pathname)) {
+            console.log('AuthProvider: On profile page but onboarding not completed, redirecting to onboarding after sign in')
+            router.push('/onboarding')
+            return
+          }
             
           if (profile) {
             setProfile(profile)

@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { 
   Home, 
@@ -9,20 +9,52 @@ import {
   User,
   Sparkles
 } from 'lucide-react'
+import { useAuthStore } from '@/store'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
 
 interface NavItem {
   href: string
   icon: React.ReactNode
   label: string
   isActive?: boolean
+  onClick?: (e: React.MouseEvent) => void
 }
 
 export function MobileBottomNav() {
   const pathname = usePathname()
+  const router = useRouter()
+  const { user } = useAuthStore()
+  const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null)
+
+  // Überprüfe, ob das Onboarding abgeschlossen ist
+  useEffect(() => {
+    if (user) {
+      const checkOnboarding = async () => {
+        const { data } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', user.id)
+          .single()
+        
+        setOnboardingCompleted(data?.onboarding_completed || false)
+      }
+      
+      checkOnboarding()
+    }
+  }, [user])
 
   // Don't show bottom nav on auth pages or landing page
   if (pathname === '/' || pathname.includes('/login') || pathname.includes('/register')) {
     return null
+  }
+
+  const handleProfileClick = (e: React.MouseEvent) => {
+    // Wenn das Onboarding nicht abgeschlossen ist, zum Onboarding weiterleiten
+    if (onboardingCompleted === false) {
+      e.preventDefault()
+      router.push('/onboarding')
+    }
   }
 
   const navItems: NavItem[] = [
@@ -51,10 +83,11 @@ export function MobileBottomNav() {
       isActive: pathname === '/recipes'
     },
     {
-      href: '/profile',
+      href: onboardingCompleted === false ? '/onboarding' : '/profile',
       icon: <User size={24} />, // Profil
       label: 'Profil',
-      isActive: pathname === '/profile'
+      isActive: pathname === '/profile',
+      onClick: handleProfileClick
     }
   ]
 
@@ -71,6 +104,7 @@ export function MobileBottomNav() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={item.onClick}
                 className={`
                   flex flex-col items-center justify-center space-y-1 relative
                   transition-all duration-200 active:scale-95

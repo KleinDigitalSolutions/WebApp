@@ -34,6 +34,21 @@ export default function ProfilePage() {
 
     const loadProfile = async () => {
       try {
+        // Wichtig: Prüfe als Erstes, ob das Onboarding abgeschlossen ist
+        const { data: onboardingCheck } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', user.id)
+          .single()
+        
+        // Sofortige Weiterleitung zum Onboarding, wenn nicht abgeschlossen
+        if (onboardingCheck && !onboardingCheck.onboarding_completed) {
+          console.log('Onboarding not completed, redirecting to /onboarding immediately')
+          router.push('/onboarding')
+          return
+        }
+        
+        // Normale Profilseiten-Logik nur fortsetzen, wenn Onboarding abgeschlossen
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
