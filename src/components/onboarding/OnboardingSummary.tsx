@@ -47,15 +47,23 @@ export default function OnboardingSummary() {
     try {
       // Alle Daten aus localStorage holen
       const local = getOnboardingData()
-      // Calculate age if birth date is set
-      const birthDate = local.birthDate || useOnboardingStore.getState().birthDate
-      let age = null
-      if (birthDate) {
-        const birthYear = new Date(birthDate).getFullYear()
-        const currentYear = new Date().getFullYear()
-        age = currentYear - birthYear
+      // Felder aus Zustand holen, falls nicht im localStorage
+      const store = useOnboardingStore.getState()
+      // Mapping: Onboarding -> Supabase
+      const firstName = local.firstName || store.firstName || ''
+      const lastName = local.lastName || store.lastName || ''
+      const gender = local.gender || store.gender || ''
+      // Alter: Priorität local.age, dann Zustand, dann ggf. aus birthDate berechnen
+      let age = local.age || store.age || null
+      if (!age) {
+        const birthDate = local.birthDate || store.birthDate
+        if (birthDate) {
+          const birthYear = new Date(birthDate).getFullYear()
+          const currentYear = new Date().getFullYear()
+          age = currentYear - birthYear
+        }
       }
-      // Determine activity level and goal
+      // Ziel, Aktivitätslevel etc.
       const activityLevel = local.activityLevel || 'lightly_active'
       let goal = local.goal || 'lose_weight'
       if (local.weight && local.targetWeight && local.weight <= local.targetWeight) {
@@ -64,17 +72,20 @@ export default function OnboardingSummary() {
       if (local.weight && local.targetWeight && local.weight < local.targetWeight) {
         goal = 'gain_weight'
       }
-      // Save all user data and complete onboarding
+      // Supabase-Profil-Update
       const profileData = {
+        first_name: firstName,
+        last_name: lastName,
+        gender: gender,
+        age: age,
         height_cm: local.height,
         weight_kg: local.weight,
         target_weight_kg: local.targetWeight,
         goals: local.userGoals,
         activity_level: activityLevel,
         goal: goal,
-        age: age,
         onboarding_completed: true,
-        onboarding_step: 5
+        onboarding_step: 8
       }
       const { data, error } = await supabase
         .from('profiles')
@@ -89,6 +100,7 @@ export default function OnboardingSummary() {
       router.push('/dashboard')
     } catch (error) {
       console.error('Error completing onboarding:', error)
+      alert('Fehler beim Speichern des Profils. Bitte versuche es erneut.')
     } finally {
       setIsLoading(false)
     }

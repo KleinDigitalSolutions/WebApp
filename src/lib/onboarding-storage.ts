@@ -11,6 +11,8 @@ export type OnboardingData = {
   activityLevel?: string;
   goal?: string;
   onboardingStep?: number;
+  firstName?: string;
+  lastName?: string;
 };
 
 const STORAGE_KEY = 'trackfood_onboarding';

@@ -9,6 +9,9 @@ import OnboardingHeight from '@/components/onboarding/OnboardingHeight'
 import OnboardingWeight from '@/components/onboarding/OnboardingWeight'
 import OnboardingTargetWeight from '@/components/onboarding/OnboardingTargetWeight'
 import OnboardingSummary from '@/components/onboarding/OnboardingSummary'
+import OnboardingName from '@/components/onboarding/OnboardingName'
+import OnboardingAge from '@/components/onboarding/OnboardingAge'
+import OnboardingGender from '@/components/onboarding/OnboardingGender'
 
 export default function OnboardingPage() {
   const { user, setProfile } = useAuthStore()
@@ -87,17 +90,23 @@ export default function OnboardingPage() {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <OnboardingGoals />
+        return <OnboardingName />
       case 2:
-        return <OnboardingHeight />
+        return <OnboardingAge />
       case 3:
-        return <OnboardingWeight />
+        return <OnboardingGender />
       case 4:
-        return <OnboardingTargetWeight />
+        return <OnboardingGoals />
       case 5:
+        return <OnboardingHeight />
+      case 6:
+        return <OnboardingWeight />
+      case 7:
+        return <OnboardingTargetWeight />
+      case 8:
         return <OnboardingSummary />
       default:
-        return <OnboardingGoals />
+        return <OnboardingName />
     }
   }
 
@@ -115,7 +124,7 @@ export default function OnboardingPage() {
       <div className="w-full bg-gray-100 h-1">
         <div 
           className="bg-emerald-500 h-1 transition-all duration-300"
-          style={{ width: `${(currentStep / 5) * 100}%` }}
+          style={{ width: `${(currentStep / 8) * 100}%` }}
         ></div>
       </div>
       
