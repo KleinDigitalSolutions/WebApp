@@ -18,7 +18,22 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user) {
-      router.push('/dashboard')
+      // Prüfen, ob Onboarding abgeschlossen ist
+      const checkOnboardingStatus = async () => {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', user.id)
+          .single()
+        
+        if (profile && !profile.onboarding_completed) {
+          router.push('/onboarding')
+        } else {
+          router.push('/dashboard')
+        }
+      }
+      
+      checkOnboardingStatus()
     }
   }, [user, router])
 
