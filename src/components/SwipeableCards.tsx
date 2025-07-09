@@ -13,66 +13,82 @@ interface SwipeCard {
   icon: React.ReactNode
   color: string
   bgColor: string
+  gradient?: string
   challenge?: AbstinenceChallenge
   streakDays?: number
 }
+
+const brandGradients = [
+  'linear-gradient(135deg, #99D98C 0%, #76C893 100%)', // grün
+  'linear-gradient(135deg, #52B69A 0%, #168AAD 100%)', // türkis-blau
+  'linear-gradient(135deg, #1A759F 0%, #34A0A4 100%)', // blau
+  'linear-gradient(135deg, #F9D923 0%, #F78A1F 100%)', // gelb-orange (optional für Abwechslung)
+  'linear-gradient(135deg, #F3722C 0%, #F94144 100%)', // orange-rot (optional)
+]
 
 const swipeCards: SwipeCard[] = [
   {
     id: 'no_cigarettes',
     title: 'Keine Zigaretten',
     description: 'Rauchfrei bleiben',
-    icon: <Cigarette className="h-8 w-8" />,
-    color: 'text-red-600',
-    bgColor: 'bg-red-100'
+    icon: <Cigarette className="h-8 w-8" />, 
+    color: 'text-brand7',
+    bgColor: '',
+    gradient: brandGradients[2]
   },
   {
     id: 'no_chips',
     title: 'Keine Chips',
     description: 'Gesunde Snacks wählen',
-    icon: <Cookie className="h-8 w-8" />,
-    color: 'text-orange-600',
-    bgColor: 'bg-orange-100'
+    icon: <Cookie className="h-8 w-8" />, 
+    color: 'text-brand6',
+    bgColor: '',
+    gradient: brandGradients[0]
   },
   {
     id: 'no_chocolate',
     title: 'Keine Schokolade',
     description: 'Süße Versuchungen meiden',
-    icon: <Candy className="h-8 w-8" />,
-    color: 'text-amber-600',
-    bgColor: 'bg-amber-100'
+    icon: <Candy className="h-8 w-8" />, 
+    color: 'text-brand4',
+    bgColor: '',
+    gradient: brandGradients[1]
   },
   {
     id: 'no_sugar',
     title: 'Kein Zucker',
     description: 'Zuckerfrei leben',
-    icon: <Apple className="h-8 w-8" />,
-    color: 'text-pink-600',
-    bgColor: 'bg-pink-100'
+    icon: <Apple className="h-8 w-8" />, 
+    color: 'text-brand8',
+    bgColor: '',
+    gradient: brandGradients[3]
   },
   {
     id: 'no_fastfood',
     title: 'Kein Fast Food',
     description: 'Frisch kochen',
-    icon: <Pizza className="h-8 w-8" />,
-    color: 'text-yellow-600',
-    bgColor: 'bg-yellow-100'
+    icon: <Pizza className="h-8 w-8" />, 
+    color: 'text-brand5',
+    bgColor: '',
+    gradient: brandGradients[4]
   },
   {
     id: 'no_coffee',
     title: 'Kein Kaffee',
     description: 'Koffeinfrei bleiben',
-    icon: <Coffee className="h-8 w-8" />,
-    color: 'text-brown-600',
-    bgColor: 'bg-stone-100'
+    icon: <Coffee className="h-8 w-8" />, 
+    color: 'text-brand3',
+    bgColor: '',
+    gradient: brandGradients[0]
   },
   {
     id: 'no_alcohol',
     title: 'Kein Alkohol',
     description: 'Nüchtern bleiben',
-    icon: <Wine className="h-8 w-8" />,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-100'
+    icon: <Wine className="h-8 w-8" />, 
+    color: 'text-brand9',
+    bgColor: '',
+    gradient: brandGradients[2]
   }
 ]
 
@@ -230,10 +246,12 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
                 minWidth: '14rem',
                 maxWidth: '14rem',
                 boxShadow: '0 8px 32px 0 rgba(31,38,135,0.25), 0 1.5px 8px 0 rgba(0,0,0,0.10)',
-                background: `#ffffff`,
-                backgroundSize: '1568px 300px',
-                backgroundPositionX: bgPosX,
-                backgroundPositionY: '0px',
+                backgroundImage: card.gradient || 'none',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                borderRadius: '1rem',
+                backdropFilter: 'blur(4px)'
               } as React.CSSProperties}
               data-idx={idx}
               onClick={() => handleCardClick(card)}
@@ -243,11 +261,13 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
                 {/* Unteres Glanz-Overlay entfernt, um Kante zu vermeiden */}
               </div>
               <div className="h-full flex flex-col items-center justify-center p-6 text-center relative z-10">
-                <div className={`mb-4 drop-shadow-lg text-gray-700`}>{card.icon}</div>
-                <h4 className="text-lg font-bold text-gray-800 drop-shadow-lg mb-2">{card.title}</h4>
-                <p className="text-sm text-gray-600 drop-shadow mb-2">{card.description}</p>
+                <div className={`mb-4 drop-shadow-lg`} style={{color: 'white', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.10))'}}>{card.icon}</div>
+                <h4 className="text-lg font-bold drop-shadow-lg mb-2" style={{color: '#fff', textShadow: '0 2px 8px rgba(0,0,0,0.10)'}}>{card.title}</h4>
+                <p className="text-sm drop-shadow mb-2" style={{color: 'rgba(255,255,255,0.92)', textShadow: '0 1px 4px rgba(0,0,0,0.10)'}}>{card.description}</p>
                 {card.challenge && (
-                  <div className="mt-2 text-xs text-gray-700 bg-gray-200 px-2 py-1 rounded-full font-semibold shadow">Aktiv: {card.challenge.current_streak_days} Tage</div>
+                  <div className="mt-2 text-xs text-white/90 bg-black/20 px-2 py-1 rounded-full font-semibold shadow" style={{backdropFilter:'blur(2px)'}}>
+                    Aktiv: {card.challenge.current_streak_days} Tage
+                  </div>
                 )}
               </div>
             </div>
