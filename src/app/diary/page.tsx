@@ -366,10 +366,7 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
           userId: user.id,
           date: dateKey,
           amount_ml: amount,
-          daily_goal_ml: dailyGoal,
-          user_weight: userWeight,
-          activity_level: activityLevel,
-          achievements: newAchievements
+          daily_goal_ml: dailyGoal
         })
       })
 
