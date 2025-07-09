@@ -1,6 +1,7 @@
-import type { NextConfig } from "next";
+import withPWA from 'next-pwa';
+const pwaConfig = require('./pwa.config.js');
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
     remotePatterns: [
       {
@@ -31,4 +32,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA({ ...nextConfig, ...pwaConfig });
