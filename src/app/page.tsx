@@ -144,17 +144,31 @@ export default function LandingPage() {
             Deine intelligente<br />
             <span
               style={{
-                background: 'linear-gradient(90deg, #34A0A4 0%, #76C893 100%)',
+                background: 'linear-gradient(270deg, #99D98C, #76C893, #52B69A, #168AAD, #1A759F, #168AAD, #52B69A, #76C893, #99D98C)',
+                backgroundSize: '1200% 100%',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
                 color: 'transparent',
-                display: 'inline-block'
+                display: 'inline-block',
+                animation: 'gradient-move 10s ease-in-out infinite'
               }}
             >
               Ernährungs-App
             </span>
           </h1>
+          <style jsx>{`
+            @keyframes gradient-move {
+              0% {
+                background-position: 0% 50%;
+              }
+              50% {
+                background-position: 100% 50%;
+              }
+              100% {
+                background-position: 0% 50%;
+              }
+            }
+          `}</style>
           <p className="text-lg text-gray-600 mb-8 max-w-sm mx-auto leading-relaxed mt-2">
             KI-gestützte Ernährungsberatung, Barcode-Scanner und personalisierte Empfehlungen – alles in einer App.
           </p>
