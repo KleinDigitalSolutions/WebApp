@@ -1,8 +1,23 @@
 # Farben
 
-Die Key Features Karten auf der Landingpage nutzen jetzt Best Practice: Die Hintergrundfarben werden per inline style mit rgba gesetzt, sodass die Transparenz garantiert funktioniert – unabhängig von Tailwind. Das ist der empfohlene Weg für Custom Colors mit Opacity.
+**WICHTIG:** Für halbtransparente Custom Colors (z.B. brand1–brand10) IMMER inline style mit rgba verwenden, NICHT Tailwind-Opacity-Utilities oder bg-brandX/80! Beispiel:
 
-Jetzt sollten die Karten wie gewünscht farbig und leicht transparent angezeigt werden.
+```tsx
+<div style={{ backgroundColor: 'rgba(181, 228, 140, 0.85)' }}>...</div>
+```
+
+Das gilt besonders für die Key Features Karten und alle Flächen, die Transparenz benötigen. Tailwind generiert KEINE Opacity-Utilities für Custom Colors. 
+
+**Gradients:** Für garantierte Farbdarstellung bei Gradients (z.B. swipebare Feature-Karten) immer echtes CSS linear-gradient mit den brand-Farben als style verwenden, z.B.:
+
+```tsx
+style={{ background: 'linear-gradient(135deg, #34A0A4 0%, #76C893 100%)' }}
+```
+
+**Buttons:** Wenn ein Button auf farbigem Hintergrund steht, sollte er weiß (#fff) als Hintergrund und brand6 (#34A0A4) als Textfarbe bekommen, damit er sich klar abhebt.
+
+---
+
 # TrackFood - Copilot Instructions
 
 <!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
