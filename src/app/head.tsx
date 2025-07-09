@@ -13,6 +13,7 @@ export default function Head() {
       <meta name="twitter:title" content="TrackFood – Ernährungstagebuch, Rezepte & KI-Coach" />
       <meta name="twitter:description" content="Gesunde Ernährung einfach gemacht: Ernährungstagebuch, Rezepte, KI-Coach, Barcode-Scanner & mehr. Jetzt kostenlos starten!" />
       <meta name="twitter:image" content="/icons8-organic-food-100.png" />
+      <meta name="google-site-verification" content="MlRWZUFuDjnnB218WWgXTg8jpKdKXi8Bdf2gdG3_ebI" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: `{
         "@context": "https://schema.org",
         "@type": "FAQPage",
