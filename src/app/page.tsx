@@ -113,18 +113,22 @@ export default function LandingPage() {
         <div className="h-6 bg-transparent"></div>
         
         {/* Header */}
-        <header className="px-6 py-4 flex items-center justify-between relative z-10">
-          <div className="flex items-center">
-            <span className="text-xl font-bold text-gray-800">TrackFood</span>
+        <header className="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md shadow-sm px-4 py-2 flex items-center justify-between"
+                style={{ minHeight: '52px', paddingTop: 'env(safe-area-inset-top, 0.5rem)', paddingBottom: '0.5rem' }}>
+          <div className="flex items-center space-x-2">
+            <img src="/SVG/logo1.webp" alt="TrackFood Logo" className="w-8 h-8" />
+            <span className="text-xl font-extrabold text-gray-900 tracking-tight">TrackFood</span>
           </div>
           <Button
             onClick={() => router.push('/login')}
-            variant="ghost"
-            className="text-gray-600 hover:text-emerald-600 font-medium"
+            className="bg-white text-brand6 border border-brand6 font-semibold rounded-full px-5 py-2 shadow-sm hover:bg-brand6 hover:text-white transition-colors duration-150"
+            style={{ boxShadow: '0 2px 8px 0 rgba(52, 160, 164, 0.08)' }}
           >
             Anmelden
           </Button>
         </header>
+        {/* Platzhalter für Header-Höhe, damit Content nicht überlappt */}
+        <div style={{ height: 'calc(52px + env(safe-area-inset-top, 0px))' }}></div>
 
         {/* Hero Section */}
         <section className="px-6 py-8 text-center">
@@ -138,7 +142,16 @@ export default function LandingPage() {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-brand10 leading-tight mb-2">
             Deine intelligente<br />
-            <span className="bg-gradient-to-r from-brand6 to-brand4 bg-clip-text text-transparent">
+            <span
+              style={{
+                background: 'linear-gradient(90deg, #34A0A4 0%, #76C893 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                color: 'transparent',
+                display: 'inline-block'
+              }}
+            >
               Ernährungs-App
             </span>
           </h1>
@@ -230,9 +243,17 @@ export default function LandingPage() {
         {/* Key Features Grid */}
         <section className="px-6 py-8">
           <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+            {/* Karte 1: Oben links */}
             <div
-              style={{ backgroundColor: 'rgba(181, 228, 140, 0.85)' }} // brand2
-              className="backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg"
+              style={{
+                background: 'linear-gradient(135deg, #B5E48C 0%, #168AAD 100%)',
+                backgroundSize: '220% 220%',
+                backgroundPosition: '0% 0%',
+                borderRadius: '1rem',
+                backdropFilter: 'blur(4px)',
+                boxShadow: '0 4px 24px 0 rgba(31, 97, 145, 0.10)'
+              }}
+              className="p-6 text-center"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-brand8 to-brand6 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Brain className="w-6 h-6 text-white" />
@@ -240,9 +261,17 @@ export default function LandingPage() {
               <h3 className="font-semibold text-brand10 mb-1">KI-Beratung</h3>
               <p className="text-xs text-brand9">Personalisierte Empfehlungen</p>
             </div>
+            {/* Karte 2: Oben rechts */}
             <div
-              style={{ backgroundColor: 'rgba(153, 217, 140, 0.85)' }} // brand3
-              className="backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg"
+              style={{
+                background: 'linear-gradient(135deg, #B5E48C 0%, #168AAD 100%)',
+                backgroundSize: '220% 220%',
+                backgroundPosition: '100% 0%',
+                borderRadius: '1rem',
+                backdropFilter: 'blur(4px)',
+                boxShadow: '0 4px 24px 0 rgba(31, 97, 145, 0.10)'
+              }}
+              className="p-6 text-center"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-brand6 to-brand4 rounded-full flex items-center justify-center mx-auto mb-3">
                 <QrCode className="w-6 h-6 text-white" />
@@ -250,9 +279,17 @@ export default function LandingPage() {
               <h3 className="font-semibold text-brand10 mb-1">Barcode-Scanner</h3>
               <p className="text-xs text-brand9">Sofort alle Nährwerte</p>
             </div>
+            {/* Karte 3: Unten links */}
             <div
-              style={{ backgroundColor: 'rgba(118, 200, 147, 0.85)' }} // brand4
-              className="backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg"
+              style={{
+                background: 'linear-gradient(135deg, #B5E48C 0%, #168AAD 100%)',
+                backgroundSize: '220% 220%',
+                backgroundPosition: '0% 100%',
+                borderRadius: '1rem',
+                backdropFilter: 'blur(4px)',
+                boxShadow: '0 4px 24px 0 rgba(31, 97, 145, 0.10)'
+              }}
+              className="p-6 text-center"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-brand3 to-brand7 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Target className="w-6 h-6 text-white" />
@@ -260,9 +297,17 @@ export default function LandingPage() {
               <h3 className="font-semibold text-brand10 mb-1">Ziele erreichen</h3>
               <p className="text-xs text-brand9">Intelligentes Tracking</p>
             </div>
+            {/* Karte 4: Unten rechts */}
             <div
-              style={{ backgroundColor: 'rgba(82, 182, 154, 0.85)' }} // brand5
-              className="backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg"
+              style={{
+                background: 'linear-gradient(135deg, #B5E48C 0%, #168AAD 100%)',
+                backgroundSize: '220% 220%',
+                backgroundPosition: '100% 100%',
+                borderRadius: '1rem',
+                backdropFilter: 'blur(4px)',
+                boxShadow: '0 4px 24px 0 rgba(31, 97, 145, 0.10)'
+              }}
+              className="p-6 text-center"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-brand7 to-brand2 rounded-full flex items-center justify-center mx-auto mb-3">
                 <TrendingUp className="w-6 h-6 text-white" />
@@ -342,7 +387,7 @@ export default function LandingPage() {
               </a>
             </div>
             <p className="text-xs">
-              Ein Produkt von Klein Digital Solutions
+              Ein Produkt von <a href="https://www.kleindigitalsolutions.de" target="_blank" rel="noopener noreferrer" className="underline hover:text-emerald-600 transition-colors">Klein Digital Solutions</a>
             </p>
           </div>
         </footer>
