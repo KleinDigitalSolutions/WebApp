@@ -9,8 +9,7 @@ import {
   ChevronLeft, 
   ChevronRight,
   Plus,
-  Dumbbell
-} from 'lucide-react'
+  } from 'lucide-react'
 import Image from 'next/image'
 import ActivitiesCard from '@/components/ActivitiesCard'
 
