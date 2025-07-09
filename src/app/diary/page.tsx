@@ -12,45 +12,57 @@ import {
   } from 'lucide-react'
 import Image from 'next/image'
 import ActivitiesCard from '@/components/ActivitiesCard'
+import { calculateDailyCalorieGoal } from '@/lib/nutrition-utils'
 
 // Meal types with recommended calories
-const mealTypes = [
-  {
-    key: 'breakfast',
-    label: 'Frühstück',
-    recommendedCalories: 673,
-    image: '/api/placeholder/80/80', // Placeholder für Frühstück
-    gradient: 'from-orange-400 to-red-400'
-  },
-  {
-    key: 'lunch',
-    label: 'Mittagessen',
-    recommendedCalories: 853,
-    image: '/api/placeholder/80/80', // Placeholder für Mittagessen
-    gradient: 'from-green-400 to-emerald-400'
-  },
-  {
-    key: 'dinner',
-    label: 'Abendessen',
-    recommendedCalories: 628,
-    image: '/api/placeholder/80/80', // Placeholder für Abendessen
-    gradient: 'from-blue-400 to-purple-400'
-  },
-  {
-    key: 'snack',
-    label: 'Snack',
-    recommendedCalories: 89,
-    image: '/api/placeholder/80/80', // Placeholder für Snack
-    gradient: 'from-pink-400 to-rose-400'
-  }
-]
+const mealDistribution = {
+  breakfast: 0.25, // 25%
+  lunch: 0.35,     // 35%
+  dinner: 0.3,     // 30%
+  snack: 0.1       // 10%
+}
 
 export default function DiaryPage() {
   const router = useRouter()
-  const { user } = useAuthStore()
+  const { user, profile } = useAuthStore()
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [entries, setEntries] = useState<DiaryEntry[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Tagesbedarf berechnen (Fallback 2000)
+  const calorieGoal = profile ? calculateDailyCalorieGoal(profile) : 2000
+
+  // Dynamische Mahlzeitenliste
+  const mealTypes = [
+    {
+      key: 'breakfast',
+      label: 'Frühstück',
+      recommendedCalories: Math.round(calorieGoal * mealDistribution.breakfast),
+      image: '/SVG/Fruestuck.webp',
+      gradient: 'from-orange-400 to-red-400'
+    },
+    {
+      key: 'lunch',
+      label: 'Mittagessen',
+      recommendedCalories: Math.round(calorieGoal * mealDistribution.lunch),
+      image: '/SVG/Mittagessen.webp',
+      gradient: 'from-green-400 to-emerald-400'
+    },
+    {
+      key: 'dinner',
+      label: 'Abendessen',
+      recommendedCalories: Math.round(calorieGoal * mealDistribution.dinner),
+      image: '/SVG/Abendessen.webp',
+      gradient: 'from-blue-400 to-purple-400'
+    },
+    {
+      key: 'snack',
+      label: 'Snack',
+      recommendedCalories: Math.round(calorieGoal * mealDistribution.snack),
+      image: '/SVG/Snacks.webp',
+      gradient: 'from-pink-400 to-rose-400'
+    }
+  ]
 
   const loadEntries = useCallback(async () => {
     if (!user) return
@@ -158,15 +170,6 @@ export default function DiaryPage() {
               const mealEntries = groupedEntries[mealType.key] || []
               const mealCalories = mealEntries.reduce((sum, entry) => sum + entry.calories, 0)
 
-              // Map mealType.key to image src
-              const mealImageMap: Record<string, string> = {
-                breakfast: '/SVG/Fruestuck.webp',
-                lunch: '/SVG/Mittagessen.webp',
-                dinner: '/SVG/Abendessen.webp',
-                snack: '/SVG/Snacks.webp',
-              }
-              const mealImageSrc = mealImageMap[mealType.key] || '/SVG/Fruestuck.webp'
-
               return (
                 <div key={mealType.key} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
                   <div className="flex items-center justify-between">
@@ -175,7 +178,7 @@ export default function DiaryPage() {
                       <div className="relative">
                         <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
                           <Image
-                            src={mealImageSrc}
+                            src={mealType.image}
                             alt={mealType.label}
                             width={64}
                             height={64}
