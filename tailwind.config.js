@@ -26,7 +26,14 @@ module.exports = {
   },
   plugins: [],
   safelist: [
-    'from-brand6', 'to-brand4', 'from-brand8', 'to-brand6', 'from-brand3', 'to-brand7', 'from-brand2', 'to-brand5',
-    'bg-brand6', 'bg-brand4', 'bg-brand8', 'bg-brand3', 'bg-brand7', 'bg-brand2', 'bg-brand5'
+    // Background
+    'bg-brand1', 'bg-brand2', 'bg-brand3', 'bg-brand4', 'bg-brand5', 'bg-brand6', 'bg-brand7', 'bg-brand8', 'bg-brand9', 'bg-brand10',
+    // Text
+    'text-brand1', 'text-brand2', 'text-brand3', 'text-brand4', 'text-brand5', 'text-brand6', 'text-brand7', 'text-brand8', 'text-brand9', 'text-brand10',
+    // Border
+    'border-brand1', 'border-brand2', 'border-brand3', 'border-brand4', 'border-brand5', 'border-brand6', 'border-brand7', 'border-brand8', 'border-brand9', 'border-brand10',
+    // Gradients
+    'from-brand1', 'from-brand2', 'from-brand3', 'from-brand4', 'from-brand5', 'from-brand6', 'from-brand7', 'from-brand8', 'from-brand9', 'from-brand10',
+    'to-brand1', 'to-brand2', 'to-brand3', 'to-brand4', 'to-brand5', 'to-brand6', 'to-brand7', 'to-brand8', 'to-brand9', 'to-brand10',
   ],
 }
