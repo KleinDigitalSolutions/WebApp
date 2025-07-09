@@ -11,6 +11,8 @@ import {
   Plus,
   Dumbbell
 } from 'lucide-react'
+import Image from 'next/image'
+import ActivitiesCard from '@/components/ActivitiesCard'
 
 // Meal types with recommended calories
 const mealTypes = [
@@ -157,39 +159,30 @@ export default function DiaryPage() {
               const mealEntries = groupedEntries[mealType.key] || []
               const mealCalories = mealEntries.reduce((sum, entry) => sum + entry.calories, 0)
 
+              // Map mealType.key to image src
+              const mealImageMap: Record<string, string> = {
+                breakfast: '/SVG/Fruestuck.webp',
+                lunch: '/SVG/Mittagessen.webp',
+                dinner: '/SVG/Abendessen.webp',
+                snack: '/SVG/Snacks.webp',
+              }
+              const mealImageSrc = mealImageMap[mealType.key] || '/SVG/Fruestuck.webp'
+
               return (
                 <div key={mealType.key} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
                   <div className="flex items-center justify-between">
                     {/* Meal Info with Image */}
                     <div className="flex items-center space-x-4">
                       <div className="relative">
-                        <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-                          {/* Food SVG Placeholder */}
-                          <div className={`w-full h-full bg-gradient-to-br ${mealType.gradient} flex items-center justify-center`}>
-                            <svg 
-                              width="32" 
-                              height="32" 
-                              viewBox="0 0 24 24" 
-                              fill="none" 
-                              stroke="white" 
-                              strokeWidth="2"
-                              strokeLinecap="round" 
-                              strokeLinejoin="round"
-                            >
-                              {mealType.key === 'breakfast' && (
-                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                              )}
-                              {mealType.key === 'lunch' && (
-                                <path d="M18 15l-6-6-6 6M12 3v18" />
-                              )}
-                              {mealType.key === 'dinner' && (
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                              )}
-                              {mealType.key === 'snack' && (
-                                <circle cx="12" cy="12" r="10" />
-                              )}
-                            </svg>
-                          </div>
+                        <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                          <Image
+                            src={mealImageSrc}
+                            alt={mealType.label}
+                            width={64}
+                            height={64}
+                            className="object-contain w-16 h-16"
+                            priority={mealType.key === 'breakfast'}
+                          />
                         </div>
                       </div>
                       
@@ -235,31 +228,14 @@ export default function DiaryPage() {
               )
             })}
 
-            {/* Training Section */}
+            {/* Aktivitäten Sektion analog Dashboard */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
-                    <Dumbbell className="h-8 w-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Training</h3>
-                    <p className="text-sm text-gray-600">
-                      Aktiviere den Schrittzähler
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Erhalte ein genaueres Kalorienbudget.
-                    </p>
-                  </div>
-                </div>
-
-                <button 
-                  onClick={() => router.push('/activities')}
-                  className="w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-all active:scale-95 shadow-lg"
-                >
-                  <Plus className="h-6 w-6" />
-                </button>
+              <div className="flex items-center mb-3">
+                <span className="text-2xl mr-2">🏃‍♂️</span>
+                <h3 className="text-lg font-semibold text-gray-900">Aktivität hinzufügen</h3>
               </div>
+              <p className="text-gray-600 text-sm mb-4">Wähle eine Aktivität aus der Liste und füge sie deinem Tagebuch hinzu.</p>
+              <ActivitiesCard />
             </div>
           </>
         )}

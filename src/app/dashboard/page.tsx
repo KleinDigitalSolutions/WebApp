@@ -15,7 +15,6 @@ import {
 } from 'lucide-react'
 import FastingCardStack from '@/components/FastingCardStack'
 import ChallengeSection from '@/components/ChallengeSection'
-import ActivitiesCard from '@/components/ActivitiesCard'
 import DashboardOverviewSwiper from '@/components/DashboardOverviewSwiper'
 
 interface PullToRefreshProps {
@@ -463,9 +462,6 @@ export default function Dashboard() {
               </div>
             )}
           </div>
-
-          {/* Neue Aktivitäten-Karte */}
-          <ActivitiesCard />
 
           {/* Recent Meals */}
           <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6">
