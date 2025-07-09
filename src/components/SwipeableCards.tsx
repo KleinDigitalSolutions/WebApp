@@ -230,11 +230,6 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
       >
         {/* Gemeinsame Wave als absolutes Hintergrund-Element entfernt */}
         {cards.map((card, idx) => {
-          // Bei der letzten Karte: Wave etwas nach links verschieben, damit der Abschluss nicht sichtbar ist
-          const isLast = idx === cards.length - 1;
-          const bgPosX = isLast
-            ? `${-1 * idx * (224 + 24) - 40}px` // 40px nach links verschieben (anpassbar)
-            : `${-1 * idx * (224 + 24)}px`;
           return (
             <div
               key={card.id}
