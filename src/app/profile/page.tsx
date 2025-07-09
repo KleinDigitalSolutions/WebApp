@@ -7,13 +7,14 @@ import { useAuthStore } from '@/store'
 import { Navigation } from '@/components/BottomNavBar'
 import { Button, Input, Select, LoadingSpinner } from '@/components/ui'
 import { calculateBMI, getBMICategory, calculateDailyCalorieGoal, calculateMacroTargets } from '@/lib/nutrition-utils'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function ProfilePage() {
   const router = useRouter()
   const { user, profile, setProfile } = useAuthStore()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
   const [formData, setFormData] = useState<Partial<Profile>>({
     first_name: undefined,
     last_name: undefined,
@@ -91,7 +92,7 @@ export default function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
-
+    setShowSuccess(false)
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -106,6 +107,8 @@ export default function ProfilePage() {
 
       if (data) {
         setProfile(data)
+        setShowSuccess(true)
+        setTimeout(() => setShowSuccess(false), 2500)
         // Redirect to dashboard if this is initial setup
         if (!profile?.age) {
           router.push('/')
@@ -170,6 +173,26 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#ffffff]">
+      {/* Toast-Benachrichtigung */}
+      <AnimatePresence>
+        {showSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: -30, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -30, scale: 0.98 }}
+            transition={{ duration: 0.35 }}
+            className="fixed top-6 right-6 z-50 shadow-xl rounded-2xl bg-emerald-500 text-white px-6 py-4 flex items-center gap-3 pointer-events-auto"
+            style={{ minWidth: 220 }}
+          >
+            <span className="text-2xl">✅</span>
+            <div>
+              <div className="font-semibold text-base">Profil gespeichert!</div>
+              <div className="text-xs opacity-80">Deine Änderungen wurden übernommen.</div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="w-full max-w-lg mx-auto px-2 pt-6 pb-32 flex flex-col gap-6 z-10">
         {/* Avatar & Name */}
         <motion.div
