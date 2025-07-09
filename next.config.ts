@@ -5,7 +5,7 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
+        protocol: 'https', // explizit als Literal
         hostname: 'www.lecker.de',
         port: '',
         pathname: '/**',
@@ -28,8 +28,13 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
-    ],
+    ] satisfies {
+      protocol: 'https';
+      hostname: string;
+      port: string;
+      pathname: string;
+    }[],
   },
 };
 
-export default withPWA({ ...nextConfig, ...pwaConfig });
+export default withPWA(pwaConfig)(nextConfig);
