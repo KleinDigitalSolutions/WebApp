@@ -230,15 +230,8 @@ export default function DiaryPage() {
               )
             })}
 
-            {/* Aktivitäten Sektion analog Dashboard */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <div className="flex items-center mb-3">
-                <span className="text-2xl mr-2">🏃‍♂️</span>
-                <h3 className="text-lg font-semibold text-gray-900">Aktivität hinzufügen</h3>
-              </div>
-              <p className="text-gray-600 text-sm mb-4">Wähle eine Aktivität aus der Liste und füge sie deinem Tagebuch hinzu.</p>
-              <ActivitiesCard />
-            </div>
+            {/* Aktivitäten Sektion: Nur noch Icon-Auswahl-Container */}
+            <ActivitiesCard />
           </>
         )}
       </div>
