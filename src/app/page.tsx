@@ -47,19 +47,22 @@ export default function LandingPage() {
       icon: Brain,
       title: 'KI-Ernährungsberatung',
       description: 'Intelligente Analyse deiner Ernährung mit personalisierten Empfehlungen',
-      color: 'from-purple-500 to-pink-500'
+      color: 'from-brand6 to-brand4',
+      gradient: 'linear-gradient(135deg, #34A0A4 0%, #76C893 100%)' // brand6 to brand4
     },
     {
       icon: QrCode,
       title: 'Barcode-Scanner',
       description: 'Scanne Produkte und erhalte sofort alle Nährwerte',
-      color: 'from-blue-500 to-cyan-500'
+      color: 'from-brand8 to-brand6',
+      gradient: 'linear-gradient(135deg, #1A759F 0%, #34A0A4 100%)' // brand8 to brand6
     },
     {
       icon: Target,
       title: 'Ziel-Tracking',
       description: 'Erreiche deine Ziele mit intelligentem Fortschritts-Tracking',
-      color: 'from-emerald-500 to-teal-500'
+      color: 'from-brand3 to-brand7',
+      gradient: 'linear-gradient(135deg, #99D98C 0%, #168AAD 100%)' // brand3 to brand7
     }
   ]
 
@@ -105,7 +108,7 @@ export default function LandingPage() {
     <>
       {showDesktopNotice && <DesktopNotice />}
       
-      <div className="min-h-screen bg-[#ffffff] overflow-hidden">
+      <div className="min-h-screen bg-brand1 overflow-hidden">
         {/* Status Bar Simulation */}
         <div className="h-6 bg-transparent"></div>
         
@@ -133,9 +136,9 @@ export default function LandingPage() {
               style={{ animationDuration: '8s', animationTimingFunction: 'linear' }}
             />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight mb-2">
+          <h1 className="text-4xl md:text-5xl font-bold text-brand10 leading-tight mb-2">
             Deine intelligente<br />
-            <span className="bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-brand6 to-brand4 bg-clip-text text-transparent">
               Ernährungs-App
             </span>
           </h1>
@@ -147,7 +150,12 @@ export default function LandingPage() {
             <Button
               onClick={() => router.push('/register')}
               size="lg"
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-4 px-8 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-200"
+              className="font-semibold py-4 px-8 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-200"
+              style={{
+                background: 'linear-gradient(90deg, #34A0A4 0%, #76C893 100%)',
+                color: '#fff',
+                border: 'none'
+              }}
             >
               Jetzt kostenlos starten
             </Button>
@@ -190,7 +198,10 @@ export default function LandingPage() {
                       : 'opacity-0 pointer-events-none'
                   }`}
                 >
-                  <div className={`bg-gradient-to-br ${feature.color} rounded-3xl p-8 text-white shadow-2xl h-full flex flex-col justify-center`}>
+                  <div
+                    className="rounded-3xl p-8 text-white shadow-2xl h-full flex flex-col justify-center"
+                    style={{ background: feature.gradient, boxShadow: '0 8px 32px 0 rgba(31, 97, 145, 0.15)' }}
+                  >
                     <feature.icon className="w-12 h-12 mb-4 mx-auto" />
                     <h3 className="text-xl font-bold mb-2 text-center">{feature.title}</h3>
                     <p className="text-center text-white/90 leading-relaxed">{feature.description}</p>
@@ -219,36 +230,45 @@ export default function LandingPage() {
         {/* Key Features Grid */}
         <section className="px-6 py-8">
           <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+            <div
+              style={{ backgroundColor: 'rgba(181, 228, 140, 0.85)' }} // brand2
+              className="backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg"
+            >
+              <div className="w-12 h-12 bg-gradient-to-br from-brand8 to-brand6 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Brain className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-semibold text-gray-800 mb-1">KI-Beratung</h3>
-              <p className="text-xs text-gray-600">Personalisierte Empfehlungen</p>
+              <h3 className="font-semibold text-brand10 mb-1">KI-Beratung</h3>
+              <p className="text-xs text-brand9">Personalisierte Empfehlungen</p>
             </div>
-            
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
+            <div
+              style={{ backgroundColor: 'rgba(153, 217, 140, 0.85)' }} // brand3
+              className="backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg"
+            >
+              <div className="w-12 h-12 bg-gradient-to-br from-brand6 to-brand4 rounded-full flex items-center justify-center mx-auto mb-3">
                 <QrCode className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-semibold text-gray-800 mb-1">Barcode-Scanner</h3>
-              <p className="text-xs text-gray-600">Sofort alle Nährwerte</p>
+              <h3 className="font-semibold text-brand10 mb-1">Barcode-Scanner</h3>
+              <p className="text-xs text-brand9">Sofort alle Nährwerte</p>
             </div>
-            
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
+            <div
+              style={{ backgroundColor: 'rgba(118, 200, 147, 0.85)' }} // brand4
+              className="backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg"
+            >
+              <div className="w-12 h-12 bg-gradient-to-br from-brand3 to-brand7 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Target className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-semibold text-gray-800 mb-1">Ziele erreichen</h3>
-              <p className="text-xs text-gray-600">Intelligentes Tracking</p>
+              <h3 className="font-semibold text-brand10 mb-1">Ziele erreichen</h3>
+              <p className="text-xs text-brand9">Intelligentes Tracking</p>
             </div>
-            
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg">
-              <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-3">
+            <div
+              style={{ backgroundColor: 'rgba(82, 182, 154, 0.85)' }} // brand5
+              className="backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg"
+            >
+              <div className="w-12 h-12 bg-gradient-to-br from-brand7 to-brand2 rounded-full flex items-center justify-center mx-auto mb-3">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-semibold text-gray-800 mb-1">Fortschritte</h3>
-              <p className="text-xs text-gray-600">Visualisierte Erfolge</p>
+              <h3 className="font-semibold text-brand10 mb-1">Fortschritte</h3>
+              <p className="text-xs text-brand9">Visualisierte Erfolge</p>
             </div>
           </div>
         </section>
@@ -280,7 +300,10 @@ export default function LandingPage() {
         {/* Bottom CTA */}
         <section className="px-6 py-8 pb-12">
           <div className="max-w-sm mx-auto text-center">
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl p-8 text-white shadow-2xl">
+            <div
+              className="rounded-3xl p-8 text-white shadow-2xl"
+              style={{ background: 'linear-gradient(90deg, #34A0A4 0%, #76C893 100%)', boxShadow: '0 8px 32px 0 rgba(31, 97, 145, 0.15)' }}
+            >
               <Zap className="w-12 h-12 mx-auto mb-4" />
               <h3 className="text-xl font-bold mb-2">Bereit loszulegen?</h3>
               <p className="text-white/90 mb-6 text-sm">
@@ -288,7 +311,13 @@ export default function LandingPage() {
               </p>
               <Button
                 onClick={() => router.push('/register')}
-                className="bg-white text-emerald-600 hover:bg-gray-100 font-semibold py-3 px-8 rounded-xl shadow-lg w-full"
+                className="font-semibold py-3 px-8 rounded-xl shadow-lg w-full border-0"
+                style={{
+                  background: '#fff',
+                  color: '#34A0A4', // brand6
+                  border: 'none',
+                  fontWeight: 700
+                }}
               >
                 Jetzt kostenlos testen
                 <ArrowRight className="w-4 h-4 ml-2" />

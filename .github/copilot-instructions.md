@@ -1,3 +1,8 @@
+# Farben
+
+Die Key Features Karten auf der Landingpage nutzen jetzt Best Practice: Die Hintergrundfarben werden per inline style mit rgba gesetzt, sodass die Transparenz garantiert funktioniert – unabhängig von Tailwind. Das ist der empfohlene Weg für Custom Colors mit Opacity.
+
+Jetzt sollten die Karten wie gewünscht farbig und leicht transparent angezeigt werden.
 # TrackFood - Copilot Instructions
 
 <!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
