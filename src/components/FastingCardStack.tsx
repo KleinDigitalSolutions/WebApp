@@ -48,35 +48,35 @@ const fastingTypes = [
   }
 ]
 
-// Farbzuordnung für Fastenarten
+// Farbzuordnung für Fastenarten (angepasst auf Brandfarben)
 const fastingColors = [
   {
-    progress: '#6366f1', // Indigo (16:8, passend zur Karte)
-    indicator: 'bg-indigo-500',
-    button: 'bg-indigo-400 hover:bg-indigo-500',
-    card: 'bg-indigo-600', // Indigo, Safari-kompatibel
-    border: 'border-indigo-700/60',
+    progress: '#34A0A4', // brand6
+    indicator: 'bg-brand6',
+    button: 'bg-brand6 hover:bg-brand7',
+    card: 'bg-brand6',
+    border: 'border-brand7/60',
   },
   {
-    progress: '#fbbf24', // Amber (18:6)
-    indicator: 'bg-amber-400',
-    button: 'bg-amber-400 hover:bg-amber-500',
-    card: 'bg-amber-500', // Amber, Safari-kompatibel
-    border: 'border-amber-700/60',
+    progress: '#76C893', // brand4
+    indicator: 'bg-brand4',
+    button: 'bg-brand4 hover:bg-brand2',
+    card: 'bg-brand4',
+    border: 'border-brand5/60',
   },
   {
-    progress: '#38bdf8', // Sky (20:4)
-    indicator: 'bg-sky-400',
-    button: 'bg-sky-400 hover:bg-sky-500',
-    card: 'bg-sky-600', // Sky, Safari-kompatibel
-    border: 'border-sky-700/60',
+    progress: '#1A759F', // brand8
+    indicator: 'bg-brand8',
+    button: 'bg-brand8 hover:bg-brand6',
+    card: 'bg-brand8',
+    border: 'border-brand9/60',
   },
   {
-    progress: '#ec4899', // Pink (24h)
-    indicator: 'bg-pink-500',
-    button: 'bg-pink-500 hover:bg-pink-600',
-    card: 'bg-pink-600', // Pink, Safari-kompatibel
-    border: 'border-pink-700/60',
+    progress: '#184E77', // brand10
+    indicator: 'bg-brand10',
+    button: 'bg-brand10 hover:bg-brand8',
+    card: 'bg-brand10',
+    border: 'border-brand9/60',
   },
 ]
 
@@ -279,8 +279,17 @@ export default function FastingCardStack() {
           swipeThreshold={120}
           preventSwipe={['up', 'down']}
         >
-          <div className={`relative rounded-3xl p-8 shadow-2xl min-h-[300px] flex flex-col items-center justify-center ${getFastingCardGradient(activeCardIndex)}`}
-            style={{minWidth:'320px', maxWidth:'400px', boxShadow:'0 8px 32px 0 rgba(31,38,135,0.25), 0 1.5px 8px 0 rgba(0,0,0,0.10)'}}>
+          <div
+            className={
+              `relative rounded-3xl p-8 shadow-2xl min-h-[300px] flex flex-col items-center justify-center`
+            }
+            style={{
+              minWidth: '320px',
+              maxWidth: '400px',
+              boxShadow: '0 8px 32px 0 rgba(31,38,135,0.25), 0 1.5px 8px 0 rgba(0,0,0,0.10)',
+              background: getFastingCardGradientHex(activeCardIndex)
+            }}
+          >
             {/* Hochglanz-Overlay */}
             <div className="absolute inset-0 rounded-3xl pointer-events-none z-10">
               <div className="absolute left-0 top-0 w-full h-1/2 rounded-t-3xl bg-white/30 blur-[2px] opacity-60" />
@@ -381,18 +390,19 @@ export default function FastingCardStack() {
   )
 }
 
-// Am Ende der Datei, vor export default:
-function getFastingCardGradient(idx: number) {
+// Am Ende der Datei:
+function getFastingCardGradientHex(idx: number) {
   switch (idx) {
-    case 0: // 16:8 Indigo
-      return 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-indigo-400';
-    case 1: // 18:6 Amber
-      return 'bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-300';
-    case 2: // 20:4 Sky
-      return 'bg-gradient-to-br from-sky-400 via-sky-500 to-blue-400';
-    case 3: // 24h Pink
-      return 'bg-gradient-to-br from-pink-400 via-pink-500 to-fuchsia-400';
+    case 0: // 16:8
+      return 'linear-gradient(135deg, #34A0A4 0%, #76C893 60%, #B5E48C 100%)'; // brand6, brand4, brand2
+    case 1: // 18:6
+      // Satteres Grün, weniger Weiß: brand4 -> brand3 -> brand2
+      return 'linear-gradient(135deg, #76C893 0%, #99D98C 60%, #B5E48C 100%)'; // brand4, brand3, brand2
+    case 2: // 20:4
+      return 'linear-gradient(135deg, #1A759F 0%, #34A0A4 60%, #76C893 100%)'; // brand8, brand6, brand4
+    case 3: // 24h
+      return 'linear-gradient(135deg, #184E77 0%, #1A759F 60%, #34A0A4 100%)'; // brand10, brand8, brand6
     default:
-      return 'bg-gradient-to-br from-emerald-400 to-emerald-600';
+      return 'linear-gradient(135deg, #76C893 0%, #34A0A4 100%)';
   }
 }
