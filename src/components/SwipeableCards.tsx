@@ -222,11 +222,11 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
   }, []);
 
   return (
-    <div>
+    <div className="relative w-full" style={{background:'#fff'}}>
       <div
         ref={scrollContainerRef}
-        className="w-full overflow-x-auto flex space-x-6 pb-4 relative" // scrollbar-hide entfernt
-        style={{ scrollSnapType: 'x mandatory' }}
+        className="w-full overflow-x-auto flex space-x-6 pb-4 relative bg-white" // explizit bg-white
+        style={{ scrollSnapType: 'x mandatory', background: '#fff' }} // Fallback für echtes Weiß
       >
         {/* Gemeinsame Wave als absolutes Hintergrund-Element entfernt */}
         {cards.map((card, idx) => {
@@ -239,19 +239,19 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
             <div
               key={card.id}
               className={
-                `flex-shrink-0 w-56 h-72 rounded-2xl shadow-2xl border-0 cursor-pointer transition-transform duration-300 relative group bg-transparent`
+                `flex-shrink-0 w-56 h-72 rounded-2xl shadow-lg border-0 cursor-pointer transition-transform duration-300 relative group`
               }
               style={{
                 scrollSnapAlign: 'center',
                 minWidth: '14rem',
                 maxWidth: '14rem',
-                boxShadow: '0 8px 32px 0 rgba(31,38,135,0.25), 0 1.5px 8px 0 rgba(0,0,0,0.10)',
+                // Dezent nach unten gerichteter Shadow, kein breiter Glow mehr
+                boxShadow: '0 6px 18px 0 rgba(31,38,135,0.10)',
                 backgroundImage: card.gradient || 'none',
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                borderRadius: '1rem',
-                backdropFilter: 'blur(4px)'
+                borderRadius: '1rem'
               } as React.CSSProperties}
               data-idx={idx}
               onClick={() => handleCardClick(card)}
