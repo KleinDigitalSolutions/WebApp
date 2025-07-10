@@ -109,69 +109,86 @@ export default function ActivitiesCard() {
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 text-gray-800 relative">
-      <div className="flex items-center mb-3">
-        <span className="text-2xl mr-2">🏃‍♂️</span>
-        <h3 className="text-lg font-semibold text-gray-800">Aktivität hinzufügen</h3>
-      </div>
-      <p className="text-gray-600 text-sm mb-4">Wähle eine Aktivität aus der Liste und füge sie deinem Tagebuch hinzu.</p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-72 overflow-y-auto">
-        {activitiesList.map((activity) => (
-          <button
-            key={activity.id}
-            onClick={() => setSelected(activity.id)}
-            className={`flex items-center px-3 py-2 rounded-2xl border shadow-sm transition-all duration-200 focus:outline-none ${selected === activity.id ? 'bg-emerald-500 text-white scale-105' : 'bg-gray-50 border-gray-200 hover:bg-emerald-50 text-gray-800'}`}
-          >
-            <span className="text-xl mr-2">{activity.emoji}</span>
-            <span className="text-sm font-medium text-left">{activity.name}</span>
-          </button>
-        ))}
-      </div>
-      {selected && (
-        <div className="mt-6 flex flex-col items-center">
-          <span className="text-3xl mb-2">{activitiesList.find(a => a.id === selected)?.emoji}</span>
-          <div className="text-lg font-semibold mb-1">{activitiesList.find(a => a.id === selected)?.name}</div>
-          <div className="text-sm text-gray-600 mb-2">MET: {activitiesList.find(a => a.id === selected)?.met}</div>
-          <label className="mt-2 text-sm text-gray-700">Dauer (Minuten):
-            <input
-              type="number"
-              min={5}
-              max={300}
-              step={5}
-              value={duration}
-              onChange={e => setDuration(Number(e.target.value))}
-              className="ml-2 px-2 py-1 rounded bg-gray-100 text-gray-800 w-20 text-center border border-gray-300"
-            />
-          </label>
-          <label className="mt-2 text-sm text-gray-700">Notiz (optional):
-            <input
-              type="text"
-              value={note}
-              onChange={e => setNote(e.target.value)}
-              className="ml-2 px-2 py-1 rounded bg-gray-100 text-gray-800 w-40 border border-gray-300"
-              placeholder="z.B. Strecke, Puls..."
-            />
-          </label>
-          <div className="mt-2 text-gray-600 text-sm">Geschätzter Verbrauch: <b>{calcCalories(activitiesList.find(a => a.id === selected)?.met || 1, profile?.weight_kg || 70, duration)}</b> kcal</div>
-          <button
-            className="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-full font-semibold shadow-lg hover:bg-emerald-700 transition disabled:opacity-60"
-            onClick={handleSave}
-            disabled={saving}
-          >
-            {saving ? 'Speichern...' : 'Aktivität speichern'}
-          </button>
-          <button
-            className="mt-2 px-4 py-2 bg-gray-400 text-white rounded-full font-semibold shadow-lg hover:bg-gray-500 transition"
-            onClick={() => setSelected(null)}
-            disabled={saving}
-          >
-            Abbrechen
-          </button>
+    <div
+      className="relative rounded-3xl overflow-hidden shadow-xl border-none mb-4"
+      style={{
+        background: 'linear-gradient(135deg, #34A0A4 0%, #76C893 100%)', // türkis/grün Gradient statt pink
+        backdropFilter: 'blur(12px)',
+        boxShadow: '0 8px 32px 0 rgba(52, 160, 164, 0.18), 0 1.5px 8px 0 #76C893' // Schattenfarbe angepasst
+      }}
+    >
+      {/* Glossy Overlay */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: '40%',
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.05) 100%)',
+        pointerEvents: 'none',
+        borderTopLeftRadius: 24, borderTopRightRadius: 24
+      }} />
+      {/* Card Content */}
+      <div className="relative z-10 p-6 text-white">
+        <div className="flex items-center mb-3">
+          <span className="text-2xl mr-2">🏃‍♂️</span>
+          <h3 className="text-lg font-semibold drop-shadow-lg">Aktivität hinzufügen</h3>
         </div>
-      )}
-      {success && (
-        <div className="mt-4 text-emerald-600 font-semibold text-center">Aktivität gespeichert! 🎉</div>
-      )}
+        <p className="text-white/80 text-sm mb-4 drop-shadow">Wähle eine Aktivität aus der Liste und füge sie deinem Tagebuch hinzu.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-72 overflow-y-auto">
+          {activitiesList.map((activity) => (
+            <button
+              key={activity.id}
+              onClick={() => setSelected(activity.id)}
+              className={`flex items-center px-3 py-2 rounded-2xl border shadow-sm transition-all duration-200 focus:outline-none font-semibold text-base drop-shadow-lg ${selected === activity.id ? 'bg-white/80 text-emerald-700 scale-105 border-white' : 'bg-white/20 border-white/30 hover:bg-white/40 text-white'}`}
+            >
+              <span className="text-xl mr-2">{activity.emoji}</span>
+              <span className="text-sm font-medium text-left">{activity.name}</span>
+            </button>
+          ))}
+        </div>
+        {selected && (
+          <div className="mt-6 flex flex-col items-center">
+            <span className="text-3xl mb-2">{activitiesList.find(a => a.id === selected)?.emoji}</span>
+            <div className="text-lg font-semibold mb-1 drop-shadow-lg">{activitiesList.find(a => a.id === selected)?.name}</div>
+            <div className="text-sm text-white/80 mb-2 drop-shadow">MET: {activitiesList.find(a => a.id === selected)?.met}</div>
+            <label className="mt-2 text-sm text-white/90 drop-shadow">Dauer (Minuten):
+              <input
+                type="number"
+                min={5}
+                max={300}
+                step={5}
+                value={duration}
+                onChange={e => setDuration(Number(e.target.value))}
+                className="ml-2 px-2 py-1 rounded bg-white/80 text-emerald-900 w-20 text-center border border-white/60"
+              />
+            </label>
+            <label className="mt-2 text-sm text-white/90 drop-shadow">Notiz (optional):
+              <input
+                type="text"
+                value={note}
+                onChange={e => setNote(e.target.value)}
+                className="ml-2 px-2 py-1 rounded bg-white/80 text-emerald-900 w-40 border border-white/60"
+                placeholder="z.B. Strecke, Puls..."
+              />
+            </label>
+            <div className="mt-2 text-white/90 text-sm drop-shadow">Geschätzter Verbrauch: <b>{calcCalories(activitiesList.find(a => a.id === selected)?.met || 1, profile?.weight_kg || 70, duration)}</b> kcal</div>
+            <button
+              className="mt-4 px-4 py-2 bg-white/90 text-emerald-700 rounded-full font-semibold shadow-lg hover:bg-white transition disabled:opacity-60 drop-shadow-lg"
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? 'Speichern...' : 'Aktivität speichern'}
+            </button>
+            <button
+              className="mt-2 px-4 py-2 bg-white/40 text-white rounded-full font-semibold shadow-lg hover:bg-white/60 transition drop-shadow-lg"
+              onClick={() => setSelected(null)}
+              disabled={saving}
+            >
+              Abbrechen
+            </button>
+          </div>
+        )}
+        {success && (
+          <div className="mt-4 text-white font-semibold text-center drop-shadow-lg">Aktivität gespeichert! 🎉</div>
+        )}
+      </div>
     </div>
   )
 }
