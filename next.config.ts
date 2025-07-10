@@ -1,35 +1,23 @@
 import withPWA from 'next-pwa';
-const pwaConfig = require('./pwa.config.js');
 
 const nextConfig = {
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'www.lecker.de',
-        port: '',
-        pathname: '/**',
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+  runtimeCaching: [
+    {
+      urlPattern: /^https?.*/,
+      handler: 'NetworkFirst' as any,
+      options: {
+        cacheName: 'http-cache',
+        expiration: {
+          maxEntries: 200,
+          maxAgeSeconds: 7 * 24 * 60 * 60, // 1 Woche
+        },
       },
-      {
-        protocol: 'https',
-        hostname: 'img.lecker.de',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'media.lecker.de',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.lecker.de',
-        port: '',
-        pathname: '/**',
-      },
-    ],
-  },
+    },
+  ],
 };
 
-export default withPWA({ ...nextConfig, ...pwaConfig });
+export default withPWA(nextConfig);
