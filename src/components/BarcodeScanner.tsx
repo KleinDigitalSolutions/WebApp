@@ -13,10 +13,18 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
   const scannerRef = useRef<HTMLDivElement>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showInstructions, setShowInstructions] = useState(true)
 
   // Browser-Detection außerhalb des useEffect
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+
+  useEffect(() => {
+    if (!isActive) return
+    setShowInstructions(true)
+    const timer = setTimeout(() => setShowInstructions(false), 4000)
+    return () => clearTimeout(timer)
+  }, [isActive])
 
   useEffect(() => {
     if (!isActive) return
@@ -287,8 +295,9 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
           </div>
         )}
 
-        {!error && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-10">
+        {/* Scanner Info/Instructions nur kurz anzeigen */}
+        {!error && showInstructions && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-10 transition-opacity duration-500">
             <div className="text-center text-white max-w-md mx-4">
               <div className="text-6xl mb-4">📷</div>
               <h3 className="text-xl font-semibold mb-2">Barcode Scanner</h3>
@@ -307,13 +316,13 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
         {/* Scan Overlay */}
         <div className="absolute inset-0 pointer-events-none">
           {/* Top overlay */}
-          <div className="absolute top-0 left-0 right-0 h-1/4 bg-black/50" />
+          <div className="absolute top-0 left-0 right-0 h-1/4" style={{ backgroundColor: 'rgba(0,0,0,0.45)' }} />
           {/* Bottom overlay */}
-          <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-black/50" />
+          <div className="absolute bottom-0 left-0 right-0 h-1/4" style={{ backgroundColor: 'rgba(0,0,0,0.45)' }} />
           {/* Left overlay */}
-          <div className="absolute top-1/4 bottom-1/4 left-0 w-1/6 bg-black/50" />
+          <div className="absolute top-1/4 bottom-1/4 left-0 w-1/6" style={{ backgroundColor: 'rgba(0,0,0,0.45)' }} />
           {/* Right overlay */}
-          <div className="absolute top-1/4 bottom-1/4 right-0 w-1/6 bg-black/50" />
+          <div className="absolute top-1/4 bottom-1/4 right-0 w-1/6" style={{ backgroundColor: 'rgba(0,0,0,0.45)' }} />
           
           {/* Scan frame */}
           <div className="absolute top-1/4 bottom-1/4 left-1/6 right-1/6 border-2 border-white/80 rounded-lg">
@@ -324,15 +333,17 @@ export default function BarcodeScanner({ onScan, onClose, isActive }: BarcodeSca
           </div>
         </div>
 
-        {/* Instructions */}
-        <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 to-transparent p-6">
-          <div className="text-center text-white">
-            <p className="text-lg mb-2">🎯 Halte den Barcode in den Rahmen</p>
-            <p className="text-white/70 text-sm">
-              Der Scanner erkennt automatisch EAN-13 und EAN-8 Barcodes
-            </p>
+        {/* Instructions unten: nur wenn showInstructions true */}
+        {showInstructions && (
+          <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 to-transparent p-6 transition-opacity duration-500">
+            <div className="text-center text-white">
+              <p className="text-lg mb-2">🎯 Halte den Barcode in den Rahmen</p>
+              <p className="text-white/70 text-sm">
+                Der Scanner erkennt automatisch EAN-13 und EAN-8 Barcodes
+              </p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )
