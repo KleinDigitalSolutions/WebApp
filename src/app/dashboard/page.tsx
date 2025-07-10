@@ -11,11 +11,16 @@ import {
   Calendar,
   Award,
   ChevronRight,
-  RefreshCw
+  RefreshCw,
+  Sparkles,
+  Target,
+  Activity
 } from 'lucide-react'
 import FastingCardStack from '@/components/FastingCardStack'
 import ChallengeSection from '@/components/ChallengeSection'
 import DashboardOverviewSwiper from '@/components/DashboardOverviewSwiper'
+import { motion, AnimatePresence } from 'framer-motion'
+import { GlassCard, ModernProgressBar, ModernButton, ModernBadge } from '@/components/ui/ModernComponents'
 
 interface PullToRefreshProps {
   children: React.ReactNode
@@ -57,27 +62,46 @@ function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
       className="relative"
     >
       {/* Pull to refresh indicator */}
-      {(pullDistance > 0 || isRefreshing) && (
-        <div 
-          className="absolute top-0 left-0 right-0 flex justify-center items-center bg-gray-50 z-10"
-          style={{ 
-            height: pullDistance || (isRefreshing ? 60 : 0),
-            transition: isRefreshing ? 'height 0.3s ease' : 'none'
-          }}
-        >
-          <RefreshCw 
-            className={`h-6 w-6 text-gray-600 ${isRefreshing ? 'animate-spin' : ''}`}
+      <AnimatePresence>
+        {(pullDistance > 0 || isRefreshing) && (
+          <motion.div 
+            className="absolute top-0 left-0 right-0 flex justify-center items-center bg-white/80 backdrop-blur-xl border-b border-white/20 z-10"
             style={{ 
-              transform: `rotate(${pullDistance * 3.6}deg)`,
-              transition: isRefreshing ? 'transform 0.3s ease' : 'none'
+              height: pullDistance || (isRefreshing ? 60 : 0),
             }}
-          />
-        </div>
-      )}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ 
+              opacity: 1,
+              height: isRefreshing ? 60 : pullDistance
+            }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              animate={{ 
+                rotate: isRefreshing ? 360 : pullDistance * 3.6,
+              }}
+              transition={{ 
+                rotate: { 
+                  duration: isRefreshing ? 1 : 0,
+                  repeat: isRefreshing ? Infinity : 0,
+                  ease: "linear"
+                }
+              }}
+            >
+              <RefreshCw className="h-6 w-6 text-primary-600" />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
-      <div style={{ transform: `translateY(${pullDistance}px)` }}>
+      <motion.div 
+        style={{ transform: `translateY(${pullDistance}px)` }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         {children}
-      </div>
+      </motion.div>
     </div>
   )
 }
@@ -198,354 +222,275 @@ export default function Dashboard() {
       try {
         const response = await fetch(`/api/water?userId=${user.id}&date=${today}`)
         const data = await response.json()
-        
-        if (response.ok) {
-          setWaterIntake(data.amount_ml || 0)
-          setWaterGoal(data.daily_goal_ml || 2000)
+        if (data.waterIntake) {
+          setWaterIntake(data.waterIntake)
         }
       } catch (error) {
         console.error('Error loading water intake:', error)
       }
-      
+
     } catch (error) {
-      console.error('Error loading data:', error)
+      console.error('Error loading dashboard data:', error)
     } finally {
       setLoading(false)
     }
-  }, [user, setProfile, setDailyGoals, setEntries])
+  }, [user, setProfile, setEntries, setDailyGoals])
 
   useEffect(() => {
-    if (!user) {
-      router.push('/login')
-      return
-    }
     loadData()
-  }, [user, router, loadData])
+  }, [loadData])
 
-  // Calculate consumed nutrients
-  const consumedCalories = todayEntries.reduce((sum, entry) => sum + entry.calories, 0)
-  const consumedProtein = todayEntries.reduce((sum, entry) => sum + entry.protein_g, 0)
-  const consumedCarbs = todayEntries.reduce((sum, entry) => sum + entry.carb_g, 0)
-  const consumedFat = todayEntries.reduce((sum, entry) => sum + entry.fat_g, 0)
-  const consumedFiber = todayEntries.reduce((sum, entry) => sum + (entry.fiber_g || 0), 0)
-  const consumedSugar = todayEntries.reduce((sum, entry) => sum + (entry.sugar_g || 0), 0)
-  const consumedSodium = todayEntries.reduce((sum, entry) => sum + (entry.sodium_mg || 0), 0)
-
-  // Calculate percentages
-  const calorieProgress = dailyGoals.calories ? (consumedCalories / dailyGoals.calories) * 100 : 0
-  const waterProgress = waterGoal ? (waterIntake / waterGoal) * 100 : 0
+  const handleRefresh = async () => {
+    await loadData()
+  }
 
   if (loading) {
     return (
-      <>
-        <div className="min-h-screen bg-[#ffffff] flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-        </div>
-      </>
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center">
+        <motion.div
+          className="flex flex-col items-center space-y-4"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-primary-500/25">
+            <Sparkles className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-secondary-600 font-medium">Lade deine Daten...</p>
+        </motion.div>
+      </div>
     )
   }
 
+  const totalCalories = todayEntries.reduce((sum, entry) => sum + (entry.calories || 0), 0)
+  const totalProtein = todayEntries.reduce((sum, entry) => sum + (entry.protein || 0), 0)
+  const totalCarbs = todayEntries.reduce((sum, entry) => sum + (entry.carbs || 0), 0)
+  const totalFat = todayEntries.reduce((sum, entry) => sum + (entry.fat || 0), 0)
+
   return (
-    <>
-      <PullToRefresh onRefresh={loadData}>
-        <div className="min-h-screen bg-[#ffffff] flex-1 flex flex-col min-h-0 overflow-x-hidden" style={{ scrollBehavior: 'smooth' }}>
-          <div className="px-4 pt-6 flex items-start justify-between">
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
+        {/* Header */}
+        <motion.header 
+          className="px-6 py-6"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">
-                {getGreeting()}{getFirstName() && `, ${getFirstName()}`}!
-              </h1>
-              <p className="text-sm text-gray-600 mt-1">
+              <motion.h1 
+                className="text-2xl font-bold text-secondary-900"
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+              >
+                {getGreeting()}, {getFirstName()}! 👋
+              </motion.h1>
+              <motion.p 
+                className="text-secondary-600 mt-1"
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+              >
                 {new Date().toLocaleDateString('de-DE', { 
                   weekday: 'long', 
-                  day: 'numeric', 
-                  month: 'long' 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
                 })}
-              </p>
-              {/* Personalisierte Zielkarte nach Onboarding */}
-              {profile?.onboarding_completed && profile?.weight_kg && profile?.target_weight_kg && (
-                <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex flex-col items-start animate-fade-in">
-                  <div className="flex items-center mb-1">
-                    <Award className="h-5 w-5 text-emerald-500 mr-2" />
-                    <span className="font-semibold text-emerald-700">Dein Ziel:</span>
-                  </div>
-                  <div className="text-lg font-bold text-emerald-900">
-                    {profile.weight_kg > profile.target_weight_kg
-                      ? `- ${(profile.weight_kg - profile.target_weight_kg).toFixed(1)} kg bis ${(() => {
-                          // Ziel-Datum grob schätzen (0.5kg/Woche)
-                          const weeks = Math.max(1, Math.ceil((profile.weight_kg - profile.target_weight_kg) / 0.5))
-                          const targetDate = new Date()
-                          targetDate.setDate(targetDate.getDate() + weeks * 7)
-                          return targetDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })
-                        })()}`
-                      : profile.weight_kg < profile.target_weight_kg
-                        ? `+ ${(profile.target_weight_kg - profile.weight_kg).toFixed(1)} kg bis ${(() => {
-                            const weeks = Math.max(1, Math.ceil((profile.target_weight_kg - profile.weight_kg) / 0.5))
-                            const targetDate = new Date()
-                            targetDate.setDate(targetDate.getDate() + weeks * 7)
-                            return targetDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })
-                          })()}`
-                        : 'Gewicht halten!'}
-                  </div>
-                  <div className="text-xs text-emerald-700 mt-1">Bleib dran – du schaffst das! 💪</div>
-                </div>
-              )}
+              </motion.p>
             </div>
-            {/* Achievement Badges */}
-            <div className="flex items-center space-x-2">
-              {calorieProgress >= 80 && calorieProgress <= 120 && (
-                <div className="flex items-center px-2 py-1 bg-emerald-500 rounded-full shadow-lg">
-                  <Award className="h-3 w-3 text-white mr-1" />
-                  <span className="text-xs font-medium text-white">Kalorien</span>
-                </div>
-              )}
-              {/* Weitere Badges (z.B. Wasser, Protein) */}
-              {waterProgress >= 100 && (
-                <div className="flex items-center px-2 py-1 bg-blue-500 rounded-full shadow-lg ml-2">
-                  <Award className="h-3 w-3 text-white mr-1" />
-                  <span className="text-xs font-medium text-white">Wasser</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-        <div className="px-4 space-y-6 pb-20 pt-4 flex-1">
-          {/* Neue swipebare/touchbare Dashboard-Übersichtskarte */}
-          <DashboardOverviewSwiper />
-
-          {/* Quick Stats Card */}
-          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Tagesübersicht</h2>
-              <div className="flex items-center text-sm text-gray-700 font-medium">
-                <Calendar className="h-4 w-4 mr-1 text-gray-700" />
-                Heute
-              </div>
-            </div>
-            
-            {/* Main Progress Rings */}
-            <div className="flex items-center justify-center space-x-8 mb-6">
-              {/* Calorie Ring */}
-              <div className="flex flex-col items-center">
-                <div className="relative w-28 h-28">
-                  <svg className="w-28 h-28 transform -rotate-90" viewBox="0 0 100 100">
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      fill="transparent"
-                      className="text-gray-200"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      stroke="url(#calorieGradient)"
-                      strokeWidth="6"
-                      fill="transparent"
-                      strokeDasharray={`${2 * Math.PI * 45}`}
-                      strokeDashoffset={`${2 * Math.PI * 45 * (1 - Math.min(calorieProgress, 100) / 100)}`}
-                      className="transition-all duration-500 ease-out"
-                      strokeLinecap="round"
-                    />
-                    <defs>
-                      <linearGradient id="calorieGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#10b981" />
-                        <stop offset="100%" stopColor="#8b5cf6" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-lg font-bold text-gray-800">{Math.round(consumedCalories)}</span>
-                    <span className="text-xs font-semibold text-gray-600">kcal</span>
-                  </div>
-                </div>
-                <div className="text-center mt-2">
-                  <div className="text-xs font-semibold text-gray-600">von {dailyGoals.calories}</div>
-                </div>
-              </div>
-
-              {/* Water Ring */}
-              <div className="flex flex-col items-center">
-                <div className="relative w-28 h-28">
-                  <svg className="w-28 h-28 transform -rotate-90" viewBox="0 0 100 100">
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      fill="transparent"
-                      className="text-gray-200"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      stroke="url(#waterGradient)"
-                      strokeWidth="6"
-                      fill="transparent"
-                      strokeDasharray={`${2 * Math.PI * 45}`}
-                      strokeDashoffset={`${2 * Math.PI * 45 * (1 - Math.min(waterProgress, 100) / 100)}`}
-                      className="transition-all duration-500 ease-out"
-                      strokeLinecap="round"
-                    />
-                    <defs>
-                      <linearGradient id="waterGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#06b6d4" />
-                        <stop offset="100%" stopColor="#3b82f6" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-lg font-bold text-gray-800">{Math.round(waterIntake / 100) / 10}L</span>
-                    <span className="text-xs font-semibold text-gray-600">Wasser</span>
-                  </div>
-                </div>
-                <div className="text-center mt-2">
-                  <div className="text-xs font-semibold text-gray-600">von {waterGoal / 1000}L</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Macro Distribution */}
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-              {[
-                { label: 'Protein', value: Math.round(consumedProtein) + 'g', color: '#2563eb' }, // kräftiges Blau
-                { label: 'Kohlenhydrate', value: Math.round(consumedCarbs) + 'g', color: '#f59e42' },
-                { label: 'Fett', value: Math.round(consumedFat) + 'g', color: '#f472b6' },
-                { label: 'Ballaststoffe', value: Math.round(consumedFiber) + 'g', color: '#059669' }, // kräftiges Dunkelgrün
-                { label: 'Zucker', value: Math.round(consumedSugar) + 'g', color: '#a78bfa' },
-                { label: 'Natrium', value: Math.round(consumedSodium) + 'mg', color: '#facc15' },
-              ].map((macro) => (
-                <div key={macro.label} className="text-center p-3 bg-gray-50 rounded-2xl border border-gray-200 shadow-sm">
-                  <div className="flex items-center justify-center mb-2">
-                    <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/0 shadow-none">
-                      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style={{display:'block',margin:'auto'}}>
-                        <circle cx="14" cy="14" r="11" stroke={macro.color} strokeWidth="2.5" fill="none" />
-                        <circle cx="14" cy="14" r="5.5" fill={macro.color} />
-                      </svg>
-                    </span>
-                  </div>
-                  <div className="text-sm font-semibold text-gray-800">{macro.value}</div>
-                  <div className="text-xs text-gray-600">{macro.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Aktivitäten des Tages */}
-          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Heutige Aktivitäten</h3>
-            </div>
-            {todayActivities.length === 0 ? (
-              <div className="text-center py-6 text-gray-600 text-sm">Noch keine Aktivitäten eingetragen</div>
-            ) : (
-              <div className="space-y-3">
-                {todayActivities.slice(0, 3).map((act) => (
-                  <div key={act.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                    <div className="flex items-center">
-                      <span className="text-2xl mr-3">{act.emoji}</span>
-                      <div>
-                        <div className="font-medium text-gray-800">{act.activity_name}</div>
-                        <div className="text-xs text-gray-600">{act.duration_min} min • {act.calories} kcal</div>
-                      </div>
-                    </div>
-                    <div className="text-right text-xs text-gray-500">
-                      {act.note && <div className="italic">{act.note}</div>}
-                      <div>{new Date(act.created_at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Recent Meals */}
-          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Heutige Mahlzeiten</h3>
-              <button 
+            <motion.div
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+            >
+              <ModernButton
                 onClick={() => router.push('/diary')}
-                className="flex items-center text-blue-600 font-medium text-sm"
+                size="sm"
+                className="bg-gradient-to-r from-primary-500 to-primary-600 text-white"
               >
-                Alle anzeigen
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </button>
-            </div>
-            
-            {todayEntries.length === 0 ? (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <PlusCircle className="h-8 w-8 text-gray-400" />
-                </div>
-                <p className="text-gray-600 text-sm">Noch keine Mahlzeiten eingetragen</p>
-                <button 
-                  onClick={() => router.push('/diary/add')}
-                  className="mt-3 text-blue-600 font-medium text-sm"
-                >
-                  Erste Mahlzeit hinzufügen
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {todayEntries.slice(0, 3).map((entry) => (
-                  <div key={entry.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-gray-800">{entry.food_name}</h4>
-                      <p className="text-sm text-gray-600">{entry.calories} kcal</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-gray-500">
-                        {new Date(entry.created_at).toLocaleTimeString('de-DE', { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                <PlusCircle className="w-4 h-4 mr-2" />
+                Hinzufügen
+              </ModernButton>
+            </motion.div>
           </div>
+        </motion.header>
+
+        {/* Main Content */}
+        <div className="px-6 pb-24">
+          {/* Quick Stats */}
+          <motion.div 
+            className="grid grid-cols-2 gap-4 mb-6"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+          >
+            <GlassCard className="text-center">
+              <div className="flex items-center justify-center mb-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center">
+                  <Target className="w-5 h-5 text-white" />
+                </div>
+              </div>
+              <h3 className="text-lg font-bold text-secondary-900 mb-1">
+                {Math.round(totalCalories)}
+              </h3>
+              <p className="text-sm text-secondary-600">Kalorien</p>
+              <ModernProgressBar 
+                value={totalCalories} 
+                max={dailyGoals.calories} 
+                className="mt-3"
+                showPercentage={false}
+              />
+            </GlassCard>
+
+            <GlassCard className="text-center">
+              <div className="flex items-center justify-center mb-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-accent-success to-green-500 rounded-2xl flex items-center justify-center">
+                  <Activity className="w-5 h-5 text-white" />
+                </div>
+              </div>
+              <h3 className="text-lg font-bold text-secondary-900 mb-1">
+                {Math.round(totalProtein)}g
+              </h3>
+              <p className="text-sm text-secondary-600">Protein</p>
+              <ModernProgressBar 
+                value={totalProtein} 
+                max={dailyGoals.protein} 
+                color="success"
+                className="mt-3"
+                showPercentage={false}
+              />
+            </GlassCard>
+          </motion.div>
+
+          {/* Water Intake */}
+          <motion.div 
+            className="mb-6"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+          >
+            <GlassCard>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-accent-info to-blue-500 rounded-2xl flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3 3 0 01-6 0c0-.35.06-.687.17-1.003L7.5 6.5V3a1 1 0 011-1z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-secondary-900">Wasseraufnahme</h3>
+                    <p className="text-sm text-secondary-600">Heute getrunken</p>
+                  </div>
+                </div>
+                <ModernBadge variant="info" size="sm">
+                  {Math.round((waterIntake / waterGoal) * 100)}%
+                </ModernBadge>
+              </div>
+              <ModernProgressBar 
+                value={waterIntake} 
+                max={waterGoal} 
+                color="info"
+                label={`${waterIntake}ml / ${waterGoal}ml`}
+              />
+            </GlassCard>
+          </motion.div>
+
+          {/* Dashboard Overview Swiper */}
+          <motion.div 
+            className="mb-6"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.9 }}
+          >
+            <DashboardOverviewSwiper />
+          </motion.div>
 
           {/* Fasting Card Stack */}
-          <FastingCardStack />
+          <motion.div 
+            className="mb-6"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.1 }}
+          >
+            <FastingCardStack />
+          </motion.div>
 
           {/* Challenge Section */}
-          <ChallengeSection />
+          <motion.div 
+            className="mb-6"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.3 }}
+          >
+            <ChallengeSection />
+          </motion.div>
 
-          {/* Insights Card */}
-          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 pb-2">
-            <div className="flex items-center mb-3">
-              <TrendingUp className="h-6 w-6 mr-2" />
-              <h3 className="text-lg font-semibold">Deine Fortschritte</h3>
-            </div>
-            <p className="text-gray-600 text-sm mb-4">
-              {calorieProgress >= 80 && calorieProgress <= 120 && waterProgress >= 80
-                ? "Fantastisch! Du bist perfekt auf Kurs mit deinen Kalorien- und Wasserzielen."
-                : calorieProgress >= 80 && calorieProgress <= 120
-                  ? "Tolle Kalorienbalance! Vergiss nicht genug zu trinken."
-                  : waterProgress >= 80
-                    ? "Super Wasserzufuhr! Achte auch auf deine Kalorienziele."
-                    : calorieProgress < 80 
-                      ? "Du könntest noch etwas mehr essen und trinken, um deine Ziele zu erreichen."
-                      : "Du hast deine Kalorienziele bereits überschritten. Achte auf die Balance."
-              }
-            </p>
-            <button 
-              onClick={() => router.push('/chat')}
-              className="flex items-center text-gray-800 font-medium"
-            >
-              Mehr Tipps erhalten
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </button>
-          </div>
+          {/* Recent Activities */}
+          <motion.div 
+            className="mb-6"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.5 }}
+          >
+            <GlassCard>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-secondary-900">Aktuelle Aktivitäten</h3>
+                <ModernButton
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => router.push('/activities')}
+                >
+                  Alle anzeigen
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </ModernButton>
+              </div>
+              
+              {todayActivities.length > 0 ? (
+                <div className="space-y-3">
+                  {todayActivities.slice(0, 3).map((activity, index) => (
+                    <motion.div
+                      key={activity.id}
+                      className="flex items-center space-x-3 p-3 bg-white/50 rounded-xl"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 1.7 + index * 0.1, duration: 0.5 }}
+                    >
+                      <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
+                        <Activity className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-secondary-900">{activity.activity_name}</p>
+                        <p className="text-xs text-secondary-600">{activity.duration} Minuten</p>
+                      </div>
+                      <ModernBadge variant="primary" size="sm">
+                        {activity.calories_burned} kcal
+                      </ModernBadge>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-secondary-100 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                    <Activity className="w-8 h-8 text-secondary-400" />
+                  </div>
+                  <p className="text-secondary-600">Noch keine Aktivitäten heute</p>
+                  <ModernButton
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => router.push('/activities')}
+                  >
+                    Aktivität hinzufügen
+                  </ModernButton>
+                </div>
+              )}
+            </GlassCard>
+          </motion.div>
         </div>
-        </div>
-      </PullToRefresh>
-    </>
+      </div>
+    </PullToRefresh>
   )
 }
