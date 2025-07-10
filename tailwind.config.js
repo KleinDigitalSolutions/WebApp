@@ -11,16 +11,42 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        brand1: '#D9ED92', // sehr helles Grün
-        brand2: '#B5E48C',
-        brand3: '#99D98C',
-        brand4: '#76C893',
-        brand5: '#52B69A',
-        brand6: '#34A0A4',
-        brand7: '#168AAD',
-        brand8: '#1A759F',
-        brand9: '#1E6091',
-        brand10: '#184E77', // dunkelstes Blau
+        // Primary Brand Colors
+        primary: {
+          50: '#FFF7ED',
+          100: '#FFEDD5',
+          500: '#FF6B35', // Main brand color
+          600: '#EA580C',
+          700: '#C2410C',
+          900: '#9A3412'
+        },
+        // Success & Health Colors
+        success: {
+          50: '#ECFDF5',
+          100: '#D1FAE5',
+          500: '#10B981',
+          600: '#059669',
+          700: '#047857'
+        },
+        // Premium Purple
+        premium: {
+          500: '#8B5CF6',
+          600: '#7C3AED',
+          700: '#6D28D9'
+        },
+        // Warm Neutrals
+        neutral: {
+          50: '#FAFAFA',
+          100: '#F5F5F5',
+          200: '#E5E5E5',
+          300: '#D4D4D4',
+          400: '#A3A3A3',
+          500: '#737373',
+          600: '#525252',
+          700: '#404040',
+          800: '#262626',
+          900: '#171717'
+        }
       },
     },
   },
