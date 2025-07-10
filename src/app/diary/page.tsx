@@ -10,7 +10,6 @@ import {
   ChevronRight,
   Plus,
   } from 'lucide-react'
-import Image from 'next/image'
 import ActivitiesCard from '@/components/ActivitiesCard'
 import { calculateDailyCalorieGoal } from '@/lib/nutrition-utils'
 
@@ -121,7 +120,7 @@ export default function DiaryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 pt-16">
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="px-4 py-4">
@@ -179,13 +178,13 @@ export default function DiaryPage() {
                     <div className="flex items-center space-x-4">
                       <div className="relative">
                         <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
-                          <Image
+                          <img
                             src={mealType.image}
                             alt={mealType.label}
                             width={64}
                             height={64}
-                            className="object-contain w-16 h-16"
-                            priority={mealType.key === 'breakfast'}
+                            style={{ objectFit: 'contain', width: 64, height: 64 }}
+                            loading={mealType.key === 'breakfast' ? 'eager' : 'lazy'}
                           />
                         </div>
                       </div>

@@ -125,7 +125,7 @@ export function Navigation() {
         {/* Floating User Menu Button */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="fixed top-4 right-4 z-50 bg-white/90 hover:bg-white text-gray-600 hover:text-gray-800 p-2 rounded-full shadow-lg border border-gray-200 transition-colors"
+          className="fixed z-50 bg-white/90 hover:bg-white text-gray-600 hover:text-gray-800 p-2 rounded-full shadow-lg border border-gray-200 transition-colors right-4 top-[calc(env(safe-area-inset-top,0px)+1rem)]"
         >
           <span className="sr-only">User menu</span>
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

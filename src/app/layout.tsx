@@ -151,7 +151,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} h-full bg-white antialiased`}>
+      <body className={`${inter.className} h-full bg-white antialiased`} style={{ paddingTop: 'env(safe-area-inset-top, 1rem)' }}>
         <AuthProvider>
           {/* GTM nur nach Consent laden (Client-Komponente) */}
           <GoogleTagManagerClient />
