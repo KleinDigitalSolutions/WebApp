@@ -31,5 +31,6 @@ const images = {
 
 const config = withPWA(pwaConfig);
 (config as any).images = images;
+(config as any).output = 'export';
 
 export default config;
