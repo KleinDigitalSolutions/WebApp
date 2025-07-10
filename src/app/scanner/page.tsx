@@ -26,6 +26,8 @@ interface ScannedProduct {
   country: string
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ''
+
 export default function ScannerPage() {
   const router = useRouter()
   const [scannedProduct, setScannedProduct] = useState<ScannedProduct | null>(null)
@@ -38,7 +40,7 @@ export default function ScannerPage() {
     setLoading(true)
 
     try {
-      const response = await fetch(`/api/food/barcode?barcode=${encodeURIComponent(barcode)}`)
+      const response = await fetch(`${API_BASE_URL}/api/food/barcode?barcode=${encodeURIComponent(barcode)}`)
       const data = await response.json()
 
       if (data.success && data.product) {

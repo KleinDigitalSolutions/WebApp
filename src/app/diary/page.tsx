@@ -22,6 +22,8 @@ const mealDistribution = {
   snack: 0.1       // 10%
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ''
+
 export default function DiaryPage() {
   const router = useRouter()
   const { user, profile } = useAuthStore()
@@ -293,7 +295,7 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
 
     try {
       setLoading(true)
-      const response = await fetch(`/api/water?userId=${user.id}&date=${dateKey}`)
+      const response = await fetch(`${API_BASE_URL}/api/water?userId=${user.id}&date=${dateKey}`)
       const data = await response.json()
       
       if (response.ok) {
@@ -328,7 +330,7 @@ function WaterTracker({ selectedDate }: { selectedDate: Date }) {
         newAchievements.push('overachiever')
       }
       
-      const response = await fetch('/api/water', {
+      const response = await fetch(`${API_BASE_URL}/api/water`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

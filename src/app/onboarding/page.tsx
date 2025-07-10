@@ -42,16 +42,31 @@ export default function OnboardingPage() {
         if (error) {
           console.error("Error fetching profile:", error)
           // Bei Fehler versuchen wir, ein Profil zu erstellen
-          const { error: insertError } = await supabase.from('profiles').insert({
-            id: user.id,
-            email: user.email,
-            onboarding_completed: false,
-            onboarding_step: 1,
-            show_onboarding: true
-          })
+          let retryCount = 0
+          let insertError = null
+          
+          while (retryCount < 3) {
+            const { error } = await supabase.from('profiles').insert({
+              id: user.id,
+              email: user.email,
+              onboarding_completed: false,
+              onboarding_step: 1,
+              show_onboarding: true
+            })
+            
+            if (!error) {
+              insertError = null
+              break
+            }
+            
+            insertError = error
+            retryCount++
+            await new Promise(resolve => setTimeout(resolve, 1000))
+          }
           
           if (insertError) {
-            console.error("Failed to create profile:", insertError)
+            console.error("Failed to create profile after retries:", insertError)
+            router.push('/login')
           } else {
             setCurrentStep(1)
           }

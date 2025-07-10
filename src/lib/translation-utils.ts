@@ -235,26 +235,10 @@ export function translateInstructions(instructions: string): string {
 /**
  * Advanced translation using Groq AI
  */
-export async function translateWithAI(text: string, targetLanguage: string = 'German'): Promise<string> {
+export async function translateWithAI(text: string): Promise<string> {
   try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: `Translate the following cooking/recipe text to ${targetLanguage}. Keep cooking terminology accurate and cultural context appropriate. Only return the translation, no explanations: "${text}"`
-      })
-    })
-    
-    if (!response.ok) {
-      throw new Error('Translation failed')
-    }
-    
-    const data = await response.json()
-    return data.response || text
-  } catch (error) {
-    console.error('AI translation failed:', error)
-    return translateText(text) // Fallback to local translation
+    return text // Platzhalter: gibt den Originaltext zurück
+  } catch {
+    return text
   }
 }

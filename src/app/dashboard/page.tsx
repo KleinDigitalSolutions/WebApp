@@ -82,6 +82,8 @@ function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
   )
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ''
+
 export default function Dashboard() {
   const router = useRouter()
   const { user, profile, setProfile } = useAuthStore()
@@ -196,7 +198,7 @@ export default function Dashboard() {
 
       // Load water intake for today
       try {
-        const response = await fetch(`/api/water?userId=${user.id}&date=${today}`)
+        const response = await fetch(`${API_BASE_URL}/api/water?userId=${user.id}&date=${today}`)
         const data = await response.json()
         
         if (response.ok) {

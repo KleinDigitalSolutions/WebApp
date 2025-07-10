@@ -35,6 +35,8 @@ const getMealLabel = (meal: string): string => {
   return mealLabels[meal as keyof typeof mealLabels] || 'Unbekannt'
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ''
+
 function AddFoodContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -63,7 +65,7 @@ function AddFoodContent() {
     if (!searchQuery.trim()) return
     setLoading(true)
     try {
-      const response = await fetch(`/api/food/search?q=${encodeURIComponent(searchQuery)}&limit=${PAGE_SIZE}&offset=${reset ? 0 : offset}`)
+      const response = await fetch(`${API_BASE_URL}/api/food/search?q=${encodeURIComponent(searchQuery)}&limit=${PAGE_SIZE}&offset=${reset ? 0 : offset}`)
       const data = await response.json()
       if (response.ok) {
         if (reset) {
@@ -104,7 +106,7 @@ function AddFoodContent() {
     setLoading(true)
 
     try {
-      const response = await fetch(`/api/food/barcode?barcode=${encodeURIComponent(barcode)}`)
+      const response = await fetch(`${API_BASE_URL}/api/food/barcode?barcode=${encodeURIComponent(barcode)}`)
       const data = await response.json()
 
       if (data.success && data.product) {

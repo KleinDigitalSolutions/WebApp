@@ -1,0 +1,14 @@
+# Copilot/Agent Notizen: Next.js Static Export für Native App
+
+10.07.2025
+
+- Für den Static Export (output: 'export') wurden alle API-Routen aus `src/app/api` nach `src/app/_api_backup/api` verschoben.
+- Die Auth-Callback-Route (`src/app/auth/callback`) wurde nach `src/app/_api_backup/auth_callback` verschoben.
+- Die dynamische Route `/recipes/[id]` wurde nach `src/app/_api_backup/recipes_id` verschoben.
+- Die Next.js-Konfiguration (`next.config.ts`) enthält jetzt nur noch statische Einstellungen (keine PWA-Plugins, keine Serverfunktionen).
+- Ziel: Die App kann jetzt als reines statisches Frontend (z. B. für Capacitor, PWA oder statisches Hosting) gebaut werden.
+- Für native Features oder API-Calls muss das Frontend über HTTP mit einem externen Backend (z. B. Supabase, eigene API) kommunizieren.
+
+**WICHTIG:**
+- Für Static Export dürfen keine API-Routen, SSR- oder dynamische Serverfunktionen im Projekt sein.
+- Alle ausgelagerten Routen sind im Backup-Ordner und können für SSR/Serverless-Deployments wiederhergestellt werden.

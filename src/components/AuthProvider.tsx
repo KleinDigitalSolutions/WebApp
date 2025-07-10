@@ -67,18 +67,43 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           } else {
             // Profile doesn't exist, create it and redirect to onboarding
             console.log('AuthProvider: Creating new profile')
-            const { error: insertError } = await supabase
-              .from('profiles')
-              .insert({
-                id: session.user.id,
-                email: session.user.email,
-                onboarding_completed: false,
-                onboarding_step: 1,
-                show_onboarding: true
-              })
+            
+            // Add delay to ensure user record exists
+            await new Promise(resolve => setTimeout(resolve, 1000))
+            
+            let retryCount = 0
+            let insertError = null
+            
+            while (retryCount < 3) {
+              const { error } = await supabase
+                .from('profiles')
+                .insert({
+                  id: session.user.id,
+                  email: session.user.email,
+                  onboarding_completed: false,
+                  onboarding_step: 1,
+                  show_onboarding: true
+                })
+              
+              if (!error) {
+                insertError = null
+                break
+              }
+              
+              insertError = error
+              retryCount++
+              await new Promise(resolve => setTimeout(resolve, 1000))
+            }
               
             if (insertError) {
-              console.error('Error creating profile:', insertError)
+              console.error('Error creating profile after retries:', insertError)
+              // Bei Fehler: User ausloggen und auf Login-Seite leiten
+              await supabase.auth.signOut()
+              setUser(null)
+              setProfile(null)
+              router.push('/login')
+              setIsLoading(false)
+              return
             } else if (!pathname.startsWith('/onboarding') && !isPublicPath) {
               console.log('AuthProvider: Profile created, redirecting to onboarding')
               router.push('/onboarding')
@@ -135,13 +160,38 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
             }
           } else {
             // Create profile and redirect to onboarding
-            await supabase.from('profiles').insert({
-              id: session.user.id,
-              email: session.user.email,
-              onboarding_completed: false,
-              onboarding_step: 1,
-              show_onboarding: true
-            })
+            await new Promise(resolve => setTimeout(resolve, 1000))
+            
+            let retryCount = 0
+            let insertError = null
+            
+            while (retryCount < 3) {
+              const { error } = await supabase.from('profiles').insert({
+                id: session.user.id,
+                email: session.user.email,
+                onboarding_completed: false,
+                onboarding_step: 1,
+                show_onboarding: true
+              })
+              
+              if (!error) {
+                insertError = null
+                break
+              }
+              
+              insertError = error
+              retryCount++
+              await new Promise(resolve => setTimeout(resolve, 1000))
+            }
+            
+            if (insertError) {
+              console.error('Error creating profile after retries:', insertError)
+              await supabase.auth.signOut()
+              setUser(null)
+              setProfile(null)
+              router.push('/login')
+              return
+            }
             
             if (!pathname.startsWith('/onboarding') && !isPublicPath) {
               console.log('AuthProvider: Redirecting to onboarding after creating profile')

@@ -21,6 +21,9 @@ function toApiRole(role: string): 'user' | 'model' {
   return role === 'assistant' ? 'model' : 'user'
 }
 
+// Hilfsfunktion für API-URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ''
+
 export default function ChatPage() {
   const router = useRouter()
   const { user, profile } = useAuthStore()
@@ -75,27 +78,53 @@ export default function ChatPage() {
         .filter(m => m.id !== 'welcome')
         .map(({ role, content }) => ({ role: toApiRole(role), content }))
         .concat([{ role: 'user', content: inputMessage }])
-      // Debug: Log API-Call-Daten
-      console.log('API-Call /api/chat', {
-        apiMessages,
+      // Debug: Log API-Call-Daten und verwendete URL
+      const url = `${API_BASE_URL}/chat`
+      console.log('API-Call', {
+        url,
+        API_BASE_URL,
+        messages: apiMessages,
         userProfile: profile,
         userId: user?.id,
       })
 
-      const response = await fetch('/api/chat', {
+      // Access Token für Authorization-Header holen
+      let accessToken: string | undefined = undefined
+      try {
+        // Dynamisch importieren, um SSR-Probleme zu vermeiden
+        const { supabase } = await import('@/lib/supabase')
+        const session = await supabase.auth.getSession()
+        accessToken = session.data.session?.access_token
+      } catch (err) {
+        console.warn('Konnte Supabase-Token nicht holen:', err)
+      }
+
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         },
         body: JSON.stringify({
           messages: apiMessages,
           userProfile: profile,
-          userId: user?.id, // Add user ID for diary analysis
+          userId: user?.id,
         }),
       })
 
       if (!response.ok) {
-        throw new Error('Failed to get AI response')
+        let errorText = ''
+        try {
+          errorText = await response.text()
+        } catch {
+          errorText = '[Fehler beim Lesen des Response-Bodys]'
+        }
+        console.error('API-Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText,
+        })
+        throw new Error(`Failed to get AI response: ${response.status} ${response.statusText} ${errorText}`)
       }
 
       const data = await response.json()
@@ -110,10 +139,16 @@ export default function ChatPage() {
       setMessages(prev => [...prev, aiMessage])
     } catch (error) {
       console.error('Error sending message:', error)
+      let errorMsg = 'Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuche es später noch einmal.'
+      if (error instanceof Error) {
+        errorMsg += '\n' + error.message
+      } else if (typeof error === 'string') {
+        errorMsg += '\n' + error
+      }
       const errorMessage: ChatMessageWithId = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuche es später noch einmal.",
+        content: errorMsg,
         timestamp: new Date(),
       }
       setMessages(prev => [...prev, errorMessage])

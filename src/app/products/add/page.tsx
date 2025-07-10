@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ''
+
 const CATEGORIES = [
   { value: 'dairy', label: 'Milchprodukte' },
   { value: 'meat', label: 'Fleisch & Wurst' },
@@ -107,7 +109,7 @@ export default function AddProductPage() {
       }
 
       // Sende Daten an API
-      const response = await fetch('/api/products/add', {
+      const response = await fetch(`${API_BASE_URL}/api/products/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
