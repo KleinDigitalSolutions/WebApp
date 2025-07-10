@@ -1,6 +1,6 @@
 import withPWA from 'next-pwa';
 
-const nextConfig = {
+const pwaConfig = {
   dest: 'public',
   register: true,
   skipWaiting: true,
@@ -20,4 +20,16 @@ const nextConfig = {
   ],
 };
 
-export default withPWA(nextConfig);
+const images = {
+  remotePatterns: [
+    { protocol: 'https', hostname: 'www.lecker.de', port: '', pathname: '/**' },
+    { protocol: 'https', hostname: 'img.lecker.de', port: '', pathname: '/**' },
+    { protocol: 'https', hostname: 'media.lecker.de', port: '', pathname: '/**' },
+    { protocol: 'https', hostname: 'images.lecker.de', port: '', pathname: '/**' },
+  ],
+};
+
+const config = withPWA(pwaConfig);
+(config as any).images = images;
+
+export default config;
