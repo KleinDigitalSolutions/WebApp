@@ -1,4 +1,4 @@
-// PWA-Konfiguration und Plugin entfernt für Static Export Test
+/** @type {import('next').NextConfig} */
 const config = {
   images: {
     remotePatterns: [
@@ -8,7 +8,6 @@ const config = {
       { protocol: 'https', hostname: 'images.lecker.de', port: '', pathname: '/**' },
     ],
   },
-  output: 'export',
-};
+}
 
-export default config;
+module.exports = config
