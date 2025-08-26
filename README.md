@@ -1,6 +1,6 @@
 # TrackFood – Intelligentes Ernährungs-Tracking & KI-Coach
 
-TrackFood ist eine moderne, KI-gestützte Ernährungs-Tracking-Web-App mit personalisierten Empfehlungen, Barcode-Scanner, deutscher Produktdatenbank und mobile-first Design. Entwickelt mit Next.js, TypeScript, Tailwind CSS, Zustand und Supabase.
+TrackFood ist eine moderne, KI-gestützte Ernährungs-Tracking-Web-App mit personalisierten Empfehlungen, Barcode-Scanner, deutscher Produktdatenbank und mobile-first Design. Entwickelt mit Next.js, TypeScript, Tailwind CSS, Zustand und Supabase, um mechaniken zu testen
 
 ---
 
@@ -88,26 +88,3 @@ TrackFood ist eine moderne, KI-gestützte Ernährungs-Tracking-Web-App mit perso
    npm run dev
    ```
 4. **App starten:** [http://localhost:3000](http://localhost:3000)
-
----
-
-## 🔮 Roadmap & Geplante Features
-
-- Foto-Tracking & KI-Bilderkennung
-- Intelligente Rezeptvorschläge
-- Fortschritts- & Motivations-Features (Badges, Score)
-- Community & Social (Challenges, Teilen, Q&A)
-- Datenexport (PDF/CSV), Google Fit Integration
-- Wissensbereich & Tipps (Blog, Lexikon)
-- Premium-Features (Analysen, Pläne, Experten-Chat)
-
----
-
-## 🤝 Contributing & Support
-
-- Pull Requests willkommen!
-- Support: [support@trackfood.app](mailto:support@trackfood.app)
-
----
-
-**TrackFood** – Deine smarte Ernährungs-App für Gesundheit, Fitness & Genuss 🥗✨
