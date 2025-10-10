@@ -1,3 +1,5 @@
+*ÜBUNGSPROJEKT KDS*
+
 # TrackFood – Intelligent Nutrition Tracking (English)
 
 This is the English summary of the TrackFood project. For the most up-to-date and detailed documentation, see the main `README.md` (German).
