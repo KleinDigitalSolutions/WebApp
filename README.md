@@ -1,3 +1,5 @@
+*ÜBUNGSPROJEKT KDS*
+
 # TrackFood – Intelligentes Ernährungs-Tracking & KI-Coach
 
 TrackFood ist eine moderne, KI-gestützte Ernährungs-Tracking-Web-App mit personalisierten Empfehlungen, Barcode-Scanner, deutscher Produktdatenbank und mobile-first Design. Entwickelt mit Next.js, TypeScript, Tailwind CSS, Zustand und Supabase, um mechaniken zu testen
