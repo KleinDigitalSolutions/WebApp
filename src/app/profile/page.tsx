@@ -23,7 +23,7 @@ export default function ProfilePage() {
     height_cm: undefined,
     weight_kg: undefined,
     activity_level: undefined,
-    goal: undefined,
+    fitness_goals: [],
     intolerances: [], // NEU: Unverträglichkeiten
   })
 
@@ -82,7 +82,7 @@ export default function ProfilePage() {
     loadProfile()
   }, [user, router, setProfile])
 
-  const handleInputChange = (field: keyof Profile, value: string | number | boolean | undefined) => {
+  const handleInputChange = (field: keyof Profile, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -125,12 +125,12 @@ export default function ProfilePage() {
     ? calculateBMI(formData.weight_kg, formData.height_cm)
     : 0
 
-  const estimatedCalories = formData.age && formData.weight_kg && formData.height_cm && formData.gender && formData.activity_level && formData.goal
-    ? calculateDailyCalorieGoal(formData as Profile)
+  const estimatedCalories = formData.age && formData.weight_kg && formData.height_cm && formData.gender && formData.activity_level && formData.fitness_goals && formData.fitness_goals.length > 0
+    ? calculateDailyCalorieGoal({ ...formData, goal: formData.fitness_goals[0] } as Profile)
     : 0
 
-  const macroTargets = estimatedCalories > 0 
-    ? calculateMacroTargets(estimatedCalories, formData.goal)
+  const macroTargets = estimatedCalories > 0 && formData.fitness_goals && formData.fitness_goals.length > 0
+    ? calculateMacroTargets(estimatedCalories, formData.fitness_goals[0])
     : { protein: 0, carbs: 0, fat: 0 }
 
   const intoleranceOptions = [
@@ -205,14 +205,14 @@ export default function ProfilePage() {
             {formData.first_name?.[0]?.toUpperCase() || 'U'}
           </div>
           <div className="text-xl font-bold text-gray-800 text-center">{formData.first_name} {formData.last_name}</div>
-          {formData.goal && (
+          {formData.fitness_goals && formData.fitness_goals.length > 0 && (
             <div className="text-xs px-3 py-1 rounded-full bg-emerald-500 text-white shadow border border-emerald-200 mb-1">🎯 Ziel: {(() => {
-              switch(formData.goal) {
+              switch(formData.fitness_goals[0]) {
                 case 'lose_weight': return 'Abnehmen';
                 case 'maintain_weight': return 'Gewicht halten';
                 case 'gain_weight': return 'Zunehmen';
                 case 'build_muscle': return 'Muskelaufbau';
-                default: return formData.goal;
+                default: return formData.fitness_goals[0];
               }
             })()}</div>
           )}
@@ -327,8 +327,8 @@ export default function ProfilePage() {
 
               <Select
                 label="Hauptziel"
-                value={formData.goal || ''}
-                onChange={(e) => handleInputChange('goal', e.target.value as Profile['goal'])}
+                value={formData.fitness_goals?.[0] || ''}
+                onChange={(e) => handleInputChange('fitness_goals', [e.target.value])}
                 options={[
                   { value: '', label: 'Dein Ziel wählen' },
                   { value: 'lose_weight', label: 'Gewicht verlieren' },
@@ -479,7 +479,7 @@ export default function ProfilePage() {
             <Button
               type="submit"
               loading={saving}
-              disabled={!formData.first_name || !formData.last_name || !formData.age || !formData.gender || !formData.height_cm || !formData.weight_kg || !formData.activity_level || !formData.goal}
+              disabled={!formData.first_name || !formData.last_name || !formData.age || !formData.gender || !formData.height_cm || !formData.weight_kg || !formData.activity_level || !formData.fitness_goals || formData.fitness_goals.length === 0}
               className="flex-1"
             >
               Profil speichern

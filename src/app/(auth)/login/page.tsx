@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
 import { Button, Input } from '@/components/ui'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Dumbbell } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -25,14 +25,14 @@ export default function LoginPage() {
           .select('onboarding_completed')
           .eq('id', user.id)
           .single()
-        
+
         if (profile && !profile.onboarding_completed) {
           router.push('/onboarding')
         } else {
           router.push('/dashboard')
         }
       }
-      
+
       checkOnboardingStatus()
     }
   }, [user, router])
@@ -55,14 +55,14 @@ export default function LoginPage() {
 
       if (data.user) {
         setUser(data.user)
-        
+
         // Prüfen, ob Onboarding abgeschlossen ist
         const { data: profile } = await supabase
           .from('profiles')
           .select('onboarding_completed')
           .eq('id', data.user.id)
           .single()
-        
+
         if (profile && !profile.onboarding_completed) {
           router.push('/onboarding')
         } else {
@@ -94,13 +94,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#ffffff] flex flex-col items-center justify-center py-4 px-2">
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black flex flex-col items-center justify-center py-4 px-2">
+      {/* Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute w-96 h-96 bg-orange-500/10 rounded-full blur-3xl -top-48 -left-48 animate-pulse"></div>
+        <div className="absolute w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl -bottom-48 -right-48 animate-pulse" style={{ animationDelay: '1s' }}></div>
+      </div>
+
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 z-10">
         <div className="w-full px-4">
           <div className="flex justify-between items-center py-4">
             <Link href="/" className="flex items-center">
-              <ArrowLeft className="w-7 h-7 text-emerald-500" />
+              <ArrowLeft className="w-7 h-7 text-orange-500" />
               <span className="sr-only">Zurück zur Startseite</span>
             </Link>
           </div>
@@ -108,19 +114,22 @@ export default function LoginPage() {
       </div>
 
       {/* Inhalt ohne Karte */}
-      <div className="w-full max-w-sm mx-auto mt-10 space-y-8">
+      <div className="w-full max-w-sm mx-auto mt-10 space-y-8 relative z-10">
         <div className="text-center">
-          {/* Logo mittig zentriert über Überschrift */}
-          <img
-            src="/SVG/logo1.webp"
-            alt="TrackFood Logo"
-            className="mx-auto mb-4 w-32 h-32 select-none"
-            draggable="false"
-            style={{ userSelect: 'none' }}
-          />
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Willkommen zurück</h2>
-          <p className="text-gray-600 mb-6">Melde dich an und setze deine Ernährungsreise fort</p>
+          {/* Fitness Logo - Hantel Icon */}
+          <div className="relative w-28 h-28 mx-auto mb-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500 via-pink-500 to-purple-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
+            <div className="relative w-28 h-28 bg-gradient-to-br from-orange-500 to-pink-500 rounded-full flex items-center justify-center shadow-2xl">
+              <Dumbbell className="w-14 h-14 text-white" />
+            </div>
+          </div>
+
+          <h2 className="text-3xl font-bold text-white mb-2">
+            Willkommen bei <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-500">A.N.D LETICS</span>
+          </h2>
+          <p className="text-gray-400 mb-6">Dein Fitness-Studio der Zukunft</p>
         </div>
+
         <form className="mt-4 space-y-6" onSubmit={handleLogin}>
           <div className="space-y-4">
             <Input
@@ -130,7 +139,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="Deine E-Mail-Adresse"
-              className="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+              className="rounded-xl border-gray-700 bg-gray-900/50 text-white placeholder:text-gray-500 focus:border-orange-500 focus:ring-orange-500"
             />
             <Input
               label="Passwort"
@@ -139,36 +148,40 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="Dein Passwort"
-              className="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+              className="rounded-xl border-gray-700 bg-gray-900/50 text-white placeholder:text-gray-500 focus:border-orange-500 focus:ring-orange-500"
             />
           </div>
+
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm">
+            <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-xl text-sm">
               {error}
             </div>
           )}
+
           <Button
             type="submit"
             loading={loading}
-            className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3 rounded-2xl font-semibold shadow-lg active:scale-95 transition-all duration-200 text-lg"
+            className="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white py-3 rounded-2xl font-semibold shadow-lg active:scale-95 transition-all duration-200 text-lg"
           >
             {loading ? 'Anmeldung läuft...' : 'Anmelden'}
           </Button>
+
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200" />
+              <div className="w-full border-t border-gray-700" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500 font-medium">Oder fortfahren mit</span>
+              <span className="px-4 bg-gray-900 text-gray-500 font-medium">Oder fortfahren mit</span>
             </div>
           </div>
+
           <Button
             type="button"
             variant="outline"
             onClick={handleGoogleLogin}
-            className="w-full border-gray-200 bg-white text-gray-700 py-3 rounded-2xl font-semibold shadow active:bg-gray-50 flex items-center justify-center gap-2"
+            className="w-full border-gray-700 bg-gray-900/50 text-white py-3 rounded-2xl font-semibold shadow hover:bg-gray-800/50 flex items-center justify-center gap-2"
           >
-            {/* Farbiges Google-Logo wie auf der Landingpage */}
+            {/* Farbiges Google-Logo */}
             <svg className="w-5 h-5 mr-2" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
               <g>
                 <path fill="#4285F4" d="M43.611 20.083h-1.861V20H24v8h11.303c-1.627 4.657-6.084 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c2.938 0 5.625 1.047 7.747 2.773l6.571-6.571C34.625 5.266 29.641 3 24 3 12.954 3 4 11.954 4 23s8.954 20 20 20c11.045 0 20-8.954 20-20 0-1.341-.138-2.651-.389-3.917z"/>
@@ -179,10 +192,11 @@ export default function LoginPage() {
             </svg>
             Mit Google anmelden
           </Button>
+
           <div className="text-center pt-4">
-            <span className="text-gray-600">
+            <span className="text-gray-400">
               Noch kein Konto?{' '}
-              <Link href="/register" className="font-semibold text-emerald-600 hover:underline">
+              <Link href="/register" className="font-semibold text-orange-500 hover:underline">
                 Jetzt registrieren
               </Link>
             </span>

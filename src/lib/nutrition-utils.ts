@@ -40,7 +40,8 @@ export function calculateDailyCalorieGoal(profile: Profile): number {
   const tdee = calculateTDEE(profile)
   if (tdee === 0) return 2000 // Default fallback
 
-  switch (profile.goal) {
+  const goal = profile.fitness_goals?.[0];
+  switch (goal) {
     case 'lose_weight':
       return Math.round(tdee - 500) // 500 calorie deficit for ~1lb/week weight loss
     case 'gain_weight':

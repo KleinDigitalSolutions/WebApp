@@ -4,12 +4,11 @@ export type OnboardingData = {
   height?: number;
   weight?: number;
   targetWeight?: number;
-  userGoals?: string[];
+  fitness_goals?: string[];
   birthDate?: string;
   gender?: string;
   age?: number;
   activityLevel?: string;
-  goal?: string;
   onboardingStep?: number;
   firstName?: string;
   lastName?: string;

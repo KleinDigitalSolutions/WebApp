@@ -67,7 +67,7 @@ export const useUIStore = create<UIState>((set) => ({
 interface OnboardingState {
   currentStep: number
   totalSteps: number
-  userGoals: string[]
+  fitness_goals
   height: number
   weight: number
   targetWeight: number

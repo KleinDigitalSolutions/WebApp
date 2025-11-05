@@ -50,21 +50,13 @@ export async function GET(request: NextRequest) {
     if (!data) {
       return NextResponse.json({
         amount_ml: 0,
-        daily_goal_ml: 2000,
-        user_weight: 70,
-        activity_level: 'moderate',
-        achievements: [],
-        streak: 0
+        daily_goal_ml: 2000
       })
     }
 
     return NextResponse.json({
       amount_ml: data.amount_ml,
-      daily_goal_ml: data.daily_goal_ml,
-      user_weight: data.user_weight || 70,
-      activity_level: data.activity_level || 'moderate',
-      achievements: data.achievements || [],
-      streak: data.streak || 0
+      daily_goal_ml: data.daily_goal_ml
     })
 
   } catch (error) {

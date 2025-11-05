@@ -150,8 +150,8 @@ export default function OnboardingHeight() {
 
         <div className="mb-12 flex flex-col items-center">
           <div className="w-24 h-24 mb-6">
-            <img 
-              src="/public/icons/height-ruler.png" 
+            <img
+              src="/icons/height-ruler.png"
               alt="Height"
               className="w-full h-full object-contain"
               onError={(e) => {

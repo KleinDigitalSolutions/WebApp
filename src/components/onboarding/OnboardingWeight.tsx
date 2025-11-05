@@ -180,8 +180,8 @@ export default function OnboardingWeight() {
 
         <div className="mb-12 flex flex-col items-center">
           <div className="w-24 h-24 mb-6">
-            <img 
-              src="/public/icons/weight-scale.png" 
+            <img
+              src="/icons/weight-scale.png"
               alt="Weight"
               className="w-full h-full object-contain"
               onError={(e) => {

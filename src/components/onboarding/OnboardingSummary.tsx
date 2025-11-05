@@ -185,9 +185,8 @@ export default function OnboardingSummary() {
         height_cm: local.height || store.height || null,
         weight_kg: local.weight || store.weight || null,
         target_weight_kg: local.targetWeight || store.targetWeight || null,
-        goals: local.userGoals || store.userGoals || [],
+        fitness_goals: local.userGoals || store.userGoals || [],
         activity_level: local.activityLevel || 'lightly_active',
-        goal: local.goal || 'lose_weight',
         onboarding_completed: true,
         onboarding_step: 8
       }
@@ -195,11 +194,11 @@ export default function OnboardingSummary() {
       // Bestimme das Ziel basierend auf Gewicht und Zielgewicht
       if (profileData.weight_kg && profileData.target_weight_kg) {
         if (profileData.weight_kg > profileData.target_weight_kg) {
-          profileData.goal = 'lose_weight'
+          profileData.fitness_goals = ['lose_weight']
         } else if (profileData.weight_kg < profileData.target_weight_kg) {
-          profileData.goal = 'gain_weight'
+          profileData.fitness_goals = ['gain_weight']
         } else {
-          profileData.goal = 'maintain_weight'
+          profileData.fitness_goals = ['maintain_weight']
         }
       }
 
