@@ -312,7 +312,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-        <div className="px-4 space-y-6 pb-20 pt-4 flex-1">
+        <div className="px-4 space-y-6 pt-4 flex-1">
           {/* Neue swipebare/touchbare Dashboard-Übersichtskarte */}
           <DashboardOverviewSwiper />
 

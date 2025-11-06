@@ -151,19 +151,19 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} h-full bg-white antialiased`}>
+      <body className={`${inter.className} h-full bg-[#121212] text-white antialiased`}>
         <AuthProvider>
           {/* GTM nur nach Consent laden (Client-Komponente) */}
           <GoogleTagManagerClient />
-          {/* Main app container with proper mobile spacing */}
-          <div className="min-h-full">
-            {/* Content area with bottom navigation spacing on mobile */}
-            <main className="pb-20 md:pb-0">
+          {/* Main app container with robust flex layout */}
+          <div className="min-h-screen flex flex-col">
+            {/* Content area that scrolls independently */}
+            <main className="flex-1 overflow-y-auto pb-[env(safe-area-inset-bottom)]">
               {children}
             </main>
+            {/* Globale Bottom Navigation Bar für eingeloggte Nutzer */}
+            <Navigation />
           </div>
-          {/* Globale Bottom Navigation Bar für eingeloggte Nutzer */}
-          <Navigation />
           <CookieConsent />
         </AuthProvider>
       </body>

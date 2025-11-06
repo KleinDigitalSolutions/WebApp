@@ -87,7 +87,7 @@ export function Navigation() {
       {/* Spacer entfernt! */}
       {/* Bottom Navigation - modern, mit prominentem Hinzufügen-Button */}
       <nav className="fixed bottom-0 left-0 right-0 z-50">
-        <div className="bg-white/95 backdrop-blur-xl border-t border-gray-200/50 shadow-lg">
+        <div className="bg-white/95 backdrop-blur-xl border-t border-gray-200/50 shadow-lg pb-[env(safe-area-inset-bottom)]">
           <div className="grid grid-cols-5 h-20 max-w-screen-2xl mx-auto">
             {navItems.map((item) => (
               <Link
