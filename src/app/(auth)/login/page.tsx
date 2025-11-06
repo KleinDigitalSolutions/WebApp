@@ -24,7 +24,7 @@ export default function LoginPage() {
           .from('profiles')
           .select('onboarding_completed')
           .eq('id', user.id)
-          .single()
+          .maybeSingle()
 
         if (profile && !profile.onboarding_completed) {
           router.push('/onboarding')
@@ -47,6 +47,10 @@ export default function LoginPage() {
         email,
         password,
       })
+      console.log('signInWithPassword response', { data, error })
+
+      const { data: sessionData } = await supabase.auth.getSession()
+      console.log('Current session after sign-in', sessionData)
 
       if (error) {
         setError(error.message)
@@ -61,7 +65,7 @@ export default function LoginPage() {
           .from('profiles')
           .select('onboarding_completed')
           .eq('id', data.user.id)
-          .single()
+          .maybeSingle()
 
         if (profile && !profile.onboarding_completed) {
           router.push('/onboarding')

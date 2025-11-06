@@ -35,14 +35,18 @@ export default function OnboardingPage() {
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single()
+          .maybeSingle()
 
         console.log("Profile data:", data)
 
-        if (error) {
-          console.error("Error fetching profile:", error)
-          console.error("Error details:", JSON.stringify(error, null, 2))
-          // Bei Fehler versuchen wir, ein Profil zu erstellen
+        if (error || !data) {
+          if (error) {
+            console.error("Error fetching profile:", error)
+            console.error("Error details:", JSON.stringify(error, null, 2))
+          } else {
+            console.log("No profile found, creating one for user:", user.id)
+          }
+          // Bei Fehler oder fehlendem Profil versuchen wir, ein Profil zu erstellen
           const { error: insertError } = await supabase.from('profiles').insert({
             id: user.id,
             email: user.email,

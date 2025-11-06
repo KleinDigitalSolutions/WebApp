@@ -32,11 +32,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           setUser(session.user)
           
           // Fetch profile
-          const { data: profile } = await supabase
+          const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', session.user.id)
-            .single()
+            .maybeSingle()
+          if (profileError) {
+            console.error('Error fetching profile during initAuth:', profileError)
+          }
             
           // Besondere Behandlung für Seiten, die explizit Onboarding benötigen
           if (profile && !profile.onboarding_completed && requireOnboardingPaths.includes(pathname)) {
@@ -89,11 +92,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           setUser(session.user)
           
           // Check if profile exists
-          const { data: profile } = await supabase
+          const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', session.user.id)
-            .single()
+            .maybeSingle()
+          if (profileError) {
+            console.error('Error fetching profile during auth state change:', profileError)
+          }
             
           // Besondere Behandlung für Seiten, die explizit Onboarding benötigen
           if (profile && !profile.onboarding_completed && requireOnboardingPaths.includes(pathname)) {
