@@ -83,7 +83,6 @@ function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
 }
 
 export default function Dashboard() {
-  console.log('Dashboard component rendered')
   const router = useRouter()
   const { user, profile, setProfile } = useAuthStore()
   const { dailyGoals, setEntries, setDailyGoals } = useDiaryStore()
@@ -146,7 +145,6 @@ export default function Dashboard() {
   }
 
   const loadData = useCallback(async () => {
-    console.log('loadData called')
     if (!user) return
 
     try {
@@ -217,12 +215,10 @@ export default function Dashboard() {
   }, [user])
 
   useEffect(() => {
-    console.log('useEffect ran')
     if (!user) {
       router.push('/login')
       return
     }
-    console.log('User changed:', user)
     loadData()
   }, [user, router, loadData])
 
