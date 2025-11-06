@@ -29,7 +29,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         const { data: { session } } = await supabase.auth.getSession()
         
         if (session?.user) {
-          console.log('AuthProvider: User is logged in', session.user.id)
           setUser(session.user)
           
           // Fetch profile
@@ -39,11 +38,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
             .eq('id', session.user.id)
             .single()
             
-          console.log('AuthProvider: Profile data', profile)
-          
           // Besondere Behandlung für Seiten, die explizit Onboarding benötigen
           if (profile && !profile.onboarding_completed && requireOnboardingPaths.includes(pathname)) {
-            console.log('AuthProvider: On profile page but onboarding not completed, redirecting to onboarding')
             router.push('/onboarding')
             setIsLoading(false)
             return
@@ -60,36 +56,19 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
             if (!profile.onboarding_completed && 
                 !pathname.startsWith('/onboarding') && 
                 !isPublicPath) {
-              console.log('AuthProvider: Redirecting to onboarding')
               router.push('/onboarding')
               return
             }
           } else {
-            // Profile doesn't exist, create it and redirect to onboarding
-            console.log('AuthProvider: Creating new profile')
-            const { error: insertError } = await supabase
-              .from('profiles')
-              .insert({
-                id: session.user.id,
-                email: session.user.email,
-                onboarding_completed: false,
-                onboarding_step: 1,
-                show_onboarding: true
-              })
-              
-            if (insertError) {
-              console.error('Error creating profile:', insertError)
-            } else if (!pathname.startsWith('/onboarding') && !isPublicPath) {
-              console.log('AuthProvider: Profile created, redirecting to onboarding')
-              router.push('/onboarding')
+            // For non-public routes, redirect to login if not authenticated
+            if (!isPublicPath) {
+              router.push('/login')
               return
             }
           }
         } else {
-          console.log('AuthProvider: No user session')
           // For non-public routes, redirect to login if not authenticated
           if (!isPublicPath) {
-            console.log('AuthProvider: Redirecting to login from protected route')
             router.push('/login')
             return
           }
@@ -106,8 +85,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     // Set up auth listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event)
-        
         if (event === 'SIGNED_IN' && session?.user) {
           setUser(session.user)
           
@@ -120,7 +97,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
             
           // Besondere Behandlung für Seiten, die explizit Onboarding benötigen
           if (profile && !profile.onboarding_completed && requireOnboardingPaths.includes(pathname)) {
-            console.log('AuthProvider: On profile page but onboarding not completed, redirecting to onboarding after sign in')
             router.push('/onboarding')
             return
           }
@@ -130,21 +106,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
             
             // Redirect to onboarding if not completed and not on auth/public paths
             if (!profile.onboarding_completed && !pathname.startsWith('/onboarding') && !isPublicPath) {
-              console.log('AuthProvider: Redirecting to onboarding after sign in')
-              router.push('/onboarding')
-            }
-          } else {
-            // Create profile and redirect to onboarding
-            await supabase.from('profiles').insert({
-              id: session.user.id,
-              email: session.user.email,
-              onboarding_completed: false,
-              onboarding_step: 1,
-              show_onboarding: true
-            })
-            
-            if (!pathname.startsWith('/onboarding') && !isPublicPath) {
-              console.log('AuthProvider: Redirecting to onboarding after creating profile')
               router.push('/onboarding')
             }
           }

@@ -83,6 +83,7 @@ function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
 }
 
 export default function Dashboard() {
+  console.log('Dashboard component rendered')
   const router = useRouter()
   const { user, profile, setProfile } = useAuthStore()
   const { dailyGoals, setEntries, setDailyGoals } = useDiaryStore()
@@ -145,12 +146,13 @@ export default function Dashboard() {
   }
 
   const loadData = useCallback(async () => {
+    console.log('loadData called')
     if (!user) return
 
     try {
       // Load user profile
       const { data: profileData } = await supabase
-        .from('profiles
+        .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single()
@@ -215,12 +217,14 @@ export default function Dashboard() {
   }, [user])
 
   useEffect(() => {
+    console.log('useEffect ran')
     if (!user) {
       router.push('/login')
       return
     }
+    console.log('User changed:', user)
     loadData()
-  }, [user, router])
+  }, [user, router, loadData])
 
   // Calculate consumed nutrients
   const consumedCalories = todayEntries.reduce((sum, entry) => sum + entry.calories, 0)
