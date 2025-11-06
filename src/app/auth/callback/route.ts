@@ -36,7 +36,25 @@ export async function GET(request: NextRequest) {
       console.error('Error checking profile during callback:', profileError)
     }
 
-    if (profile && !profile.onboarding_completed) {
+    if (!profile) {
+      const { error: insertError } = await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          email: user.email?.toLowerCase() ?? null,
+          onboarding_completed: false,
+          onboarding_step: 1,
+          show_onboarding: true,
+        })
+
+      if (insertError) {
+        console.error('Failed to create profile during callback:', insertError)
+      }
+
+      return NextResponse.redirect(`${siteUrl}/onboarding`)
+    }
+
+    if (!profile.onboarding_completed) {
       return NextResponse.redirect(`${siteUrl}/onboarding`)
     }
 
