@@ -41,17 +41,18 @@ export default function OnboardingPage() {
 
         if (error) {
           console.error("Error fetching profile:", error)
+          console.error("Error details:", JSON.stringify(error, null, 2))
           // Bei Fehler versuchen wir, ein Profil zu erstellen
           const { error: insertError } = await supabase.from('profiles').insert({
             id: user.id,
             email: user.email,
             onboarding_completed: false,
-            onboarding_step: 1,
-            show_onboarding: true
+            onboarding_step: 1
           })
-          
+
           if (insertError) {
             console.error("Failed to create profile:", insertError)
+            console.error("Insert error details:", JSON.stringify(insertError, null, 2))
           } else {
             setCurrentStep(1)
           }

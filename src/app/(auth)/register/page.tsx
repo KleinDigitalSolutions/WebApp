@@ -54,26 +54,18 @@ export default function RegisterPage() {
       }
 
       if (data.user) {
-        // Profil in Supabase anlegen
-        await supabase.from('profiles').insert({
-          id: data.user.id,
+        // Profil wird automatisch durch Trigger erstellt!
+        // Kurz warten damit der Trigger fertig ist
+        await new Promise(resolve => setTimeout(resolve, 500))
+
+        // Update das Profil mit onboarding Status
+        await supabase.from('profiles').update({
           email: data.user.email,
           onboarding_completed: false,
           onboarding_step: 1
-        })
+        }).eq('id', data.user.id)
 
-        // Benutzer anmelden
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        })
-
-        if (signInError) {
-          setError(signInError.message)
-          return
-        }
-
-        // Benutzer ist jetzt angemeldet, zum Onboarding weiterleiten
+        // Benutzer ist bereits angemeldet nach signUp ohne Email Confirmation
         setUser(data.user)
         router.push('/onboarding')
       }
