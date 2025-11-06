@@ -4,7 +4,7 @@ export type OnboardingData = {
   height?: number;
   weight?: number;
   targetWeight?: number;
-  fitness_goals?: string[];
+  userGoals?: string[];
   birthDate?: string;
   gender?: string;
   age?: number;

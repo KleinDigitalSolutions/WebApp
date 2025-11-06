@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store'
 import { Button, Input } from '@/components/ui'
-import { ArrowLeft, Dumbbell } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -108,6 +109,16 @@ export default function LoginPage() {
       </div>
 
       {/* Header */}
+      <div className="absolute top-0 left-0 right-0 h-64 z-0">
+        <Image
+          src="/Gross-handsome-bearded-man-doing-plank-exercise-on-green-2023-11-27-05-26-12-utc.jpeg"
+          alt="Fitness background"
+          layout="fill"
+          objectFit="cover"
+          quality={85}
+          className="opacity-50"
+        />
+      </div>
       <div className="absolute top-0 left-0 right-0 z-10">
         <div className="w-full px-4">
           <div className="flex justify-between items-center py-4">
@@ -121,17 +132,11 @@ export default function LoginPage() {
 
       {/* Inhalt ohne Karte */}
       <div className="w-full max-w-sm mx-auto mt-10 space-y-8 relative z-10">
-        <div className="text-center">
-          {/* Fitness Logo - Hantel Icon */}
-          <div className="relative w-28 h-28 mx-auto mb-6">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500 via-pink-500 to-purple-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
-            <div className="relative w-28 h-28 bg-gradient-to-br from-orange-500 to-pink-500 rounded-full flex items-center justify-center shadow-2xl">
-              <Dumbbell className="w-14 h-14 text-white" />
-            </div>
-          </div>
+        <div className="text-center transform -translate-y-8">
+
 
           <h2 className="text-3xl font-bold text-white mb-2">
-            Willkommen bei <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-500">A.N.D LETICS</span>
+            Willkommen bei <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-500">A.N.D LETICS</span>
           </h2>
           <p className="text-gray-400 mb-6">Dein Fitness-Studio der Zukunft</p>
         </div>

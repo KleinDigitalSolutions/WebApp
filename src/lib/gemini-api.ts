@@ -1,36 +1,47 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import Groq from 'groq-sdk'
 
 export interface ChatMessage {
-  role: 'user' | 'model'
+  role: 'user' | 'assistant'
   content: string
 }
 
 export class GeminiAPI {
   private apiKey: string
+  private client: Groq
   private modelName: string
 
   constructor() {
-    this.apiKey = process.env.GEMINI_API_KEY || ''
-    this.modelName = 'gemini-1.5-flash' // oder 'gemini-2.5-flash' wenn verfügbar
+    this.apiKey = process.env.GROQ_API_KEY || ''
+    this.modelName = process.env.GROQ_MODEL || 'llama3.1-70b-versatile'
     if (!this.apiKey) {
-      console.warn('GEMINI_API_KEY not found in environment variables')
+      console.warn('GROQ_API_KEY not found in environment variables')
     }
+    this.client = new Groq({ apiKey: this.apiKey })
   }
 
   async chat(history: ChatMessage[], userMessage: string): Promise<string> {
-    if (!this.apiKey) throw new Error('Gemini API key not configured')
-    const genAI = new GoogleGenerativeAI(this.apiKey)
-    const model = genAI.getGenerativeModel({ model: this.modelName })
-    // History für Chat aufbereiten
-    const chatHistory = history.map(m => ({
-      role: m.role,
-      parts: [{ text: m.content }]
-    }))
-    const chat = model.startChat({
-      history: chatHistory,
-      generationConfig: { maxOutputTokens: 1000, temperature: 0.7 }
+    if (!this.apiKey) throw new Error('Groq API key not configured')
+
+    const messages = [
+      ...history.map((m) => ({
+        role: m.role,
+        content: m.content,
+      })),
+      { role: 'user' as const, content: userMessage },
+    ]
+
+    const response = await this.client.chat.completions.create({
+      model: this.modelName,
+      messages,
+      temperature: 0.6,
+      max_tokens: 1024,
     })
-    const result = await chat.sendMessage(userMessage)
-    return await result.response.text()
+
+    const content = response.choices[0]?.message?.content
+    if (!content) {
+      throw new Error('Groq response was empty')
+    }
+
+    return content
   }
 }

@@ -35,6 +35,7 @@ const nextConfig = {
       pathname: string;
     }[],
   },
+  turbopack: {},
 };
 
 export default withPWA(pwaConfig)(nextConfig);
