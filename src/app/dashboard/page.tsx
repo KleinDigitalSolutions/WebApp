@@ -144,77 +144,77 @@ export default function Dashboard() {
     return ""
   }
 
-  const loadData = useCallback(async () => {
-    if (!user) return
-
-    try {
-      // Load user profile
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
-
-      if (profileData) {
-        setProfile(profileData)
-        
-        // Calculate daily goals based on profile
-        const calorieGoal = calculateDailyCalorieGoal(profileData)
-        
-        const macroTargets = calculateMacroTargets(calorieGoal)
-        setDailyGoals({
-          calories: calorieGoal,
-          protein: macroTargets.protein,
-          carbs: macroTargets.carbs,
-          fat: macroTargets.fat
-        })
-      }
-
-      // Load today's entries
-      const today = new Date().toISOString().split('T')[0]
-      const { data: entries } = await supabase
-        .from('diary_entries')
-        .select('*')
-        .eq('user_id', user.id)
-        .gte('created_at', `${today}T00:00:00`)
-        .lt('created_at', `${today}T23:59:59`)
-
-      if (entries) {
-        setTodayEntries(entries)
-        setEntries(entries)
-      }
-
-      // Load today's activities
-      const { data: activities } = await supabase
-        .from('user_activities')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('activity_date', today)
-        .order('created_at', { ascending: false })
-
-      if (activities) setTodayActivities(activities)
-
-      // Load water intake for today
-      try {
-        const response = await fetch(`/api/water?userId=${user.id}&date=${today}`)
-        const data = await response.json()
-        
-        if (response.ok) {
-          setWaterIntake(data.amount_ml || 0)
-          setWaterGoal(data.daily_goal_ml || 2000)
-        }
-      } catch (error) {
-        console.error('Error loading water intake:', error)
-      }
-      
-    } catch (error) {
-      console.error('Error loading data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }, [user, router])
-
   useEffect(() => {
+    const loadData = async () => {
+      if (!user) return
+
+      try {
+        // Load user profile
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+
+        if (profileData) {
+          setProfile(profileData)
+          
+          // Calculate daily goals based on profile
+          const calorieGoal = calculateDailyCalorieGoal(profileData)
+          
+          const macroTargets = calculateMacroTargets(calorieGoal)
+          setDailyGoals({
+            calories: calorieGoal,
+            protein: macroTargets.protein,
+            carbs: macroTargets.carbs,
+            fat: macroTargets.fat
+          })
+        }
+
+        // Load today's entries
+        const today = new Date().toISOString().split('T')[0]
+        const { data: entries } = await supabase
+          .from('diary_entries')
+          .select('*')
+          .eq('user_id', user.id)
+          .gte('created_at', `${today}T00:00:00`)
+          .lt('created_at', `${today}T23:59:59`)
+
+        if (entries) {
+          setTodayEntries(entries)
+          setEntries(entries)
+        }
+
+        // Load today's activities
+        const { data: activities } = await supabase
+          .from('user_activities')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('activity_date', today)
+          .order('created_at', { ascending: false })
+
+        if (activities) setTodayActivities(activities)
+
+        // Load water intake for today
+        try {
+          const response = await fetch(`/api/water?userId=${user.id}&date=${today}`)
+          const data = await response.json()
+          
+          if (response.ok) {
+            setWaterIntake(data.amount_ml || 0)
+            setWaterGoal(data.daily_goal_ml || 2000)
+          }
+        } catch (error) {
+          console.error('Error loading water intake:', error)
+        }
+        
+      } catch (error) {
+        console.error('Error loading data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
     if (!user) {
       router.push('/login')
       return
