@@ -11,8 +11,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${siteUrl}/login`)
   }
 
-  const cookieStore = cookies()
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+  const supabase = createRouteHandlerClient({ cookies })
 
   try {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)

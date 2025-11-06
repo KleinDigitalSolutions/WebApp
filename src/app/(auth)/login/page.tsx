@@ -43,8 +43,10 @@ export default function LoginPage() {
     setError('')
 
     try {
+      const normalizedEmail = email.trim().toLowerCase()
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: normalizedEmail,
         password,
       })
       console.log('signInWithPassword response', { data, error })
