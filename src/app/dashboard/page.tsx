@@ -212,7 +212,7 @@ export default function Dashboard() {
     } finally {
       setLoading(false)
     }
-  }, [user, setProfile, setDailyGoals, setEntries])
+  }, [user, router])
 
   useEffect(() => {
     if (!user) {
@@ -220,7 +220,7 @@ export default function Dashboard() {
       return
     }
     loadData()
-  }, [user, router, loadData])
+  }, [user, router])
 
   // Calculate consumed nutrients
   const consumedCalories = todayEntries.reduce((sum, entry) => sum + entry.calories, 0)
