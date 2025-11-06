@@ -36,12 +36,16 @@ export default function ProfilePage() {
     const loadProfile = async () => {
       try {
         // Wichtig: Prüfe als Erstes, ob das Onboarding abgeschlossen ist
-        const { data: onboardingCheck } = await supabase
+        const { data: onboardingCheck, error: onboardingError } = await supabase
           .from('profiles')
           .select('onboarding_completed')
           .eq('id', user.id)
-          .single()
-        
+          .maybeSingle()
+
+        if (onboardingError) {
+          console.error('Error checking onboarding status:', onboardingError)
+        }
+
         // Sofortige Weiterleitung zum Onboarding, wenn nicht abgeschlossen
         if (onboardingCheck && !onboardingCheck.onboarding_completed) {
           console.log('Onboarding not completed, redirecting to /onboarding immediately')
@@ -50,24 +54,30 @@ export default function ProfilePage() {
         }
         
         // Normale Profilseiten-Logik nur fortsetzen, wenn Onboarding abgeschlossen
-        const { data, error } = await supabase
+        const { data, error: profileError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single()
+          .maybeSingle()
+
+        if (profileError) {
+          console.error('Error loading profile data:', profileError)
+        }
 
         if (data) {
           setProfile(data)
           setFormData(data)
-        } else if (error && error.code === 'PGRST116') {
+        } else if (!profileError) {
           // Profile doesn't exist, create it
-          const { data: newProfile } = await supabase
+          const { data: newProfile, error: createError } = await supabase
             .from('profiles')
-            .insert([{ id: user.id }])
+            .insert([{ id: user.id, email: user.email ?? undefined }])
             .select()
             .single()
 
-          if (newProfile) {
+          if (createError) {
+            console.error('Error creating profile stub:', createError)
+          } else if (newProfile) {
             setProfile(newProfile)
             setFormData(newProfile)
           }

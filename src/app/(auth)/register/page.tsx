@@ -38,10 +38,13 @@ export default function RegisterPage() {
 
     try {
       // Registrierung ohne E-Mail-Bestätigung
+      const normalizedEmail = email.trim().toLowerCase()
+
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: normalizedEmail,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: {
             // Zusätzliche Benutzerdaten können hier hinzugefügt werden
           }
@@ -53,22 +56,22 @@ export default function RegisterPage() {
         return
       }
 
-      if (data.user) {
-        // Profil wird automatisch durch Trigger erstellt!
-        // Kurz warten damit der Trigger fertig ist
+      if (data.user && data.session) {
+        // Benutzer ist bereits angemeldet (keine E-Mail-Bestätigung erforderlich)
         await new Promise(resolve => setTimeout(resolve, 500))
-
-        // Update das Profil mit onboarding Status
         await supabase.from('profiles').update({
           email: data.user.email,
           onboarding_completed: false,
           onboarding_step: 1
         }).eq('id', data.user.id)
 
-        // Benutzer ist bereits angemeldet nach signUp ohne Email Confirmation
         setUser(data.user)
         router.push('/onboarding')
+        return
       }
+
+      // E-Mail-Bestätigung erforderlich
+      router.push(`/auth/confirm?email=${encodeURIComponent(normalizedEmail)}`)
     } catch {
       setError('Ein unerwarteter Fehler ist aufgetreten')
     } finally {
@@ -112,7 +115,7 @@ export default function RegisterPage() {
             .from('profiles')
             .select('onboarding_completed')
             .eq('id', session.user.id)
-            .single()
+            .maybeSingle()
 
           if (profile && !profile.onboarding_completed) {
             router.push('/onboarding')

@@ -35,7 +35,7 @@ export function MobileBottomNav() {
           .from('profiles')
           .select('onboarding_completed')
           .eq('id', user.id)
-          .single()
+          .maybeSingle()
         
         setOnboardingCompleted(data?.onboarding_completed || false)
       }

@@ -149,11 +149,15 @@ export default function Dashboard() {
 
     try {
       // Load user profile
-      const { data: profileData } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single()
+        .maybeSingle()
+
+      if (profileError) {
+        console.error('Error loading dashboard profile:', profileError)
+      }
 
       if (profileData) {
         setProfile(profileData)
