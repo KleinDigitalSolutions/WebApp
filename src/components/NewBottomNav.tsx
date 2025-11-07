@@ -3,7 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation'
 import { Home, BookOpen, Plus, Calendar, User as UserIcon } from 'lucide-react'
 import { useState } from 'react'
-import AddItemModal from './AddItemModal' // Wir erstellen diese Komponente als Nächstes
+import AddItemModal from './AddItemModal'
 
 const NewBottomNav = () => {
   const router = useRouter()
