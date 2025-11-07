@@ -19,7 +19,7 @@ import {
   BarChart3,
   Clock
 } from 'lucide-react'
-import Head from 'next/head'
+
 
 // Structured Data for SEO
 const structuredData = {
@@ -71,31 +71,7 @@ export default function LandingPage() {
 
   return (
     <>
-      <Head>
-        {/* Additional SEO Meta Tags */}
-        <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
-        <meta name="googlebot" content="index,follow" />
-        
-        {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
-        
-        {/* Preload critical resources */}
-        <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        
-        {/* DNS Prefetch for APIs */}
-        <link rel="dns-prefetch" href="//api.groq.com" />
-        <link rel="dns-prefetch" href="//world.openfoodfacts.org" />
-        
-        {/* Canonical URL */}
-        <link rel="canonical" href="https://trackfood-app.vercel.app" />
-        
-        {/* Hreflang for internationalization */}
-        <link rel="alternate" hrefLang="de" href="https://trackfood-app.vercel.app" />
-        <link rel="alternate" hrefLang="x-default" href="https://trackfood-app.vercel.app" />
-      </Head>
+
 
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50">
         {/* Hero Section - Mobile First */}
