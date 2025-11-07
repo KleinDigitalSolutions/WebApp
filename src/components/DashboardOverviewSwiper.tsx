@@ -124,7 +124,7 @@ export default function DashboardOverviewSwiper() {
   }
 
   if (!user) return null
-  if (loading || !activeStats) return <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 mb-4 text-gray-600">Lade Übersicht...</div>
+  if (loading || !activeStats) return <div className="bg-gray-900 rounded-3xl shadow-lg border border-gray-800 p-6 mb-4 text-gray-400">Lade Übersicht...</div>
 
   // Wenn ein Modal offen ist, Swiper ausblenden (damit keine Karte "darunter" sichtbar ist)
   if (modal) {
@@ -163,42 +163,42 @@ export default function DashboardOverviewSwiper() {
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 mb-4 text-gray-800 select-none" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+    <div className="bg-gray-900 rounded-3xl shadow-lg border border-gray-800 p-6 mb-4 text-gray-200 select-none" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-semibold text-gray-800">{PERIODS[periodIdx].label} Übersicht</h3>
+        <h3 className="text-lg font-semibold text-gray-100">{PERIODS[periodIdx].label} Übersicht</h3>
         <div className="flex gap-1">
           {PERIODS.map((p, i) => (
-            <button key={p.key} className={`w-2 h-2 rounded-full ${i===periodIdx?'bg-emerald-500':'bg-gray-300'}`} onClick={()=>setPeriodIdx(i)} aria-label={p.label} />
+            <button key={p.key} className={`w-2 h-2 rounded-full ${i===periodIdx?'bg-emerald-400':'bg-gray-600'}`} onClick={()=>setPeriodIdx(i)} aria-label={p.label} />
           ))}
         </div>
       </div>
-      <div className="mb-3 text-gray-600 text-xs flex items-center gap-2">
-        <FaInfoCircle className="text-emerald-600" /> Tippe oder wische für andere Zeiträume.
+      <div className="mb-3 text-gray-400 text-xs flex items-center gap-2">
+        <FaInfoCircle className="text-emerald-500" /> Tippe oder wische für andere Zeiträume.
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <button onClick={() => setModal('calories')} className="text-left">
-          <div className="text-2xl font-bold text-gray-800">{activeStats.totalCalories} kcal</div>
-          <div className="text-xs text-gray-600">Aufgenommen</div>
+        <button onClick={() => setModal('calories')} className="text-left p-2 rounded-lg hover:bg-gray-800">
+          <div className="text-2xl font-bold text-gray-100">{activeStats.totalCalories} kcal</div>
+          <div className="text-xs text-gray-400">Aufgenommen</div>
         </button>
-        <button onClick={() => setModal('burned')} className="text-left">
-          <div className="text-2xl font-bold text-gray-800">{activeStats.totalBurned} kcal</div>
-          <div className="text-xs text-gray-600">Verbrannt (Aktivitäten)</div>
+        <button onClick={() => setModal('burned')} className="text-left p-2 rounded-lg hover:bg-gray-800">
+          <div className="text-2xl font-bold text-gray-100">{activeStats.totalBurned} kcal</div>
+          <div className="text-xs text-gray-400">Verbrannt (Aktivitäten)</div>
         </button>
-        <button onClick={() => setModal('fasting')} className="text-left">
-          <div className="text-2xl font-bold text-gray-800">{activeStats.fastingCount}</div>
-          <div className="text-xs text-gray-600">Fasten-Sessions</div>
+        <button onClick={() => setModal('fasting')} className="text-left p-2 rounded-lg hover:bg-gray-800">
+          <div className="text-2xl font-bold text-gray-100">{activeStats.fastingCount}</div>
+          <div className="text-xs text-gray-400">Fasten-Sessions</div>
         </button>
-        <button onClick={() => setModal('fasting')} className="text-left">
-          <div className="text-2xl font-bold text-gray-800">{activeStats.fastingHours.toFixed(1)} h</div>
-          <div className="text-xs text-gray-600">Gefastet</div>
+        <button onClick={() => setModal('fasting')} className="text-left p-2 rounded-lg hover:bg-gray-800">
+          <div className="text-2xl font-bold text-gray-100">{activeStats.fastingHours.toFixed(1)} h</div>
+          <div className="text-xs text-gray-400">Gefastet</div>
         </button>
-        <button onClick={() => setModal('challenges')} className="text-left">
-          <div className="text-2xl font-bold text-gray-800">{activeStats.challengeCount}</div>
-          <div className="text-xs text-gray-600">Challenges</div>
+        <button onClick={() => setModal('challenges')} className="text-left p-2 rounded-lg hover:bg-gray-800">
+          <div className="text-2xl font-bold text-gray-100">{activeStats.challengeCount}</div>
+          <div className="text-xs text-gray-400">Challenges</div>
         </button>
-        <button onClick={() => setModal('challenges')} className="text-left">
-          <div className="text-2xl font-bold text-gray-800">{activeStats.challengeCompleted}</div>
-          <div className="text-xs text-gray-600">Abgeschlossen</div>
+        <button onClick={() => setModal('challenges')} className="text-left p-2 rounded-lg hover:bg-gray-800">
+          <div className="text-2xl font-bold text-gray-100">{activeStats.challengeCompleted}</div>
+          <div className="text-xs text-gray-400">Abgeschlossen</div>
         </button>
       </div>
     </div>

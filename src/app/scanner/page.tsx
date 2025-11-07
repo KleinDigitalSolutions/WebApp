@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import { ArrowLeft, Plus } from 'lucide-react'
+import { ArrowLeft, Plus, CheckCircle } from 'lucide-react'
 import BarcodeScanner from '@/components/BarcodeScanner'
+import { useAuthStore } from '@/store'
 
 interface ScannedProduct {
   code: string
@@ -28,9 +29,51 @@ interface ScannedProduct {
 
 export default function ScannerPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const { setIsCheckedIn } = useAuthStore()
+
   const [scannedProduct, setScannedProduct] = useState<ScannedProduct | null>(null)
   const [isScanning, setIsScanning] = useState(true)
   const [loading, setLoading] = useState(false)
+  const [checkInSuccess, setCheckInSuccess] = useState(false)
+  const [deviceScanSuccess, setDeviceScanSuccess] = useState(false)
+
+  // Check-in & Device Scan Modus Logik
+  useEffect(() => {
+    const mode = searchParams.get('mode')
+    if (mode === 'check-in') {
+      // Simuliere einen erfolgreichen Scan nach 2 Sekunden
+      const timer = setTimeout(() => {
+        setIsScanning(false)
+        setCheckInSuccess(true)
+        setIsCheckedIn(true)
+
+        // Leite nach weiteren 1.5 Sekunden zurück zum Dashboard
+        setTimeout(() => {
+          router.replace('/dashboard')
+        }, 1500)
+
+      }, 2000)
+
+      return () => clearTimeout(timer)
+    }
+    if (mode === 'device-scan') {
+      // Simuliere einen erfolgreichen Gerätescan nach 2 Sekunden
+      const timer = setTimeout(() => {
+        setIsScanning(false)
+        setDeviceScanSuccess(true)
+
+        // Leite nach weiteren 1.5 Sekunden zur Übungsseite weiter
+        setTimeout(() => {
+          router.replace('/log-exercise?device=Beinpresse')
+        }, 1500)
+
+      }, 2000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [searchParams, router, setIsCheckedIn])
+
 
   const handleBarcodeScanned = async (barcode: string) => {
     console.log('🔍 Barcode gescannt:', barcode)
@@ -59,7 +102,7 @@ export default function ScannerPage() {
   const handleAddToDiary = (mealType: string) => {
     if (!scannedProduct) return
     
-    // Navigiere zur Add Food Seite mit dem gescannten Produkt
+    // Navigiere zur Add Food Seite with dem gescannten Produkt
     const params = new URLSearchParams({
       meal: mealType,
       barcode: scannedProduct.code,
@@ -73,6 +116,30 @@ export default function ScannerPage() {
   const handleScanAnother = () => {
     setScannedProduct(null)
     setIsScanning(true)
+  }
+
+  if (checkInSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center">
+        <div className="text-center text-white animate-fade-in">
+          <CheckCircle className="h-24 w-24 mx-auto mb-6" />
+          <h1 className="text-3xl font-bold">Erfolgreich eingecheckt!</h1>
+          <p className="text-lg mt-2">Dein Training kann beginnen.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (deviceScanSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+        <div className="text-center text-white animate-fade-in">
+          <CheckCircle className="h-24 w-24 mx-auto mb-6" />
+          <h1 className="text-3xl font-bold">Gerät gescannt: Beinpresse</h1>
+          <p className="text-lg mt-2">Gleich geht's los...</p>
+        </div>
+      </div>
+    )
   }
 
   if (loading) {

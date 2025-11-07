@@ -11,11 +11,15 @@ import {
   Calendar,
   Award,
   ChevronRight,
-  RefreshCw
+  RefreshCw,
+  LogIn,
+  LogOut,
+  Clock
 } from 'lucide-react'
 import FastingCardStack from '@/components/FastingCardStack'
 import ChallengeSection from '@/components/ChallengeSection'
 import DashboardOverviewSwiper from '@/components/DashboardOverviewSwiper'
+import AppleHealthRings from '@/components/AppleHealthRings'
 
 interface PullToRefreshProps {
   children: React.ReactNode
@@ -84,13 +88,47 @@ function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
 
 export default function Dashboard() {
   const router = useRouter()
-  const { user, profile, setProfile } = useAuthStore()
+  const { user, profile, setProfile, isCheckedIn, setIsCheckedIn } = useAuthStore()
   const { dailyGoals, setEntries, setDailyGoals } = useDiaryStore()
   const [loading, setLoading] = useState(true)
   const [todayEntries, setTodayEntries] = useState<DiaryEntry[]>([])
   const [todayActivities, setTodayActivities] = useState<UserActivity[]>([])
   const [waterIntake, setWaterIntake] = useState(0)
   const [waterGoal, setWaterGoal] = useState(2000) // 2L = 2000ml
+
+  // NEU: Zustand für Check-in WIRD JETZT AUS DEM STORE VERWENDET
+  const [checkInTime, setCheckInTime] = useState<Date | null>(null)
+  const [elapsedTime, setElapsedTime] = useState('00:00:00')
+
+  // Effekt für den Timer
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null
+    if (isCheckedIn && checkInTime) {
+      interval = setInterval(() => {
+        const now = new Date()
+        const diff = now.getTime() - checkInTime.getTime()
+        
+        const hours = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, '0')
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0')
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
+        
+        setElapsedTime(`${hours}:${minutes}:${seconds}`)
+      }, 1000)
+    }
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, [isCheckedIn, checkInTime])
+
+  const handleCheckIn = () => {
+    router.push('/scanner?mode=check-in');
+  }
+
+  const handleCheckOut = () => {
+    setIsCheckedIn(false);
+    setCheckInTime(null);
+    setElapsedTime('00:00:00');
+  }
 
   // Funktion für zeitbasierte Begrüßung
   const getGreeting = () => {
@@ -216,7 +254,7 @@ export default function Dashboard() {
     } finally {
       setLoading(false)
     }
-  }, [user])
+  }, [user, setProfile, setDailyGoals, setEntries])
 
   useEffect(() => {
     if (!user) {
@@ -252,47 +290,19 @@ export default function Dashboard() {
   return (
     <>
       <PullToRefresh onRefresh={loadData}>
-        <div className="min-h-screen bg-[#ffffff] flex-1 flex flex-col min-h-0 overflow-x-hidden" style={{ scrollBehavior: 'smooth' }}>
+        <div className="min-h-screen bg-black flex-1 flex flex-col overflow-x-hidden pb-24" style={{ scrollBehavior: 'smooth' }}>
           <div className="px-4 pt-6 flex items-start justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">
+              <h1 className="text-2xl font-bold text-gray-100">
                 {getGreeting()}{getFirstName() && `, ${getFirstName()}`}!
               </h1>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-gray-400 mt-1">
                 {new Date().toLocaleDateString('de-DE', { 
                   weekday: 'long', 
                   day: 'numeric', 
                   month: 'long' 
                 })}
               </p>
-              {/* Personalisierte Zielkarte nach Onboarding */}
-              {profile?.onboarding_completed && profile?.weight_kg && profile?.target_weight_kg && (
-                <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex flex-col items-start animate-fade-in">
-                  <div className="flex items-center mb-1">
-                    <Award className="h-5 w-5 text-emerald-500 mr-2" />
-                    <span className="font-semibold text-emerald-700">Dein Ziel:</span>
-                  </div>
-                  <div className="text-lg font-bold text-emerald-900">
-                    {profile.weight_kg > profile.target_weight_kg
-                      ? `- ${(profile.weight_kg - profile.target_weight_kg).toFixed(1)} kg bis ${(() => {
-                          // Ziel-Datum grob schätzen (0.5kg/Woche)
-                          const weeks = Math.max(1, Math.ceil((profile.weight_kg - profile.target_weight_kg) / 0.5))
-                          const targetDate = new Date()
-                          targetDate.setDate(targetDate.getDate() + weeks * 7)
-                          return targetDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })
-                        })()}`
-                      : profile.weight_kg < profile.target_weight_kg
-                        ? `+ ${(profile.target_weight_kg - profile.weight_kg).toFixed(1)} kg bis ${(() => {
-                            const weeks = Math.max(1, Math.ceil((profile.target_weight_kg - profile.weight_kg) / 0.5))
-                            const targetDate = new Date()
-                            targetDate.setDate(targetDate.getDate() + weeks * 7)
-                            return targetDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })
-                          })()}`
-                        : 'Gewicht halten!'}
-                  </div>
-                  <div className="text-xs text-emerald-700 mt-1">Bleib dran – du schaffst das! 💪</div>
-                </div>
-              )}
             </div>
             {/* Achievement Badges */}
             <div className="flex items-center space-x-2">
@@ -302,7 +312,6 @@ export default function Dashboard() {
                   <span className="text-xs font-medium text-white">Kalorien</span>
                 </div>
               )}
-              {/* Weitere Badges (z.B. Wasser, Protein) */}
               {waterProgress >= 100 && (
                 <div className="flex items-center px-2 py-1 bg-blue-500 rounded-full shadow-lg ml-2">
                   <Award className="h-3 w-3 text-white mr-1" />
@@ -313,235 +322,75 @@ export default function Dashboard() {
           </div>
 
         <div className="px-4 space-y-6 pt-4 flex-1">
-          {/* Neue swipebare/touchbare Dashboard-Übersichtskarte */}
-          <DashboardOverviewSwiper />
-
-          {/* Quick Stats Card */}
-          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Tagesübersicht</h2>
-              <div className="flex items-center text-sm text-gray-700 font-medium">
-                <Calendar className="h-4 w-4 mr-1 text-gray-700" />
-                Heute
-              </div>
-            </div>
-            
-            {/* Main Progress Rings */}
-            <div className="flex items-center justify-center space-x-8 mb-6">
-              {/* Calorie Ring */}
-              <div className="flex flex-col items-center">
-                <div className="relative w-28 h-28">
-                  <svg className="w-28 h-28 transform -rotate-90" viewBox="0 0 100 100">
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      fill="transparent"
-                      className="text-gray-200"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      stroke="url(#calorieGradient)"
-                      strokeWidth="6"
-                      fill="transparent"
-                      strokeDasharray={`${2 * Math.PI * 45}`}
-                      strokeDashoffset={`${2 * Math.PI * 45 * (1 - Math.min(calorieProgress, 100) / 100)}`}
-                      className="transition-all duration-500 ease-out"
-                      strokeLinecap="round"
-                    />
-                    <defs>
-                      <linearGradient id="calorieGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#10b981" />
-                        <stop offset="100%" stopColor="#8b5cf6" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-lg font-bold text-gray-800">{Math.round(consumedCalories)}</span>
-                    <span className="text-xs font-semibold text-gray-600">kcal</span>
+          
+          {/* NEUE CHECK-IN KARTE */}
+          <div 
+            className="relative bg-cover bg-center rounded-3xl shadow-2xl p-6 text-white animate-fade-in overflow-hidden"
+            style={{ backgroundImage: "url('/1.png')" }}
+          >
+            <div className="absolute inset-0 bg-black/50 z-0"></div>
+            <div className="relative z-10">
+              {!isCheckedIn ? (
+                <>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-bold">Bereit fürs Training?</h2>
+                    <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
+                      <LogIn className="h-6 w-6 text-emerald-400" />
+                    </div>
                   </div>
-                </div>
-                <div className="text-center mt-2">
-                  <div className="text-xs font-semibold text-gray-600">von {dailyGoals.calories}</div>
-                </div>
-              </div>
-
-              {/* Water Ring */}
-              <div className="flex flex-col items-center">
-                <div className="relative w-28 h-28">
-                  <svg className="w-28 h-28 transform -rotate-90" viewBox="0 0 100 100">
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      fill="transparent"
-                      className="text-gray-200"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      stroke="url(#waterGradient)"
-                      strokeWidth="6"
-                      fill="transparent"
-                      strokeDasharray={`${2 * Math.PI * 45}`}
-                      strokeDashoffset={`${2 * Math.PI * 45 * (1 - Math.min(waterProgress, 100) / 100)}`}
-                      className="transition-all duration-500 ease-out"
-                      strokeLinecap="round"
-                    />
-                    <defs>
-                      <linearGradient id="waterGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#06b6d4" />
-                        <stop offset="100%" stopColor="#3b82f6" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-lg font-bold text-gray-800">{Math.round(waterIntake / 100) / 10}L</span>
-                    <span className="text-xs font-semibold text-gray-600">Wasser</span>
-                  </div>
-                </div>
-                <div className="text-center mt-2">
-                  <div className="text-xs font-semibold text-gray-600">von {waterGoal / 1000}L</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Macro Distribution */}
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-              {[
-                { label: 'Protein', value: Math.round(consumedProtein) + 'g', color: '#2563eb' }, // kräftiges Blau
-                { label: 'Kohlenhydrate', value: Math.round(consumedCarbs) + 'g', color: '#f59e42' },
-                { label: 'Fett', value: Math.round(consumedFat) + 'g', color: '#f472b6' },
-                { label: 'Ballaststoffe', value: Math.round(consumedFiber) + 'g', color: '#059669' }, // kräftiges Dunkelgrün
-                { label: 'Zucker', value: Math.round(consumedSugar) + 'g', color: '#a78bfa' },
-                { label: 'Natrium', value: Math.round(consumedSodium) + 'mg', color: '#facc15' },
-              ].map((macro) => (
-                <div key={macro.label} className="text-center p-3 bg-gray-50 rounded-2xl border border-gray-200 shadow-sm">
-                  <div className="flex items-center justify-center mb-2">
-                    <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/0 shadow-none">
-                      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style={{display:'block',margin:'auto'}}>
-                        <circle cx="14" cy="14" r="11" stroke={macro.color} strokeWidth="2.5" fill="none" />
-                        <circle cx="14" cy="14" r="5.5" fill={macro.color} />
-                      </svg>
-                    </span>
-                  </div>
-                  <div className="text-sm font-semibold text-gray-800">{macro.value}</div>
-                  <div className="text-xs text-gray-600">{macro.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Aktivitäten des Tages */}
-          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Heutige Aktivitäten</h3>
-            </div>
-            {todayActivities.length === 0 ? (
-              <div className="text-center py-6 text-gray-600 text-sm">Noch keine Aktivitäten eingetragen</div>
-            ) : (
-              <div className="space-y-3">
-                {todayActivities.slice(0, 3).map((act) => (
-                  <div key={act.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                    <div className="flex items-center">
-                      <span className="text-2xl mr-3">{act.emoji}</span>
-                      <div>
-                        <div className="font-medium text-gray-800">{act.activity_name}</div>
-                        <div className="text-xs text-gray-600">{act.duration_min} min • {act.calories} kcal</div>
+                  <p className="text-gray-200 text-sm mb-6">Scanne den QR-Code am Eingang, um dein Training zu starten.</p>
+                  <button 
+                    onClick={handleCheckIn}
+                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-4 rounded-2xl flex items-center justify-center transition-transform transform hover:scale-105 shadow-lg"
+                  >
+                    <LogIn className="h-5 w-5 mr-2" />
+                    JETZT EINCHECKEN
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h2 className="text-xl font-bold">Du trainierst!</h2>
+                      <div className="flex items-center text-gray-200 mt-1">
+                        <Clock className="h-4 w-4 mr-2 text-cyan-400" />
+                        <span className="text-lg font-mono">{elapsedTime}</span>
                       </div>
                     </div>
-                    <div className="text-right text-xs text-gray-500">
-                      {act.note && <div className="italic">{act.note}</div>}
-                      <div>{new Date(act.created_at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</div>
+                    <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
+                      <Clock className="h-6 w-6 text-cyan-400 animate-pulse" />
                     </div>
                   </div>
-                ))}
-              </div>
+                  <p className="text-gray-200 text-sm mb-6">Gib alles! Dein Einsatz zählt. 💪</p>
+                  <button 
+                    onClick={handleCheckOut}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-4 rounded-2xl flex items-center justify-center transition-transform transform hover:scale-105 shadow-lg"
+                  >
+                    <LogOut className="h-5 w-5 mr-2" />
+                    TRAINING BEENDEN
+                  </button>
+              </>
             )}
           </div>
+        </div>
 
-          {/* Recent Meals */}
-          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Heutige Mahlzeiten</h3>
-              <button 
-                onClick={() => router.push('/diary')}
-                className="flex items-center text-blue-600 font-medium text-sm"
-              >
-                Alle anzeigen
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </button>
-            </div>
-            
-            {todayEntries.length === 0 ? (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <PlusCircle className="h-8 w-8 text-gray-400" />
-                </div>
-                <p className="text-gray-600 text-sm">Noch keine Mahlzeiten eingetragen</p>
-                <button 
-                  onClick={() => router.push('/diary/add')}
-                  className="mt-3 text-blue-600 font-medium text-sm"
-                >
-                  Erste Mahlzeit hinzufügen
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {todayEntries.slice(0, 3).map((entry) => (
-                  <div key={entry.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-gray-800">{entry.food_name}</h4>
-                      <p className="text-sm text-gray-600">{entry.calories} kcal</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-gray-500">
-                        {new Date(entry.created_at).toLocaleTimeString('de-DE', { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        {/* Apple Health Rings */}
+        <AppleHealthRings />
 
-          {/* Fasting Card Stack */}
-          <FastingCardStack />
-
-          {/* Challenge Section */}
-          <ChallengeSection />
-
-          {/* Insights Card */}
-          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 pb-2">
+        <DashboardOverviewSwiper />
+        <FastingCardStack />
+        <ChallengeSection />          {/* Insights Card */}
+          <div className="bg-gray-900 rounded-3xl shadow-lg border border-gray-800 p-6 pb-2">
             <div className="flex items-center mb-3">
-              <TrendingUp className="h-6 w-6 mr-2" />
-              <h3 className="text-lg font-semibold">Deine Fortschritte</h3>
+              <TrendingUp className="h-6 w-6 mr-2 text-emerald-400" />
+              <h3 className="text-lg font-semibold text-gray-100">Deine Fortschritte</h3>
             </div>
-            <p className="text-gray-600 text-sm mb-4">
-              {calorieProgress >= 80 && calorieProgress <= 120 && waterProgress >= 80
-                ? "Fantastisch! Du bist perfekt auf Kurs mit deinen Kalorien- und Wasserzielen."
-                : calorieProgress >= 80 && calorieProgress <= 120
-                  ? "Tolle Kalorienbalance! Vergiss nicht genug zu trinken."
-                  : waterProgress >= 80
-                    ? "Super Wasserzufuhr! Achte auch auf deine Kalorienziele."
-                    : calorieProgress < 80 
-                      ? "Du könntest noch etwas mehr essen und trinken, um deine Ziele zu erreichen."
-                      : "Du hast deine Kalorienziele bereits überschritten. Achte auf die Balance."
-              }
+            <p className="text-gray-400 text-sm mb-4">
+              Behalte deine Ziele im Auge und bleib motiviert. Wir unterstützen dich dabei!
             </p>
             <button 
               onClick={() => router.push('/chat')}
-              className="flex items-center text-gray-800 font-medium"
+              className="flex items-center text-emerald-400 font-medium"
             >
               Mehr Tipps erhalten
               <ChevronRight className="h-4 w-4 ml-1" />

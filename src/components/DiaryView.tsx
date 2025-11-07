@@ -1,0 +1,540 @@
+'use client'
+
+import { useEffect, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase, DiaryEntry } from '@/lib/supabase'
+import { useAuthStore } from '@/store'
+import { 
+  Calendar, 
+  ChevronLeft, 
+  ChevronRight,
+  Plus,
+  } from 'lucide-react'
+import Image from 'next/image'
+import ActivitiesCard from '@/components/ActivitiesCard'
+import { calculateDailyCalorieGoal } from '@/lib/nutrition-utils'
+
+// Meal types with recommended calories
+const mealDistribution = {
+  breakfast: 0.25, // 25%
+  lunch: 0.35,     // 35%
+  dinner: 0.3,     // 30%
+  snack: 0.1       // 10%
+}
+
+export default function DiaryView() {
+  const router = useRouter()
+  const { user, profile } = useAuthStore()
+  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [entries, setEntries] = useState<DiaryEntry[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Tagesbedarf berechnen (Fallback 2000)
+  const calorieGoal = profile ? calculateDailyCalorieGoal(profile) : 2000
+
+  // Dynamische Mahlzeitenliste
+  const mealTypes = [
+    {
+      key: 'breakfast',
+      label: 'Frühstück',
+      recommendedCalories: Math.round(calorieGoal * mealDistribution.breakfast),
+      image: '/SVG/Fruestuck.webp',
+      gradient: 'from-orange-400 to-red-400'
+    },
+    {
+      key: 'lunch',
+      label: 'Mittagessen',
+      recommendedCalories: Math.round(calorieGoal * mealDistribution.lunch),
+      image: '/SVG/Mittagessen.webp',
+      gradient: 'from-green-400 to-emerald-400'
+    },
+    {
+      key: 'dinner',
+      label: 'Abendessen',
+      recommendedCalories: Math.round(calorieGoal * mealDistribution.dinner),
+      image: '/SVG/Abendessen.webp',
+      gradient: 'from-blue-400 to-purple-400'
+    },
+    {
+      key: 'snack',
+      label: 'Snack',
+      recommendedCalories: Math.round(calorieGoal * mealDistribution.snack),
+      image: '/SVG/Snacks.webp',
+      gradient: 'from-pink-400 to-rose-400'
+    }
+  ]
+
+  const loadEntries = useCallback(async () => {
+    if (!user) return
+
+    setLoading(true)
+    try {
+      const dateStr = selectedDate.toISOString().split('T')[0]
+      const { data } = await supabase
+        .from('diary_entries')
+        .select('*')
+        .eq('user_id', user.id)
+        .gte('created_at', `${dateStr}T00:00:00`)
+        .lt('created_at', `${dateStr}T23:59:59`)
+        .order('created_at', { ascending: false })
+
+      if (data) {
+        setEntries(data)
+      }
+    } catch (error) {
+      console.error('Error loading entries:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [user, selectedDate])
+
+  useEffect(() => {
+    if (!user) {
+      // Auf einer Komponentenebene leiten wir nicht mehr um, das sollte die Seite selbst tun.
+      return
+    }
+    loadEntries()
+  }, [user, loadEntries])
+
+  // Group entries by meal type
+  const groupedEntries = entries.reduce((acc, entry) => {
+    const meal = entry.meal_type || 'other'
+    if (!acc[meal]) acc[meal] = []
+    acc[meal].push(entry)
+    return acc
+  }, {} as Record<string, DiaryEntry[]>)
+
+  const changeDate = (direction: 'prev' | 'next') => {
+    const newDate = new Date(selectedDate)
+    if (direction === 'prev') {
+      newDate.setDate(selectedDate.getDate() - 1)
+    } else {
+      newDate.setDate(selectedDate.getDate() + 1)
+    }
+    setSelectedDate(newDate)
+  }
+
+  if (!user) {
+    return <div className="p-4 text-center text-gray-600">Bitte einloggen, um das Tagebuch zu sehen.</div>
+  }
+
+  return (
+    <div className="min-h-screen bg-black pb-24">
+      {/* Header */}
+      <div className="bg-gray-900 border-b border-gray-800">
+        <div className="px-4 py-4">
+          <div className="flex items-center justify-between">
+            <button 
+              onClick={() => changeDate('prev')}
+              className="p-2 rounded-full hover:bg-gray-800 transition-colors"
+            >
+              <ChevronLeft className="h-5 w-5 text-gray-400" />
+            </button>
+            <div className="flex items-center space-x-2">
+              <Calendar className="h-5 w-5 text-emerald-400" />
+              <span className="font-medium text-gray-200">
+                {selectedDate.toLocaleDateString('de-DE', { 
+                  weekday: 'long',
+                  day: 'numeric', 
+                  month: 'long' 
+                })}
+              </span>
+            </div>
+            <button 
+              onClick={() => changeDate('next')}
+              className="p-2 rounded-full hover:bg-gray-800 transition-colors"
+              disabled={selectedDate.toDateString() === new Date().toDateString()}
+            >
+              <ChevronRight className={`h-5 w-5 ${
+                selectedDate.toDateString() === new Date().toDateString() 
+                  ? 'text-gray-600' 
+                  : 'text-gray-400'
+              }`} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Water Tracker */}
+      <WaterTracker selectedDate={selectedDate} />
+
+      {/* Meal Planning Interface */}
+      <div className="px-4 py-6 space-y-4">
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+          </div>
+        ) : (
+          <>
+            {mealTypes.map((mealType) => {
+              const mealEntries = groupedEntries[mealType.key] || []
+              const mealCalories = mealEntries.reduce((sum, entry) => sum + entry.calories, 0)
+
+              return (
+                <div key={mealType.key} className="bg-gray-900 rounded-2xl shadow-md border border-gray-800 p-4">
+                  <div className="flex items-center justify-between">
+                    {/* Meal Info with Image */}
+                    <div className="flex items-center space-x-4">
+                      <div className="relative">
+                        <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-800 flex items-center justify-center">
+                          <Image
+                            src={mealType.image}
+                            alt={mealType.label}
+                            width={64}
+                            height={64}
+                            className="object-contain w-16 h-16"
+                            priority={mealType.key === 'breakfast'}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-100">{mealType.label}</h3>
+                        <p className="text-sm text-gray-400">
+                          empfohlen {mealType.recommendedCalories} kcal
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Add Button */}
+                    <button 
+                      onClick={() => router.push(`/diary/add?meal=${mealType.key}`)}
+                      className="w-12 h-12 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center transition-all active:scale-95 shadow-lg"
+                    >
+                      <Plus className="h-6 w-6" />
+                    </button>
+                  </div>
+
+                  {/* Show added entries if any */}
+                  {mealEntries.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-700">
+                      <div className="text-sm text-gray-400 mb-2">
+                        Hinzugefügt: {mealCalories} kcal
+                      </div>
+                      <div className="space-y-2">
+                        {mealEntries.slice(0, 3).map((entry) => (
+                          <div key={entry.id} className="flex items-center justify-between text-sm">
+                            <span className="text-gray-300">{entry.food_name}</span>
+                            <span className="text-gray-500">{entry.calories} kcal</span>
+                          </div>
+                        ))}
+                        {mealEntries.length > 3 && (
+                          <div className="text-xs text-gray-500">
+                            +{mealEntries.length - 3} weitere Einträge
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Water Tracker Component
+function WaterTracker({ selectedDate }: { selectedDate: Date }) {
+  const { user } = useAuthStore()
+  const [waterIntake, setWaterIntake] = useState(0)
+  const [dailyGoal, setDailyGoal] = useState(2000) // 2L = 2000ml
+  const [glassSize] = useState(250) // Standard glass size in ml
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [userWeight, setUserWeight] = useState(70) // kg
+  const [activityLevel, setActivityLevel] = useState<'sedentary' | 'light' | 'moderate' | 'active'>('moderate')
+  const [showSettings, setShowSettings] = useState(false)
+  const [achievements, setAchievements] = useState<string[]>([])
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false)
+
+  const dateKey = selectedDate.toISOString().split('T')[0] // YYYY-MM-DD format
+  
+  // Smart daily goal calculation
+  const calculateSmartGoal = useCallback(() => {
+    let baseGoal = userWeight * 35 // Basic calculation: 35ml per kg body weight
+    
+    // Activity level multiplier
+    const activityMultiplier = {
+      sedentary: 1.0,
+      light: 1.2,
+      moderate: 1.4,
+      active: 1.6
+    }
+    
+    baseGoal *= activityMultiplier[activityLevel]
+    
+    // Weather adjustment (simplified - in real app would use weather API)
+    const today = new Date()
+    const isWinter = today.getMonth() >= 10 || today.getMonth() <= 2
+    const weatherMultiplier = isWinter ? 0.9 : 1.1
+    
+    baseGoal *= weatherMultiplier
+    
+    return Math.round(baseGoal)
+  }, [userWeight, activityLevel])
+  
+  // Drink type multipliers for hydration effectiveness
+  const drinkMultipliers = {
+    water: 1.0,
+    tea: 0.85,
+    coffee: 0.7,
+    juice: 0.8
+  }
+
+  // Load water intake for the selected date from Supabase
+  const loadWaterIntake = useCallback(async () => {
+    if (!user) return
+
+    try {
+      setLoading(true)
+      const response = await fetch(`/api/water?userId=${user.id}&date=${dateKey}`)
+      const data = await response.json()
+      
+      if (response.ok) {
+        setWaterIntake(data.amount_ml || 0)
+        const smartGoal = calculateSmartGoal()
+        setDailyGoal(data.daily_goal_ml || smartGoal)
+        setUserWeight(data.user_weight || 70)
+        setActivityLevel(data.activity_level || 'moderate')
+        setAchievements(data.achievements || [])
+      }
+    } catch (error) {
+      console.error('Error loading water intake:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [user, dateKey, calculateSmartGoal])
+
+  // Save water intake to Supabase
+  const saveWaterIntake = useCallback(async (amount: number) => {
+    if (!user || saving) return
+
+    try {
+      setSaving(true)
+      
+      const newAchievements = [...achievements]
+      if (amount >= dailyGoal && !achievements.includes('daily_goal')) {
+        newAchievements.push('daily_goal')
+      }
+      if (amount >= dailyGoal * 1.5 && !achievements.includes('overachiever')) {
+        newAchievements.push('overachiever')
+      }
+      
+      const response = await fetch('/api/water', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          date: dateKey,
+          amount_ml: amount,
+          daily_goal_ml: dailyGoal
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save water intake')
+      }
+      
+      setAchievements(newAchievements)
+    } catch (error) {
+      console.error('Error saving water intake:', error)
+    } finally {
+      setSaving(false)
+    }
+  }, [user, dateKey, dailyGoal, saving, achievements])
+
+  useEffect(() => {
+    loadWaterIntake()
+  }, [loadWaterIntake])
+  
+  useEffect(() => {
+    if (!notificationsEnabled || !('Notification' in window)) return
+    
+    const checkHydrationReminder = () => {
+      const hoursSinceLastDrink = 2
+      const currentPercentage = Math.min((waterIntake / dailyGoal) * 100, 100)
+      
+      if (currentPercentage < 50 && hoursSinceLastDrink >= 2) {
+        if (Notification.permission === 'granted') {
+          new Notification('💧 Hydration Reminder', {
+            body: `Du hast erst ${waterIntake}ml getrunken. Zeit für etwas Wasser!`,
+            icon: '/water-icon.png',
+            badge: '/water-badge.png'
+          })
+        }
+      }
+    }
+    
+    const intervalId = setInterval(checkHydrationReminder, 60000 * 60)
+    return () => clearInterval(intervalId)
+  }, [notificationsEnabled, waterIntake, dailyGoal])
+  
+  const percentage = Math.min((waterIntake / dailyGoal) * 100, 100)
+  
+  const addWater = async (amount: number, type: string = 'water') => {
+    const effectiveAmount = amount * drinkMultipliers[type as keyof typeof drinkMultipliers]
+    const newAmount = Math.min(waterIntake + effectiveAmount, dailyGoal + 1000)
+    setWaterIntake(newAmount)
+    await saveWaterIntake(newAmount)
+  }
+  
+  const removeWater = async () => {
+    const newAmount = Math.max(waterIntake - glassSize, 0)
+    setWaterIntake(newAmount)
+    await saveWaterIntake(newAmount)
+  }
+
+  const resetWater = async () => {
+    setWaterIntake(0)
+    await saveWaterIntake(0)
+  }
+  
+  return (
+    <div className="mx-4 mt-4 mb-4">
+      <div className="bg-gray-900 rounded-2xl shadow-md border border-gray-800 p-4">
+        <div className="relative z-10">
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+            </div>
+          ) : (
+            <>
+              {/* Header */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                    <span className="text-xl">💧</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-100">Wasser</h3>
+                    <p className="text-sm text-gray-400">{waterIntake}ml / {dailyGoal}ml</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setShowSettings(!showSettings)}
+                    className="p-2 text-gray-500 hover:text-gray-300 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={resetWater}
+                    disabled={saving}
+                    className="p-2 text-gray-500 hover:text-gray-300 transition-colors disabled:opacity-50"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-300">{Math.round(percentage)}%</span>
+                  <span className="text-sm text-gray-500">{dailyGoal - waterIntake}ml verbleibend</span>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div
+                    className="h-2 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-500 ease-out"
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Quick Add Buttons */}
+              <div className="grid grid-cols-4 gap-2 mb-4">
+                {[250, 500, 750, 1000].map((amount) => (
+                  <button
+                    key={amount}
+                    onClick={() => addWater(amount)}
+                    className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-center transition-colors active:scale-95 text-blue-300 border border-gray-700"
+                  >
+                    <span className="text-lg block mb-1">💧</span>
+                    <div className="text-xs font-medium text-blue-300">{amount}ml</div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Control Buttons */}
+              <div className="flex space-x-2">
+                <button
+                  onClick={removeWater}
+                  disabled={waterIntake === 0 || saving}
+                  className="flex-1 p-2 bg-red-900/50 hover:bg-red-800/50 disabled:bg-gray-800 disabled:text-gray-600 text-red-300 rounded-lg font-medium transition-colors active:scale-95 text-sm"
+                >
+                  - {glassSize}ml
+                </button>
+                <button
+                  onClick={() => addWater(glassSize)}
+                  disabled={saving}
+                  className="flex-1 p-2 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-400 text-white rounded-lg font-medium transition-colors active:scale-95 text-sm"
+                >
+                  + {glassSize}ml
+                </button>
+              </div>
+
+              {/* Achievement */}
+              {waterIntake >= dailyGoal && (
+                <div className="mt-3 p-2 bg-green-900/50 border border-green-800 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm">🎉</span>
+                    <p className="text-sm font-medium text-green-300">Tagesziel erreicht!</p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Settings Panel */}
+              {showSettings && (
+                <div className="mt-3 p-3 bg-gray-800 rounded-lg border border-gray-700">
+                  <h4 className="text-gray-100 font-medium mb-3 text-sm">Einstellungen</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-gray-300 text-sm block mb-1">Tagesziel (ml)</label>
+                      <input
+                        type="number"
+                        value={dailyGoal}
+                        onChange={(e) => setDailyGoal(Number(e.target.value))}
+                        className="w-full px-3 py-2 bg-gray-900 text-gray-100 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        min="1000"
+                        max="5000"
+                        step="100"
+                      />
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        id="notifications-enabled"
+                        type="checkbox"
+                        checked={notificationsEnabled}
+                        onChange={e => setNotificationsEnabled(e.target.checked)}
+                        className="accent-blue-500 h-4 w-4 rounded border-gray-600 bg-gray-800 focus:ring-blue-500"
+                      />
+                      <label htmlFor="notifications-enabled" className="text-gray-300 text-sm select-none cursor-pointer">
+                        Trink-Erinnerungen aktivieren
+                      </label>
+                    </div>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => setShowSettings(false)}
+                        className="flex-1 px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm transition-colors"
+                      >
+                        Fertig
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

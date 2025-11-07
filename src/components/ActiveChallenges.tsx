@@ -17,13 +17,13 @@ const challengeIcons: Record<string, React.ReactNode> = {
 }
 
 const challengeColors: Record<string, { bg: string; text: string; progress: string }> = {
-  no_cigarettes: { bg: 'bg-red-100', text: 'text-red-600', progress: 'bg-red-500' },
-  no_chips: { bg: 'bg-orange-100', text: 'text-orange-600', progress: 'bg-orange-500' },
-  no_chocolate: { bg: 'bg-amber-100', text: 'text-amber-600', progress: 'bg-amber-500' },
-  no_sugar: { bg: 'bg-pink-100', text: 'text-pink-600', progress: 'bg-pink-500' },
-  no_fastfood: { bg: 'bg-yellow-100', text: 'text-yellow-600', progress: 'bg-yellow-500' },
-  no_coffee: { bg: 'bg-stone-100', text: 'text-stone-600', progress: 'bg-stone-500' },
-  no_alcohol: { bg: 'bg-purple-100', text: 'text-purple-600', progress: 'bg-purple-500' }
+  no_cigarettes: { bg: 'bg-red-900/50', text: 'text-red-300', progress: 'bg-red-500' },
+  no_chips: { bg: 'bg-orange-900/50', text: 'text-orange-300', progress: 'bg-orange-500' },
+  no_chocolate: { bg: 'bg-amber-900/50', text: 'text-amber-300', progress: 'bg-amber-500' },
+  no_sugar: { bg: 'bg-pink-900/50', text: 'text-pink-300', progress: 'bg-pink-500' },
+  no_fastfood: { bg: 'bg-yellow-900/50', text: 'text-yellow-300', progress: 'bg-yellow-500' },
+  no_coffee: { bg: 'bg-stone-900/50', text: 'text-stone-300', progress: 'bg-stone-500' },
+  no_alcohol: { bg: 'bg-purple-900/50', text: 'text-purple-300', progress: 'bg-purple-500' }
 }
 
 export interface ActiveChallengesProps {
@@ -117,12 +117,12 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
 
   if (loading) {
     return (
-      <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-200">
+      <div className="bg-gray-900 rounded-3xl p-6 shadow-lg border border-gray-800">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-6 bg-gray-800 rounded w-1/3"></div>
           <div className="space-y-3">
             {[1, 2].map(i => (
-              <div key={i} className="h-20 bg-gray-200 rounded-2xl"></div>
+              <div key={i} className="h-20 bg-gray-800 rounded-2xl"></div>
             ))}
           </div>
         </div>
@@ -132,24 +132,24 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
 
   if (challenges.length === 0) {
     return (
-      <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6">
+      <div className="bg-gray-900 rounded-3xl shadow-lg border border-gray-800 p-6">
         <div className="text-center py-8">
-          <Target className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Keine aktiven Challenges</h3>
-          <p className="text-gray-600 text-sm">Starte eine Challenge indem du eine Karte nach rechts swipst!</p>
+          <Target className="h-12 w-12 text-gray-600 mx-auto mb-3" />
+          <h3 className="text-lg font-semibold text-gray-200 mb-2">Keine aktiven Challenges</h3>
+          <p className="text-gray-400 text-sm">Starte eine Challenge, indem du eine Karte nach rechts swipst!</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6">
+    <div className="bg-gray-900 rounded-3xl shadow-lg border border-gray-800 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-          <Trophy className="h-5 w-5 mr-2 text-yellow-500" />
+        <h3 className="text-lg font-semibold text-gray-100 flex items-center">
+          <Trophy className="h-5 w-5 mr-2 text-yellow-400" />
           Aktive Challenges
         </h3>
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-400">
           {challenges.length} aktiv
         </div>
       </div>
@@ -173,13 +173,13 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
               exit={{ opacity: 0, y: 40, transition: { duration: 0.35, ease: 'easeIn' } }}
               animate={{ opacity: 1, y: 0 }}
               // layout removed for performance
-              className="bg-white rounded-2xl shadow-lg border border-gray-200 p-4 flex items-center gap-4 overflow-hidden" style={{willChange: 'transform, opacity'}}>
+              className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 p-4 flex items-center gap-4 overflow-hidden" style={{willChange: 'transform, opacity'}}>
               {/* Progress Ring + Icon */}
               <div className="relative flex-shrink-0">
                 <svg className="w-14 h-14" viewBox="0 0 48 48">
                   <circle
                     cx="24" cy="24" r="20"
-                    stroke="#e0e7ef" strokeWidth="6" fill="none"
+                    stroke="#4b5563" strokeWidth="6" fill="none"
                   />
                   <circle
                     cx="24" cy="24" r="20"
@@ -193,17 +193,17 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
                     style={{filter:'drop-shadow(0 0 8px #38bdf8aa)'}}
                   />
                 </svg>
-                <div className={`absolute inset-0 flex items-center justify-center rounded-full bg-gray-100 shadow-lg`}>
+                <div className={`absolute inset-0 flex items-center justify-center rounded-full bg-gray-900 shadow-lg`}>
                   <span className={`text-xl ${colors.text}`}>{icon}</span>
                 </div>
               </div>
               {/* Challenge Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-semibold text-gray-800 truncate">{challenge.challenge_name}</h4>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 ml-1">{Math.round(progressPercentage)}%</span>
+                  <h4 className="font-semibold text-gray-200 truncate">{challenge.challenge_name}</h4>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-700 text-gray-300 ml-1">{Math.round(progressPercentage)}%</span>
                 </div>
-                <div className="text-xs text-gray-600 mb-1 truncate">Abstinent seit {timeSince.value} {timeSince.unit}</div>
+                <div className="text-xs text-gray-400 mb-1 truncate">Abstinent seit {timeSince.value} {timeSince.unit}</div>
                 <div className="flex items-center gap-2 text-xs text-gray-500">
                   <span>Gestartet am {new Date(challenge.start_date).toLocaleDateString('de-DE')}</span>
                   {challenge.longest_streak_days > 0 && (

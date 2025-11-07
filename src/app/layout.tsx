@@ -2,7 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "./fix-scroll.css";
-import { Navigation } from "@/components/BottomNavBar";
+import NewBottomNav from '@/components/NewBottomNav';
+import StudioBottomNav from '@/components/StudioBottomNav'; // Geändert
 import CookieConsent from '@/components/ui/CookieConsent';
 import GoogleTagManagerClient from '@/components/ui/GoogleTagManagerClient';
 import AuthProvider from '@/components/AuthProvider';
@@ -151,7 +152,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} h-full bg-[#121212] text-white antialiased`}>
+      <body className={`${inter.className} h-full bg-black text-white antialiased`}>
         <AuthProvider>
           {/* GTM nur nach Consent laden (Client-Komponente) */}
           <GoogleTagManagerClient />
@@ -162,7 +163,8 @@ export default function RootLayout({
               {children}
             </main>
             {/* Globale Bottom Navigation Bar für eingeloggte Nutzer */}
-            <Navigation />
+            {/* <StudioBottomNav /> */} {/* Alte Navigation, auskommentiert */}
+            <NewBottomNav /> {/* Neue Navigation zum Testen */}
           </div>
           <CookieConsent />
         </AuthProvider>

@@ -172,7 +172,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#ffffff]">
+      <div className="min-h-screen flex flex-col relative overflow-hidden bg-black">
         <div className="flex items-center justify-center py-12 flex-1 z-10">
           <LoadingSpinner size="lg" />
         </div>
@@ -182,7 +182,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#ffffff]">
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-black">
       {/* Toast-Benachrichtigung */}
       <AnimatePresence>
         {showSuccess && (
@@ -211,12 +211,12 @@ export default function ProfilePage() {
           transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
           className="flex flex-col items-center gap-2 mb-2"
         >
-          <div className="w-20 h-20 rounded-full bg-gray-100 shadow-lg border-2 border-gray-200 flex items-center justify-center text-4xl font-bold text-gray-700 mb-1" style={{boxShadow:'0 4px 32px rgba(0,0,0,0.1)'}}>
+          <div className="w-20 h-20 rounded-full bg-gray-800 shadow-lg border-2 border-gray-700 flex items-center justify-center text-4xl font-bold text-gray-300 mb-1" style={{boxShadow:'0 4px 32px rgba(0,0,0,0.2)'}}>
             {formData.first_name?.[0]?.toUpperCase() || 'U'}
           </div>
-          <div className="text-xl font-bold text-gray-800 text-center">{formData.first_name} {formData.last_name}</div>
+          <div className="text-xl font-bold text-gray-100 text-center">{formData.first_name} {formData.last_name}</div>
           {formData.fitness_goals && formData.fitness_goals.length > 0 && (
-            <div className="text-xs px-3 py-1 rounded-full bg-emerald-500 text-white shadow border border-emerald-200 mb-1">🎯 Ziel: {(() => {
+            <div className="text-xs px-3 py-1 rounded-full bg-emerald-500 text-white shadow border border-emerald-400 mb-1">🎯 Ziel: {(() => {
               switch(formData.fitness_goals[0]) {
                 case 'lose_weight': return 'Abnehmen';
                 case 'maintain_weight': return 'Gewicht halten';
@@ -233,9 +233,9 @@ export default function ProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
-            className="bg-white rounded-3xl border border-gray-200 shadow-lg p-6"
+            className="bg-gray-900 rounded-3xl border border-gray-800 shadow-lg p-6"
           >
-            <h2 className="text-lg font-bold text-gray-800 mb-4">Persönliche Daten</h2>
+            <h2 className="text-lg font-bold text-gray-100 mb-4">Persönliche Daten</h2>
             
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -304,8 +304,8 @@ export default function ProfilePage() {
             </div>
 
             {bmi > 0 && (
-              <div className="mt-4 p-4 bg-green-50 rounded-xl border border-green-100">
-                <p className="text-sm text-green-800">
+              <div className="mt-4 p-4 bg-emerald-900/50 rounded-xl border border-emerald-800">
+                <p className="text-sm text-emerald-300">
                   <strong>BMI:</strong> {bmi} ({getBMICategory(bmi)})
                 </p>
               </div>
@@ -317,9 +317,9 @@ export default function ProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
-            className="bg-white rounded-3xl border border-gray-200 shadow-lg p-6"
+            className="bg-gray-900 rounded-3xl border border-gray-800 shadow-lg p-6"
           >
-            <h2 className="text-lg font-bold text-gray-800 mb-4">Aktivität & Ziele</h2>
+            <h2 className="text-lg font-bold text-gray-100 mb-4">Aktivität & Ziele</h2>
             <div className="space-y-4">
               <Select
                 label="Aktivitätslevel"
@@ -350,7 +350,7 @@ export default function ProfilePage() {
 
               {/* Ernährungspräferenz Auswahl */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Ernährungspräferenz</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Ernährungspräferenz</label>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   {dietOptions.map(opt => (
                     <button
@@ -358,7 +358,7 @@ export default function ProfilePage() {
                       type="button"
                       onClick={() => handleInputChange('diet_type', opt.value)}
                       className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all font-semibold text-base
-                        ${(formData.diet_type === opt.value) ? 'border-emerald-500 bg-emerald-50 text-emerald-800 scale-105' : 'border-gray-200 bg-white text-gray-800 hover:border-gray-300 hover:bg-gray-100'}`}
+                        ${(formData.diet_type === opt.value) ? 'border-emerald-500 bg-emerald-900/50 text-emerald-300 scale-105' : 'border-gray-700 bg-gray-800 text-gray-200 hover:border-gray-600 hover:bg-gray-700'}`}
                       aria-pressed={formData.diet_type === opt.value}
                     >
                       <span className="text-2xl">{opt.emoji}</span>
@@ -371,10 +371,10 @@ export default function ProfilePage() {
                     type="checkbox"
                     checked={!!formData.is_glutenfree}
                     onChange={e => handleInputChange('is_glutenfree', Boolean(e.target.checked))}
-                    className="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                    className="w-5 h-5 text-emerald-600 bg-gray-800 border-gray-600 rounded focus:ring-emerald-500"
                   />
                   <span className="text-2xl">🌾</span>
-                  <span className="text-base font-medium text-gray-800">Glutenfrei</span>
+                  <span className="text-base font-medium text-gray-200">Glutenfrei</span>
                 </label>
               </div>
             </div>
@@ -386,30 +386,30 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, type: 'spring', bounce: 0.2 }}
-              className="bg-white rounded-3xl border border-gray-200 shadow-lg p-6"
+              className="bg-gray-900 rounded-3xl border border-gray-800 shadow-lg p-6"
             >
-              <h2 className="text-lg font-bold text-gray-800 mb-4">Deine geschätzten Tagesziele</h2>
+              <h2 className="text-lg font-bold text-gray-100 mb-4">Deine geschätzten Tagesziele</h2>
               
               <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-4 bg-green-50 rounded-xl">
-                  <div className="text-2xl font-bold text-green-600">{estimatedCalories}</div>
-                  <div className="text-sm text-gray-600">Kalorien</div>
+                <div className="text-center p-4 bg-emerald-900/50 rounded-xl">
+                  <div className="text-2xl font-bold text-emerald-300">{estimatedCalories}</div>
+                  <div className="text-sm text-gray-400">Kalorien</div>
                 </div>
-                <div className="text-center p-4 bg-green-50 rounded-xl">
-                  <div className="text-2xl font-bold text-green-600">{macroTargets.protein}g</div>
-                  <div className="text-sm text-gray-600">Protein</div>
+                <div className="text-center p-4 bg-emerald-900/50 rounded-xl">
+                  <div className="text-2xl font-bold text-emerald-300">{macroTargets.protein}g</div>
+                  <div className="text-sm text-gray-400">Protein</div>
                 </div>
-                <div className="text-center p-4 bg-green-50 rounded-xl">
-                  <div className="text-2xl font-bold text-green-600">{macroTargets.carbs}g</div>
-                  <div className="text-sm text-gray-600">Kohlenhydrate</div>
+                <div className="text-center p-4 bg-emerald-900/50 rounded-xl">
+                  <div className="text-2xl font-bold text-emerald-300">{macroTargets.carbs}g</div>
+                  <div className="text-sm text-gray-400">Kohlenhydrate</div>
                 </div>
-                <div className="text-center p-4 bg-green-50 rounded-xl">
-                  <div className="text-2xl font-bold text-green-600">{macroTargets.fat}g</div>
-                  <div className="text-sm text-gray-600">Fett</div>
+                <div className="text-center p-4 bg-emerald-900/50 rounded-xl">
+                  <div className="text-2xl font-bold text-emerald-300">{macroTargets.fat}g</div>
+                  <div className="text-sm text-gray-400">Fett</div>
                 </div>
               </div>
 
-              <p className="text-xs text-gray-600 mt-4 p-3 bg-gray-50 rounded-xl">
+              <p className="text-xs text-gray-500 mt-4 p-3 bg-gray-800 rounded-xl">
                 <strong>Hinweis:</strong> Dies sind Schätzungen basierend auf der Mifflin-St Jeor Gleichung. 
                 Individuelle Bedürfnisse können variieren. Konsultiere einen Arzt für personalisierte Beratung.
               </p>
@@ -417,48 +417,48 @@ export default function ProfilePage() {
           )}
 
           {/* Produktverwaltung */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
-            <h2 className="text-lg font-medium text-gray-800 mb-4">Community & Produkte</h2>
+          <div className="bg-gray-900 rounded-2xl border border-gray-800 shadow-lg p-6">
+            <h2 className="text-lg font-medium text-gray-100 mb-4">Community & Produkte</h2>
             <div className="space-y-3">
               <div 
                 onClick={() => router.push('/products/add')}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors"
+                className="flex items-center justify-between p-4 bg-gray-800 rounded-xl cursor-pointer hover:bg-gray-700 transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
                     <span className="text-white text-lg">➕</span>
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-800">Produkt hinzufügen</h3>
-                    <p className="text-sm text-gray-600">Hilf der Community mit neuen Produkten</p>
+                    <h3 className="font-medium text-gray-200">Produkt hinzufügen</h3>
+                    <p className="text-sm text-gray-400">Hilf der Community mit neuen Produkten</p>
                   </div>
                 </div>
-                <span className="text-blue-500">→</span>
+                <span className="text-blue-400">→</span>
               </div>
               <div 
                 onClick={() => router.push('/products/my')}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors"
+                className="flex items-center justify-between p-4 bg-gray-800 rounded-xl cursor-pointer hover:bg-gray-700 transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
                     <span className="text-white text-lg">📦</span>
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-800">Meine Produkte</h3>
-                    <p className="text-sm text-gray-600">Übersicht deiner hinzugefügten Produkte</p>
+                    <h3 className="font-medium text-gray-200">Meine Produkte</h3>
+                    <p className="text-sm text-gray-400">Übersicht deiner hinzugefügten Produkte</p>
                   </div>
                 </div>
-                <span className="text-green-500">→</span>
+                <span className="text-green-400">→</span>
               </div>
             </div>
           </div>
 
           {/* Unverträglichkeiten */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
-            <h2 className="text-lg font-medium text-gray-800 mb-4">Unverträglichkeiten</h2>
+          <div className="bg-gray-900 rounded-2xl border border-gray-800 shadow-lg p-6">
+            <h2 className="text-lg font-medium text-gray-100 mb-4">Unverträglichkeiten</h2>
             <div className="flex flex-wrap gap-3">
               {intoleranceOptions.map((item) => (
-                <label key={item} className="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-xl cursor-pointer border border-gray-200">
+                <label key={item} className="flex items-center space-x-2 bg-gray-800 px-3 py-2 rounded-xl cursor-pointer border border-gray-700">
                   <input
                     type="checkbox"
                     checked={formData.intolerances?.includes(item) || false}
@@ -470,8 +470,9 @@ export default function ProfilePage() {
                           : (prev.intolerances || []).filter(i => i !== item)
                       }))
                     }}
+                    className="bg-gray-700 border-gray-600 text-emerald-500 focus:ring-emerald-500"
                   />
-                  <span className="text-gray-800 font-medium">{item}</span>
+                  <span className="text-gray-200 font-medium">{item}</span>
                 </label>
               ))}
             </div>

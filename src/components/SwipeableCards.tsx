@@ -222,11 +222,11 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
   }, []);
 
   return (
-    <div className="relative w-full" style={{background:'#fff'}}>
+    <div className="relative w-full">
       <div
         ref={scrollContainerRef}
-        className="w-full overflow-x-auto flex space-x-6 pb-4 relative bg-white" // explizit bg-white
-        style={{ scrollSnapType: 'x mandatory', background: '#fff' }} // Fallback für echtes Weiß
+        className="w-full overflow-x-auto flex space-x-6 pb-4 relative"
+        style={{ scrollSnapType: 'x mandatory' }}
       >
         {/* Gemeinsame Wave als absolutes Hintergrund-Element entfernt */}
         {cards.map((card, idx) => {
@@ -241,7 +241,7 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
                 minWidth: '14rem',
                 maxWidth: '14rem',
                 // Dezent nach unten gerichteter Shadow, kein breiter Glow mehr
-                boxShadow: '0 6px 18px 0 rgba(31,38,135,0.10)',
+                boxShadow: '0 6px 18px 0 rgba(0,0,0,0.2)',
                 backgroundImage: card.gradient || 'none',
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: 'cover',
@@ -271,22 +271,22 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
       </div>
       {/* Detail-Overlay/Slide-in als echtes Modal/Portal */}
       {showDetail && selectedCard && typeof window !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-40 flex justify-center md:items-center items-center bg-black/40 backdrop-blur-sm transition-all" onClick={() => setShowDetail(false)}>
+        <div className="fixed inset-0 z-40 flex justify-center md:items-center items-center bg-black/60 backdrop-blur-sm transition-all" onClick={() => setShowDetail(false)}>
           <div
-            className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-0 mx-auto animate-slideInUp relative max-h-[90vh] flex flex-col"
+            className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-3xl shadow-2xl p-0 mx-auto animate-slideInUp relative max-h-[90vh] flex flex-col"
             onClick={e => e.stopPropagation()}
           >
-            <button className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-xl z-10" onClick={()=>setShowDetail(false)}>&times;</button>
+            <button className="absolute top-4 right-4 text-gray-500 hover:text-gray-200 text-xl z-10" onClick={()=>setShowDetail(false)}>&times;</button>
             <div className="flex-1 flex flex-col items-center px-6 pt-8 pb-4 w-full select-none" style={{overflow:'hidden', overscrollBehavior:'none'}}>
               <div className={`${selectedCard.color} mb-4`}>{selectedCard.icon}</div>
-              <h4 className="text-xl font-bold text-gray-900 mb-2">{selectedCard.title}</h4>
-              <p className="text-base text-gray-700 mb-4">{selectedCard.description}</p>
+              <h4 className="text-xl font-bold text-gray-100 mb-2">{selectedCard.title}</h4>
+              <p className="text-base text-gray-300 mb-4">{selectedCard.description}</p>
               {/* Challenge-Dauer-Auswahl jetzt oben */}
               {!selectedCard.challenge && (
                 <div className="w-full mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Wie lange möchtest du verzichten?</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Wie lange möchtest du verzichten?</label>
                   <select
-                    className="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full rounded-lg bg-gray-800 border-gray-700 text-white focus:ring-emerald-500 focus:border-emerald-500"
                     value={challengeDuration}
                     onChange={e => setChallengeDuration(Number(e.target.value))}
                     disabled={isStarting}
@@ -300,19 +300,19 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
               {/* Fortschritt nur wenn Challenge aktiv */}
               {selectedCard.challenge && (
                 <div className="w-full text-center mt-2">
-                  <div className="text-blue-600 font-semibold mb-1">Aktiv: {selectedCard.challenge.current_streak_days} / {selectedCard.challenge.target_days} Tage</div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{width: `${Math.min(100, Math.round((selectedCard.challenge.current_streak_days/selectedCard.challenge.target_days)*100))}%`}}></div>
+                  <div className="text-emerald-400 font-semibold mb-1">Aktiv: {selectedCard.challenge.current_streak_days} / {selectedCard.challenge.target_days} Tage</div>
+                  <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+                    <div className="bg-emerald-500 h-2 rounded-full" style={{width: `${Math.min(100, Math.round((selectedCard.challenge.current_streak_days/selectedCard.challenge.target_days)*100))}%`}}></div>
                   </div>
-                  <div className="text-xs text-gray-500">Challenge läuft!</div>
+                  <div className="text-xs text-gray-400">Challenge läuft!</div>
                 </div>
               )}
             </div>
             {/* Start-Button sticky am unteren Rand */}
             {!selectedCard.challenge && (
-              <div className="w-full px-6 pb-6 pt-2 bg-white sticky bottom-0 z-10 rounded-b-3xl">
+              <div className="w-full px-6 pb-6 pt-2 bg-gray-900 sticky bottom-0 z-10 rounded-b-3xl">
                 <button
-                  className="w-full py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-60"
+                  className="w-full py-3 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors disabled:opacity-60"
                   onClick={handleStartChallenge}
                   disabled={isStarting}
                 >

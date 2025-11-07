@@ -5,17 +5,21 @@ import { User } from '@supabase/supabase-js'
 interface AuthState {
   user: User | null
   profile: Profile | null
+  isCheckedIn: boolean
   setUser: (user: User | null) => void
   setProfile: (profile: Profile | null) => void
+  setIsCheckedIn: (isCheckedIn: boolean) => void
   logout: () => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   profile: null,
+  isCheckedIn: false,
   setUser: (user) => set({ user }),
   setProfile: (profile) => set({ profile }),
-  logout: () => set({ user: null, profile: null }),
+  setIsCheckedIn: (isCheckedIn) => set({ isCheckedIn }),
+  logout: () => set({ user: null, profile: null, isCheckedIn: false }),
 }))
 
 interface DiaryState {
