@@ -117,12 +117,12 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
 
   if (loading) {
     return (
-      <div className="bg-gray-900 rounded-3xl p-6 shadow-lg border border-gray-800">
+      <div className="bg-zinc-900 rounded-3xl p-6 shadow-lg border border-zinc-800">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-gray-800 rounded w-1/3"></div>
+          <div className="h-6 bg-zinc-800 rounded w-1/3"></div>
           <div className="space-y-3">
             {[1, 2].map(i => (
-              <div key={i} className="h-20 bg-gray-800 rounded-2xl"></div>
+              <div key={i} className="h-20 bg-zinc-800 rounded-2xl"></div>
             ))}
           </div>
         </div>
@@ -132,7 +132,7 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
 
   if (challenges.length === 0) {
     return (
-      <div className="bg-gray-900 rounded-3xl shadow-lg border border-gray-800 p-6">
+      <div className="bg-zinc-900 rounded-3xl shadow-lg border border-zinc-800 p-6">
         <div className="text-center py-8">
           <Target className="h-12 w-12 text-gray-600 mx-auto mb-3" />
           <h3 className="text-lg font-semibold text-gray-200 mb-2">Keine aktiven Challenges</h3>
@@ -143,7 +143,7 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
   }
 
   return (
-    <div className="bg-gray-900 rounded-3xl shadow-lg border border-gray-800 p-6">
+    <div className="bg-zinc-900 rounded-3xl shadow-lg border border-zinc-800 p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-gray-100 flex items-center">
           <Trophy className="h-5 w-5 mr-2 text-yellow-400" />
@@ -173,13 +173,13 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
               exit={{ opacity: 0, y: 40, transition: { duration: 0.35, ease: 'easeIn' } }}
               animate={{ opacity: 1, y: 0 }}
               // layout removed for performance
-              className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 p-4 flex items-center gap-4 overflow-hidden" style={{willChange: 'transform, opacity'}}>
+              className="bg-zinc-800 rounded-2xl shadow-lg border border-zinc-700 p-4 flex items-center gap-4 overflow-hidden" style={{willChange: 'transform, opacity'}}>
               {/* Progress Ring + Icon */}
               <div className="relative flex-shrink-0">
                 <svg className="w-14 h-14" viewBox="0 0 48 48">
                   <circle
                     cx="24" cy="24" r="20"
-                    stroke="#4b5563" strokeWidth="6" fill="none"
+                    stroke="#3f3f46" strokeWidth="6" fill="none"
                   />
                   <circle
                     cx="24" cy="24" r="20"
@@ -193,7 +193,7 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
                     style={{filter:'drop-shadow(0 0 8px #38bdf8aa)'}}
                   />
                 </svg>
-                <div className={`absolute inset-0 flex items-center justify-center rounded-full bg-gray-900 shadow-lg`}>
+                <div className={`absolute inset-0 flex items-center justify-center rounded-full bg-zinc-900 shadow-lg`}>
                   <span className={`text-xl ${colors.text}`}>{icon}</span>
                 </div>
               </div>
@@ -201,7 +201,7 @@ export default function ActiveChallenges({ onChallengeAborted }: ActiveChallenge
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <h4 className="font-semibold text-gray-200 truncate">{challenge.challenge_name}</h4>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-700 text-gray-300 ml-1">{Math.round(progressPercentage)}%</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-700 text-gray-300 ml-1">{Math.round(progressPercentage)}%</span>
                 </div>
                 <div className="text-xs text-gray-400 mb-1 truncate">Abstinent seit {timeSince.value} {timeSince.unit}</div>
                 <div className="flex items-center gap-2 text-xs text-gray-500">

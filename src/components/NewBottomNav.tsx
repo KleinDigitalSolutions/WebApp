@@ -23,7 +23,7 @@ const NewBottomNav = () => {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 h-20 bg-gray-900/90 backdrop-blur-lg border-t border-gray-700 flex items-center justify-around z-50 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.2)]">
+      <div className="fixed bottom-0 left-0 right-0 h-20 bg-zinc-900/80 backdrop-blur-lg border-t border-zinc-800 flex items-center justify-around z-50 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.2)]">
         {navItems.slice(0, 2).map((item) => {
           const isActive = pathname === item.href
           return (

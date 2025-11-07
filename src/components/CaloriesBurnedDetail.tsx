@@ -70,14 +70,14 @@ export default function CaloriesBurnedDetail({ userId, month, year }: CaloriesBu
     // ...weitere Zuordnungen...
   }
 
-  if (loading) return <div className="rounded-3xl p-6 bg-zinc-900/90 text-white shadow-xl backdrop-blur-xl border border-white/20">Lade Aktivitäten...</div>
-  if (error) return <div className="text-red-500 bg-zinc-900/90 rounded-3xl p-4 shadow-xl backdrop-blur-xl border border-white/20">Fehler: {error}</div>
-  if (Object.keys(grouped).length === 0) return <div className="rounded-3xl p-6 bg-zinc-900/90 text-white shadow-xl backdrop-blur-xl border border-white/20">Keine Aktivitäten für diesen Monat.</div>
+  if (loading) return <div className="rounded-3xl p-6 bg-zinc-900 text-gray-400 shadow-xl backdrop-blur-xl border border-zinc-800">Lade Aktivitäten...</div>
+  if (error) return <div className="text-red-400 bg-zinc-900 rounded-3xl p-4 shadow-xl backdrop-blur-xl border border-zinc-800">Fehler: {error}</div>
+  if (Object.keys(grouped).length === 0) return <div className="rounded-3xl p-6 bg-zinc-900 text-gray-400 shadow-xl backdrop-blur-xl border border-zinc-800">Keine Aktivitäten für diesen Monat.</div>
 
   return (
-    <div className="rounded-3xl p-6 bg-zinc-950/90 text-white shadow-2xl border border-white/20 backdrop-blur-xl">
-      <h3 className="font-bold mb-4 text-2xl text-emerald-200 flex items-center gap-2"><FaFireAlt className="text-amber-400" /> Tagesübersicht Kalorienverbrauch</h3>
-      <div className="mb-3 text-emerald-200 text-sm flex items-center gap-2">
+    <div className="rounded-3xl p-6 bg-zinc-900 text-white shadow-2xl border border-zinc-800 backdrop-blur-xl">
+      <h3 className="font-bold mb-4 text-2xl text-emerald-300 flex items-center gap-2"><FaFireAlt className="text-amber-400" /> Tagesübersicht Kalorienverbrauch</h3>
+      <div className="mb-3 text-emerald-300 text-sm flex items-center gap-2">
         <FaInfoCircle className="text-emerald-300" /> Tipp: Tippe auf einen Tag für mehr Details.
       </div>
       {/* Mobile Card-Ansicht */}
@@ -86,7 +86,7 @@ export default function CaloriesBurnedDetail({ userId, month, year }: CaloriesBu
           {Object.entries(grouped).map(([date, { total, acts }]) => (
             <div
               key={date}
-              className="rounded-2xl bg-zinc-900/90 p-4 flex items-center gap-3 shadow-md border border-emerald-900/60 active:scale-[0.98] active:bg-emerald-700/80 transition cursor-pointer"
+              className="rounded-2xl bg-zinc-800/80 p-4 flex items-center gap-3 shadow-md border border-zinc-700 active:scale-[0.98] active:bg-emerald-700/80 transition cursor-pointer"
               onClick={() => {/* Modal/Details öffnen */}}
             >
               <div className="flex flex-col flex-1">
@@ -99,7 +99,7 @@ export default function CaloriesBurnedDetail({ userId, month, year }: CaloriesBu
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {acts.map(a => (
-                    <span key={a.activity_name + a.duration_min} className="inline-flex items-center bg-emerald-950/90 rounded-xl px-3 py-1 text-sm font-semibold text-white shadow border border-emerald-900/60">
+                    <span key={a.activity_name + a.duration_min} className="inline-flex items-center bg-zinc-700 rounded-xl px-3 py-1 text-sm font-semibold text-white shadow border border-zinc-600">
                       {activityIcons[a.activity_name] || <FaDumbbell className="inline mr-1 text-emerald-300" />} {a.activity_name}
                     </span>
                   ))}
@@ -115,27 +115,27 @@ export default function CaloriesBurnedDetail({ userId, month, year }: CaloriesBu
         <div className="overflow-x-auto">
           <table className="w-full text-base border-separate border-spacing-y-2 mb-6">
             <thead>
-              <tr className="bg-emerald-950/90 text-emerald-100">
-                <th className="p-3 rounded-l-2xl font-semibold text-lg">Datum</th>
-                <th className="p-3 font-semibold text-lg">Kalorien</th>
-                <th className="p-3 rounded-r-2xl font-semibold text-lg">Aktivitäten</th>
+              <tr className="text-zinc-300">
+                <th className="p-3 font-semibold text-lg text-left">Datum</th>
+                <th className="p-3 font-semibold text-lg text-left">Kalorien</th>
+                <th className="p-3 font-semibold text-lg text-left">Aktivitäten</th>
               </tr>
             </thead>
             <tbody>
               {Object.entries(grouped).map(([date, { total, acts }]) => (
                 <tr
                   key={date}
-                  className="hover:bg-emerald-800/90 hover:scale-[1.025] transition rounded-2xl cursor-pointer group min-h-14"
+                  className="hover:bg-zinc-800/70 hover:scale-[1.025] transition rounded-2xl cursor-pointer group min-h-14"
                   // onClick={() => ...}
                 >
-                  <td className="p-3 font-mono text-lg text-white bg-zinc-900/80 rounded-l-2xl flex items-center gap-2 min-h-14">
+                  <td className="p-3 font-mono text-lg text-white bg-zinc-800/80 rounded-l-2xl flex items-center gap-2 min-h-14">
                     {date}
                     <FaInfoCircle className="ml-2 text-emerald-300 text-lg group-hover:text-amber-400 transition" />
                   </td>
-                  <td className="p-3 font-bold text-xl text-amber-300 bg-zinc-900/80">{total}</td>
-                  <td className="p-3 flex flex-wrap gap-2 bg-zinc-900/80 rounded-r-2xl">
+                  <td className="p-3 font-bold text-xl text-amber-300 bg-zinc-800/80">{total}</td>
+                  <td className="p-3 flex flex-wrap gap-2 bg-zinc-800/80 rounded-r-2xl">
                     {acts.map(a => (
-                      <span key={a.activity_name + a.duration_min} className="inline-flex items-center bg-emerald-950/90 rounded-xl px-3 py-1 text-sm font-semibold text-white shadow border border-emerald-900/60">
+                      <span key={a.activity_name + a.duration_min} className="inline-flex items-center bg-zinc-700 rounded-xl px-3 py-1 text-sm font-semibold text-white shadow border border-zinc-600">
                         {activityIcons[a.activity_name] || <FaDumbbell className="inline mr-1 text-emerald-300" />} {a.activity_name}
                       </span>
                     ))}
@@ -146,11 +146,11 @@ export default function CaloriesBurnedDetail({ userId, month, year }: CaloriesBu
           </table>
         </div>
       </div>
-      <h4 className="font-semibold mt-6 mb-2 text-lg text-emerald-200 flex items-center gap-2"><FaCrown className="text-yellow-400" /> Top-Aktivitäten</h4>
+      <h4 className="font-semibold mt-6 mb-2 text-lg text-emerald-300 flex items-center gap-2"><FaCrown className="text-yellow-400" /> Top-Aktivitäten</h4>
       <ul className="space-y-2">
         {topActivities.map(([name, kcal]) => (
           <li key={name} className="flex items-center gap-3 text-base font-semibold text-white">
-            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-950/90 shadow text-xl border border-emerald-900/60">
+            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-zinc-800 shadow text-xl border border-zinc-700">
               {activityIcons[name] || <FaDumbbell className="text-emerald-300" />}
             </span>
             <span className="font-bold text-white">{name}</span>

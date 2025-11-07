@@ -124,7 +124,7 @@ export default function DashboardOverviewSwiper() {
   }
 
   if (!user) return null
-  if (loading || !activeStats) return <div className="bg-gray-900 rounded-3xl shadow-lg border border-gray-800 p-6 mb-4 text-gray-400">Lade Übersicht...</div>
+  if (loading || !activeStats) return <div className="bg-zinc-900 rounded-3xl shadow-lg border border-zinc-800 p-6 mb-4 text-gray-400">Lade Übersicht...</div>
 
   // Wenn ein Modal offen ist, Swiper ausblenden (damit keine Karte "darunter" sichtbar ist)
   if (modal) {
@@ -163,12 +163,12 @@ export default function DashboardOverviewSwiper() {
   }
 
   return (
-    <div className="bg-gray-900 rounded-3xl shadow-lg border border-gray-800 p-6 mb-4 text-gray-200 select-none" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+    <div className="bg-zinc-900 rounded-3xl shadow-lg border border-zinc-800 p-6 mb-4 text-gray-200 select-none" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-semibold text-gray-100">{PERIODS[periodIdx].label} Übersicht</h3>
         <div className="flex gap-1">
           {PERIODS.map((p, i) => (
-            <button key={p.key} className={`w-2 h-2 rounded-full ${i===periodIdx?'bg-emerald-400':'bg-gray-600'}`} onClick={()=>setPeriodIdx(i)} aria-label={p.label} />
+            <button key={p.key} className={`w-2 h-2 rounded-full ${i===periodIdx?'bg-emerald-400':'bg-zinc-600'}`} onClick={()=>setPeriodIdx(i)} aria-label={p.label} />
           ))}
         </div>
       </div>
@@ -176,27 +176,27 @@ export default function DashboardOverviewSwiper() {
         <FaInfoCircle className="text-emerald-500" /> Tippe oder wische für andere Zeiträume.
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <button onClick={() => setModal('calories')} className="text-left p-2 rounded-lg hover:bg-gray-800">
+        <button onClick={() => setModal('calories')} className="text-left p-2 rounded-lg hover:bg-zinc-800">
           <div className="text-2xl font-bold text-gray-100">{activeStats.totalCalories} kcal</div>
           <div className="text-xs text-gray-400">Aufgenommen</div>
         </button>
-        <button onClick={() => setModal('burned')} className="text-left p-2 rounded-lg hover:bg-gray-800">
+        <button onClick={() => setModal('burned')} className="text-left p-2 rounded-lg hover:bg-zinc-800">
           <div className="text-2xl font-bold text-gray-100">{activeStats.totalBurned} kcal</div>
           <div className="text-xs text-gray-400">Verbrannt (Aktivitäten)</div>
         </button>
-        <button onClick={() => setModal('fasting')} className="text-left p-2 rounded-lg hover:bg-gray-800">
+        <button onClick={() => setModal('fasting')} className="text-left p-2 rounded-lg hover:bg-zinc-800">
           <div className="text-2xl font-bold text-gray-100">{activeStats.fastingCount}</div>
           <div className="text-xs text-gray-400">Fasten-Sessions</div>
         </button>
-        <button onClick={() => setModal('fasting')} className="text-left p-2 rounded-lg hover:bg-gray-800">
+        <button onClick={() => setModal('fasting')} className="text-left p-2 rounded-lg hover:bg-zinc-800">
           <div className="text-2xl font-bold text-gray-100">{activeStats.fastingHours.toFixed(1)} h</div>
           <div className="text-xs text-gray-400">Gefastet</div>
         </button>
-        <button onClick={() => setModal('challenges')} className="text-left p-2 rounded-lg hover:bg-gray-800">
+        <button onClick={() => setModal('challenges')} className="text-left p-2 rounded-lg hover:bg-zinc-800">
           <div className="text-2xl font-bold text-gray-100">{activeStats.challengeCount}</div>
           <div className="text-xs text-gray-400">Challenges</div>
         </button>
-        <button onClick={() => setModal('challenges')} className="text-left p-2 rounded-lg hover:bg-gray-800">
+        <button onClick={() => setModal('challenges')} className="text-left p-2 rounded-lg hover:bg-zinc-800">
           <div className="text-2xl font-bold text-gray-100">{activeStats.challengeCompleted}</div>
           <div className="text-xs text-gray-400">Abgeschlossen</div>
         </button>

@@ -222,10 +222,10 @@ export default function FastingCardStack() {
 
   if (loading) {
     return (
-      <div className="bg-gray-900 rounded-3xl p-6 shadow-lg border border-gray-800">
+      <div className="bg-zinc-900 rounded-3xl p-6 shadow-lg border border-zinc-800">
         <div className="animate-pulse">
-          <div className="h-6 bg-gray-700 rounded w-1/3 mb-4"></div>
-          <div className="h-64 bg-gray-800 rounded-2xl"></div>
+          <div className="h-6 bg-zinc-800 rounded w-1/3 mb-4"></div>
+          <div className="h-64 bg-zinc-800 rounded-2xl"></div>
         </div>
       </div>
     )
@@ -236,7 +236,7 @@ export default function FastingCardStack() {
   const isActiveSession = currentSession && currentSession.target_duration_hours === currentType.duration
 
   return (
-    <div className="bg-gray-900 rounded-3xl shadow-lg border border-gray-800 p-6 relative">
+    <div className="bg-zinc-900 rounded-3xl shadow-lg border border-zinc-800 p-6 relative">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-gray-100 flex items-center">
           <Timer className="h-5 w-5 mr-2" style={{color: color.progress}} />
@@ -245,7 +245,7 @@ export default function FastingCardStack() {
         <div className="flex items-center space-x-2">
           <button
             onClick={prevCard}
-            className="p-2 rounded-full hover:bg-gray-800 transition-colors"
+            className="p-2 rounded-full hover:bg-zinc-800 transition-colors"
           >
             <ChevronLeft className="h-5 w-5 text-gray-400" />
           </button>
@@ -253,13 +253,13 @@ export default function FastingCardStack() {
             {fastingTypes.map((_, index) => (
               <div
                 key={index}
-                className={`w-2 h-2 rounded-full transition-colors ${index === activeCardIndex ? color.indicator : 'bg-gray-600'}`}
+                className={`w-2 h-2 rounded-full transition-colors ${index === activeCardIndex ? color.indicator : 'bg-zinc-600'}`}
               />
             ))}
           </div>
           <button
             onClick={nextCard}
-            className="p-2 rounded-full hover:bg-gray-800 transition-colors"
+            className="p-2 rounded-full hover:bg-zinc-800 transition-colors"
           >
             <ChevronRight className="h-5 w-5 text-gray-400" />
           </button>

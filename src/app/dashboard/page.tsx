@@ -380,7 +380,7 @@ export default function Dashboard() {
         <DashboardOverviewSwiper />
         <FastingCardStack />
         <ChallengeSection />          {/* Insights Card */}
-          <div className="bg-gray-900 rounded-3xl shadow-lg border border-gray-800 p-6 pb-2">
+          <div className="bg-zinc-900 rounded-3xl shadow-lg border border-zinc-800 p-6 pb-2">
             <div className="flex items-center mb-3">
               <TrendingUp className="h-6 w-6 mr-2 text-emerald-400" />
               <h3 className="text-lg font-semibold text-gray-100">Deine Fortschritte</h3>

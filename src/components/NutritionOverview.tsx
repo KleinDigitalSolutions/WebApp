@@ -193,7 +193,7 @@ export default function NutritionOverview() {
       </div>
 
       {/* Recent Meals */}
-      <div className="bg-gray-900 rounded-3xl shadow-lg border border-gray-800 p-6">
+      <div className="bg-zinc-900 rounded-3xl shadow-lg border border-zinc-800 p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-100">Heutige Mahlzeiten</h3>
           <button 
@@ -207,7 +207,7 @@ export default function NutritionOverview() {
         
         {todayEntries.length === 0 ? (
           <div className="text-center py-8">
-            <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
+            <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-3">
               <PlusCircle className="h-8 w-8 text-gray-600" />
             </div>
             <p className="text-gray-400 text-sm">Noch keine Mahlzeiten eingetragen</p>
@@ -221,7 +221,7 @@ export default function NutritionOverview() {
         ) : (
           <div className="space-y-3">
             {todayEntries.slice(0, 3).map((entry) => (
-              <div key={entry.id} className="flex items-center justify-between p-4 bg-gray-800 rounded-2xl">
+              <div key={entry.id} className="flex items-center justify-between p-4 bg-zinc-800 rounded-2xl">
                 <div className="flex-1">
                   <h4 className="font-medium text-gray-200">{entry.food_name}</h4>
                   <p className="text-sm text-gray-400">{entry.calories} kcal</p>

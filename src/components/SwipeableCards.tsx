@@ -273,7 +273,7 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
       {showDetail && selectedCard && typeof window !== 'undefined' && createPortal(
         <div className="fixed inset-0 z-40 flex justify-center md:items-center items-center bg-black/60 backdrop-blur-sm transition-all" onClick={() => setShowDetail(false)}>
           <div
-            className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-3xl shadow-2xl p-0 mx-auto animate-slideInUp relative max-h-[90vh] flex flex-col"
+            className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-3xl shadow-2xl p-0 mx-auto animate-slideInUp relative max-h-[90vh] flex flex-col"
             onClick={e => e.stopPropagation()}
           >
             <button className="absolute top-4 right-4 text-gray-500 hover:text-gray-200 text-xl z-10" onClick={()=>setShowDetail(false)}>&times;</button>
@@ -286,7 +286,7 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
                 <div className="w-full mb-4">
                   <label className="block text-sm font-medium text-gray-300 mb-1">Wie lange möchtest du verzichten?</label>
                   <select
-                    className="w-full rounded-lg bg-gray-800 border-gray-700 text-white focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full rounded-lg bg-zinc-800 border-zinc-700 text-white focus:ring-emerald-500 focus:border-emerald-500"
                     value={challengeDuration}
                     onChange={e => setChallengeDuration(Number(e.target.value))}
                     disabled={isStarting}
@@ -301,7 +301,7 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
               {selectedCard.challenge && (
                 <div className="w-full text-center mt-2">
                   <div className="text-emerald-400 font-semibold mb-1">Aktiv: {selectedCard.challenge.current_streak_days} / {selectedCard.challenge.target_days} Tage</div>
-                  <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+                  <div className="w-full bg-zinc-700 rounded-full h-2 mb-2">
                     <div className="bg-emerald-500 h-2 rounded-full" style={{width: `${Math.min(100, Math.round((selectedCard.challenge.current_streak_days/selectedCard.challenge.target_days)*100))}%`}}></div>
                   </div>
                   <div className="text-xs text-gray-400">Challenge läuft!</div>
@@ -310,7 +310,7 @@ export default function SwipeableCards({ onChallengeStarted }: SwipeableCardsPro
             </div>
             {/* Start-Button sticky am unteren Rand */}
             {!selectedCard.challenge && (
-              <div className="w-full px-6 pb-6 pt-2 bg-gray-900 sticky bottom-0 z-10 rounded-b-3xl">
+              <div className="w-full px-6 pb-6 pt-2 bg-zinc-900 sticky bottom-0 z-10 rounded-b-3xl">
                 <button
                   className="w-full py-3 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors disabled:opacity-60"
                   onClick={handleStartChallenge}

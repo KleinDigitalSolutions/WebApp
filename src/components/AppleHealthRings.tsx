@@ -78,7 +78,7 @@ export default function AppleHealthRings() {
   const standData = { value: 9, goal: 12, progress: (9 / 12) * 100 }
 
   return (
-    <div className="bg-gray-900 rounded-3xl shadow-lg border border-gray-800 p-6">
+    <div className="bg-zinc-900 rounded-3xl shadow-lg border border-zinc-800 p-6">
       <h3 className="text-lg font-semibold text-gray-100 mb-4">Tagesaktivität</h3>
       <div className="flex items-center justify-between gap-6">
         {/* Rings */}
