@@ -91,67 +91,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de" dir="ltr" className="h-full">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="TrackFood" />
-        <meta name="application-name" content="TrackFood" />
-        <meta name="msapplication-TileColor" content="#10b981" />
-        <meta name="msapplication-tap-highlight" content="no" />
-        {/* Favicons und Manifest: Nur die wichtigsten, keine Duplikate */}
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/web-app-manifest-192x192.png" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/web-app-manifest-512x512.png" />
-        <link rel="manifest" href="/site.webmanifest" />
-        {/* Structured Data for SEO */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "SoftwareApplication",
-              "name": "TrackFood",
-              "applicationCategory": "HealthApplication",
-              "operatingSystem": "Web Browser, iOS, Android",
-              "description": "Barcode scannen, KI fragen, gesund leben! TrackFood kombiniert intelligenten Barcode-Scanner mit personalisierter KI-Ernährungsberatung. 2500+ deutsche Produkte.",
-              "url": "https://trackfood-app.vercel.app",
-              "downloadUrl": "https://trackfood-app.vercel.app",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "EUR"
-              },
-              "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.9",
-                "ratingCount": "1247"
-              },
-              "features": [
-                "Barcode-Scanner für deutsche Produkte (EAN-13, EAN-8, Code-128, Code-39)",
-                "KI-gestützte Ernährungsberatung (Groq AI, LLaMA 3.1)",
-                "7-Tage Ernährungsanalyse & automatische Problemerkennung",
-                "Personalisierte Empfehlungen für Abnehmen, Muskelaufbau, Gesundheit",
-                "Kalorien-, Makro- und Mikronährstoff-Tracking (Zucker, Ballaststoffe, Natrium)",
-                "Deutsche Produktdatenbank (2500+ Produkte, EDEKA, REWE, ALDI, Lidl, Ferrero, Milka, Haribo, Coca-Cola, Dr. Oetker, uvm.)",
-                "Rezepte & Inspiration, direkt ins Tagebuch übernehmen",
-                "Mobile- und Safari-optimiert, PWA-fähig, offline nutzbar",
-                "Supabase-Backend, sichere Authentifizierung, RLS, DSGVO-konform"
-              ],
-              "author": {
-                "@type": "Organization",
-                "name": "TrackFood Team"
-              }
-            })
-          }}
-        />
-      </head>
       <body className={`${inter.className} h-full bg-black text-white antialiased`}>
         <AuthProvider>
           {/* GTM nur nach Consent laden (Client-Komponente) */}
