@@ -1,25 +1,14 @@
 'use client'
 
-'use client'
-
 import { useEffect, useRef, useState } from 'react'
-
-export default function TestPage() {import { useRouter } from 'next/navigation'
-
-  return (import { useAuthStore } from '@/store'
-
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>import { Button } from '@/components/ui'
-
-      <h1>Test erfolgreich</h1>import {
-
-      <p>Wenn du das siehst, funktioniert das Deployment grundsätzlich.</p>  QrCode,
-
-    </div>  Dumbbell,
-
-  )  ArrowRight,
-
-}  Trophy,
-
+import { useRouter } from 'next/navigation'
+import { useAuthStore } from '@/store'
+import { Button } from '@/components/ui'
+import {
+  QrCode,
+  Dumbbell,
+  ArrowRight,
+  Trophy,
   Zap,
   Users,
   Check,
